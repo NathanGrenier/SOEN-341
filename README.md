@@ -1,4 +1,4 @@
-# SOEN-341_SiteName
+# SOEN-341
 TODO
 
 ## Development
