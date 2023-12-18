@@ -1,4 +1,5 @@
 # SOEN-341
+
 TODO
 
 ## Development
@@ -9,20 +10,28 @@ TODO
 2. Install the `Tailwind CSS InteliSense` VSCode Extension
 3. Install the `Prettier` VSCode Extension
 4. Configure Prettier to format on save in VSCode's settings
-5. Add this configuration to you VSCode settings.json file (accesible through settings)
+5. Add this configuration to you VSCode settings.json file (accesible through
+   settings)
+
 ```json
    "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
   },
 ```
+
 6. Another useful extension for live collaboration is `Live Share`
 
 ### Starting the Dev Environment
 
-Start the development server by running:
+Start the development server by running: Once you've created a project and
+installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a
+development server:
 
-```sh
+```bash
 npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
 ```
 
 ### Environment Variables
@@ -37,13 +46,12 @@ file in the project root folder.
 
 The following variables can be configured:
 
-| VAR                   | DESC                                                     | DEFAULT                                               |
-| --------------------- | -------------------------------------------------------- | ----------------------------------------------------- |
-| EXEC_ENV              | The runtime environment                                  | `localhost`                                           |
-| FAKE_AUTH_PASSWORD    | The password that is required on the fake login page     | `changeme`                                            |
-| SERVER_PORT           | Port the application runs on                             | `3000`                                                |
-| USE_FAKE_AUTH         | Set to `true` to bypass Azure authentication             | `true`                                                |
-
+| VAR                | DESC                                                 | DEFAULT     |
+| ------------------ | ---------------------------------------------------- | ----------- |
+| EXEC_ENV           | The runtime environment                              | `localhost` |
+| FAKE_AUTH_PASSWORD | The password that is required on the fake login page | `changeme`  |
+| SERVER_PORT        | Port the application runs on                         | `3000`      |
+| USE_FAKE_AUTH      | Set to `true` to bypass Azure authentication         | `true`      |
 
 ### Tests
 
@@ -59,11 +67,25 @@ npm test
 
 ### Before Merging
 
-Before you created a merge request, make sure that your code is properly formatted and linted using the following npm commands (located in `package.json` under scripts):
-* Typecheck: `npm run typecheck`
-* Lint: `npm run lint`
-* Format: `npm run format`
+Before you created a merge request, make sure that your code is properly
+formatted and linted using the following npm commands (located in `package.json`
+under scripts):
+
+- Typecheck: `npm run typecheck`
+- Lint: `npm run lint`
+- Format: `npm run format`
+
+## Building
+
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
 
 ## Deployment
 
-
+> To deploy your app, you may need to install an
+> [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
