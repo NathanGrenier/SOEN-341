@@ -3,6 +3,22 @@ TODO
 
 ## Development
 
+### VSCode Setup
+
+1. Install the `Svelte for VS Code` and `Svelte Intellisense` VSCode Extensions
+2. Install the `Tailwind CSS InteliSense` VSCode Extension
+3. Install the `Prettier` VSCode Extension
+4. Configure Prettier to format on save in VSCode's settings
+5. Add this configuration to you VSCode settings.json file (accesible through settings)
+```json
+   "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  },
+```
+6. Another useful extension for live collaboration is `Live Share`
+
+### Starting the Dev Environment
+
 Start the development server by running:
 
 ```sh
@@ -40,6 +56,13 @@ Launch unit tests by running:
 ```
 npm test
 ```
+
+### Before Merging
+
+Before you created a merge request, make sure that your code is properly formatted and linted using the following npm commands (located in `package.json` under scripts):
+* Typecheck: `npm run typecheck`
+* Lint: `npm run lint`
+* Format: `npm run format`
 
 ## Deployment
 
