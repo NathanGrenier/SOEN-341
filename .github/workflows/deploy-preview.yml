@@ -86,7 +86,7 @@ jobs:
           body-includes: Vercel Preview URL
 
       - name: Create comment
-        if: steps.fc.outputs.comment-id == ''
+        if: steps.previewComment.outputs.comment-id == ''
         uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -95,10 +95,10 @@ jobs:
             Neon branch :elephant: : https://console.neon.tech/app/projects/${{ secrets.NEON_PROJECT_ID }}/branches/${{ steps.create_branch.outputs.branch_id }}
 
       - name: Update comment
-        if: steps.fc.outputs.comment-id != ''
+        if: steps.previewComment.outputs.comment-id != ''
         uses: peter-evans/create-or-update-comment@v1
         with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
+          comment-id: ${{ steps.previewComment.outputs.comment-id }}
           body: |
             Vercel Preview URL :rocket: : ${{ steps.deploy.outputs.preview_url }}
             Neon branch :elephant: : https://console.neon.tech/app/projects/${{ secrets.NEON_PROJECT_ID }}/branches/${{ steps.create_branch.outputs.branch_id }}
