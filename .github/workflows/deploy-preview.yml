@@ -36,6 +36,10 @@ jobs:
       statuses: write
       pull-requests: write
     runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -65,9 +69,11 @@ jobs:
           npx prisma generate
           npx prisma migrate deploy
 
-       - name: Extract branch name
+      - name: Extract branch name
         shell: bash
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        run:
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >>
+          $GITHUB_OUTPUT
         id: extract_branch
 
       - name: Hash branch name
@@ -76,7 +82,7 @@ jobs:
         with:
           input: ${{ steps.extract_branch.outputs.branch }}
           method: MD5
-      
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
@@ -100,7 +106,9 @@ jobs:
       - name: Deploy Project Artifacts to Vercel
         id: vercel
         env:
-          META_TAG: ${{ steps.hash_branch.outputs.digest }}-${{ github.run_number }}-${{ github.run_attempt}}
+          META_TAG:
+            ${{ steps.hash_branch.outputs.digest }}-${{ github.run_number }}-${{
+            github.run_attempt}}
         run: |
           vercel --version
           vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
@@ -112,7 +120,7 @@ jobs:
           echo "New preview URL: $url"
           echo "META_TAG=$META_TAG"
           echo "preview_url=$url" >> "$GITHUB_OUTPUT"
-      
+
       # - name: Build Project Artifacts
       #   run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
 
