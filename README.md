@@ -149,5 +149,9 @@ You can preview the production build with `npm run preview`.
 
 ## Deployment
 
-> To deploy your app, you may need to install an
-> [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+A preview environment is created whenever a pull request is created and the
+preliminary tests have passed. This can be used to review any changed made in a
+production like environment.
+
+Once the pull request is merged, a GitHub action will automatically deploy the
+application to [production](https://soen-341.vercel.app/).
