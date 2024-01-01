@@ -61,14 +61,6 @@ jobs:
           username: ${{ secrets.PG_USERNAME }}
           password: ${{ secrets.PG_PASSWORD }}
 
-      - name: Run Prisma Migrate
-        run: |
-          touch .env
-          echo DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/neondb >> .env
-          echo DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/neondb >> .env
-          npx prisma generate
-          npx prisma migrate deploy
-
       - name: Extract branch name
         shell: bash
         run:
@@ -103,6 +95,14 @@ jobs:
           vercel pull --yes --environment=preview --token=${{
           secrets.VERCEL_TOKEN }}
 
+      - name: Run Prisma Migrate
+        run: |
+          touch .env
+          echo DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/neondb >> .env
+          echo DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/neondb >> .env
+          npx prisma generate
+          npx prisma migrate deploy
+
       - name: Deploy Project Artifacts to Vercel
         id: vercel
         env:
@@ -120,15 +120,6 @@ jobs:
           echo "New preview URL: $url"
           echo "META_TAG=$META_TAG"
           echo "preview_url=$url" >> "$GITHUB_OUTPUT"
-
-      # - name: Build Project Artifacts
-      #   run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
-      # - name: Deploy Preview to Vercel
-      #   id: deploy
-      #   run:
-      #     echo preview_url=$(vercel deploy --prebuilt --token=${{
-      #     secrets.VERCEL_TOKEN }}) >> $GITHUB_OUTPUT
 
       # From: https://github.com/peter-evans/create-or-update-comment
       - name: Find Comment
