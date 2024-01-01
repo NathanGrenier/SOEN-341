@@ -5,24 +5,27 @@ on: [pull_request]
 jobs:
   Test:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
     steps:
       - name: Checkout code
-      uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
       - name: Install dependencies
-      run: npm ci
+        run: npm ci
 
       - name: Build, Test, and Lint
-      run: |
-        npm run build
-        npm run test
-        npm run lint
-        npm run prisma:validate
+        run: |
+          npm run build
+          npm run test
+          npm run lint
+          npm run prisma:validate
 
   deploy_preview:
     needs: [Test]
