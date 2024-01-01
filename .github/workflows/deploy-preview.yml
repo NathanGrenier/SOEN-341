@@ -77,9 +77,29 @@ jobs:
           echo preview_url=$(vercel deploy --prebuilt --token=${{
           secrets.VERCEL_TOKEN }}) >> $GITHUB_OUTPUT
 
-      - name: Comment on Pull Request
-        uses: thollander/actions-comment-pull-request@v2
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: previewComment
         with:
-          message: |
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: Vercel Preview URL
+
+      - name: Create comment
+        if: steps.previewComment.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
             Vercel Preview URL :rocket: : ${{ steps.deploy.outputs.preview_url }}
             Neon branch :elephant: : https://console.neon.tech/app/projects/${{ secrets.NEON_PROJECT_ID }}/branches/${{ steps.create_branch.outputs.branch_id }}
+
+      - name: Update comment
+        if: steps.previewComment.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.previewComment.outputs.comment-id }}
+          body: |
+            Vercel Preview URL :rocket: : ${{ steps.deploy.outputs.preview_url }}
+            Neon branch :elephant: : https://console.neon.tech/app/projects/${{ secrets.NEON_PROJECT_ID }}/branches/${{ steps.create_branch.outputs.branch_id }}
+          edit-mode: replace
