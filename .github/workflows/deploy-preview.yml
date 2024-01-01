@@ -145,7 +145,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            Vercel Preview URL :rocket: : ${{ steps.deploy.outputs.preview_url }}
+            Vercel Preview URL :rocket: : ${{ steps.vercel.outputs.preview_url }}
             Neon branch :elephant: : https://console.neon.tech/app/projects/${{ secrets.NEON_PROJECT_ID }}/branches/${{ steps.create_branch.outputs.branch_id }}
 
       - name: Update comment
@@ -154,6 +154,6 @@ jobs:
         with:
           comment-id: ${{ steps.previewComment.outputs.comment-id }}
           body: |
-            Vercel Preview URL :rocket: : ${{ steps.deploy.outputs.preview_url }}
+            Vercel Preview URL :rocket: : ${{ steps.vercel.outputs.preview_url }}
             Neon branch :elephant: : https://console.neon.tech/app/projects/${{ secrets.NEON_PROJECT_ID }}/branches/${{ steps.create_branch.outputs.branch_id }}
           edit-mode: replace
