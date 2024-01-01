@@ -5,6 +5,8 @@ on: [pull_request]
 jobs:
   Test:
     runs-on: ubuntu-latest
+    env:
+      DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
