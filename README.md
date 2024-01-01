@@ -1,35 +1,36 @@
 # SOEN-341
 
-TODO
+TODO: Add project description, table of contents.
 
 ## Development
 
 ### VSCode Setup
 
 1. Install the `Svelte for VS Code` and `Svelte Intellisense` VSCode Extensions
-2. Install the `Tailwind CSS InteliSense` VSCode Extension
-3. Install the `Prettier` VSCode Extension
-4. Configure Prettier to format on save in VSCode's settings
-5. Add this configuration to you VSCode settings.json file (accesible through
+2. Install the `Prisma` VSCode Extension
+3. Install the `Tailwind CSS InteliSense` VSCode Extension
+4. Install the `Prettier` VSCode Extension
+5. Configure Prettier to format on save in VSCode's settings
+6. Add this configuration to you VSCode settings.json file (accesible through
    settings)
 
 ```json
+   "editor.formatOnSave": true,
    "[svelte]": {
-    "editor.defaultFormatter": "svelte.svelte-vscode"
-  },
+      "editor.defaultFormatter": "svelte.svelte-vscode"
+   },
+   "[prisma]": {
+      "editor.defaultFormatter": "Prisma.prisma"
+   },
 ```
 
 6. Another useful extension for live collaboration is `Live Share`
 
-### Starting the Dev Environment
+### Installing Docker
 
-Once you've created a project and
-installed dependencies with `npm install`, start a
-development server by running:
-
-```bash
-npm run dev
-```
+A docker container is used in development to create a dev database. You'll need
+to [install](https://docs.docker.com/desktop/install/windows-install/) docker on
+your computer to be able to use the necessary commands.
 
 ### Environment Variables
 
@@ -43,18 +44,82 @@ file in the project root folder.
 
 The following variables can be configured:
 
-| VAR                | DESC                                                 | DEFAULT     |
-| ------------------ | ---------------------------------------------------- | ----------- |
-| EXEC_ENV           | The runtime environment                              | `localhost` |
-| FAKE_AUTH_PASSWORD | The password that is required on the fake login page | `changeme`  |
-| SERVER_PORT        | Port the application runs on                         | `3000`      |
-| USE_FAKE_AUTH      | Set to `true` to bypass Azure authentication         | `true`      |
+| VAR                | DESC                                                 | DEFAULT                                                                                 |
+| ------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| DB_HOST            | The dev database host                                | `localhost`                                                                             |
+| DB_USER            | The dev database username                            | `devuser`                                                                               |
+| DB_PASSWORD        | The dev database password                            | `supersecret`                                                                           |
+| DB_NAME            | The dev database name                                | `devdb`                                                                                 |
+| DB_PORT            | The dev database port                                | `5432`                                                                                  |
+| DATABASE_URL       | The database URL (used by Prisma)                    | `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public` |
+| FAKE_AUTH_PASSWORD | The password that is required on the fake login page | `changeme`                                                                              |
+| USE_FAKE_AUTH      | Set to `true` to bypass authentication               | `true`                                                                                  |
+
+### Starting the Dev Environment
+
+Install the node dependencies:
+
+```bash
+npm install
+```
+
+Use docker compose to start the development database:
+
+```bash
+docker compose up
+
+# or run the docker container in detached mode (runs in the background)
+docker compose up -d
+```
+
+Start a development server:
+
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+### Prisma
+
+When you prototype a change to the Prisma schema, in order to sync the changes
+with your development database use the following command:
+
+```bash
+npx prisma db push
+```
+
+---
+
+When the Prisma schema is in a stable condition (in the desired state), create a
+[migration](https://www.prisma.io/docs/orm/prisma-migrate/getting-started) file
+with:
+
+```bash
+prisma migrate dev
+```
+
+This migration file can then be used to update the databases in other
+environments (development, production).
+
+For more detail, visit the
+[Prisma Docs](https://www.prisma.io/docs/orm/prisma-migrate/workflows/prototyping-your-schema)
+on the topic.
+
+---
+
+If you want to see a visual representation of the database, use the
+[Prisma Studio](https://www.prisma.io/docs/orm/tools/prisma-studio) tool by
+running:
+
+```bash
+npx prisma studio
+```
 
 ### Tests
 
-Unit tests are run using the [Vitest](https://vitest.dev/) testing framework. We
-use [Testcontainers](https://node.testcontainers.org/) to start a MySQL
-container for the duration of the test run.
+Unit tests are run using the [Vitest](https://vitest.dev/) testing framework.
 
 Launch unit tests by running:
 
