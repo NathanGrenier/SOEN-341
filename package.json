@@ -13,13 +13,17 @@
     "lint": "prettier --check . && eslint .",
     "prisma:validate": "npx prisma format && npx prisma validate",
     "format": "prettier --write . && npx prisma format",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
-    "@types/node": "^20.10.5",
+    "@types/node": "^20.10.6",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
@@ -37,6 +41,7 @@
     "tailwindcss": "^3.3.6",
     "ts-node": "^10.9.2",
     "tslib": "^2.4.1",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.3",
     "vitest": "^1.0.0"
