@@ -75,7 +75,6 @@ jobs:
         env:
           EXEC_ENV: ${{ vars.EXEC_ENV }}
         run: |
-          echo "Environment: $EXEC_ENV"
           npx prisma db seed
 
       - name: Extract branch name
