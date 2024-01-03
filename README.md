@@ -54,6 +54,7 @@ The following variables can be configured:
 | DATABASE_URL       | The database URL (used by Prisma)                    | `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public` |
 | FAKE_AUTH_PASSWORD | The password that is required on the fake login page | `changeme`                                                                              |
 | USE_FAKE_AUTH      | Set to `true` to bypass authentication               | `true`                                                                                  |
+| EXEC_ENV           | Current execution environment                        | `development`                                                                           |
 
 ### Starting the Dev Environment
 
