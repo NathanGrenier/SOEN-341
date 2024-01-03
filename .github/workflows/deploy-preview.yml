@@ -69,6 +69,10 @@ jobs:
           npx prisma generate
           npx prisma migrate deploy
 
+      - name: Run Prisma Seed
+        run: |
+          npx prisma db seed
+
       - name: Extract branch name
         shell: bash
         run:
