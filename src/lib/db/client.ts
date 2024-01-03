@@ -15,8 +15,8 @@ switch (process.env.EXEC_ENV) {
     });
     break;
   }
-  // Runs for preview and deployment
-  default: {
+  case "production":
+  case "preview": {
     neonConfig.webSocketConstructor = ws;
 
     const connectionString = `${process.env.DATABASE_URL}`;
@@ -28,5 +28,8 @@ switch (process.env.EXEC_ENV) {
       log: ["info", "warn", "error"],
     });
     break;
+  }
+  default: {
+    throw new Error(`Unknown EXEC_ENV=${process.env.EXEC_ENV}`);
   }
 }
