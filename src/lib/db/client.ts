@@ -4,10 +4,32 @@ import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 import ws from "ws";
 
-dotenv.config();
-neonConfig.webSocketConstructor = ws;
-const connectionString = `${process.env.DATABASE_URL}`;
+export let prisma: PrismaClient;
 
-const pool = new Pool({ connectionString });
-const adapter = new PrismaNeon(pool);
-export const prisma = new PrismaClient({ adapter });
+dotenv.config();
+
+switch (process.env.EXEC_ENV) {
+  case "development": {
+    prisma = new PrismaClient({
+      log: ["info", "warn", "error"],
+    });
+    break;
+  }
+  case "production":
+  case "preview": {
+    neonConfig.webSocketConstructor = ws;
+
+    const connectionString = `${process.env.DATABASE_URL}`;
+    const pool = new Pool({ connectionString });
+    const adapter = new PrismaNeon(pool);
+
+    prisma = new PrismaClient({
+      adapter,
+      log: ["info", "warn", "error"],
+    });
+    break;
+  }
+  default: {
+    throw new Error(`Unknown EXEC_ENV=${process.env.EXEC_ENV}`);
+  }
+}
