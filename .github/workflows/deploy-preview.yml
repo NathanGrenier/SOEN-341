@@ -16,6 +16,7 @@ jobs:
       statuses: write
       pull-requests: write
     runs-on: ubuntu-latest
+    environment: Preview
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
