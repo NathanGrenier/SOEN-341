@@ -44,17 +44,18 @@ file in the project root folder.
 
 The following variables can be configured:
 
-| VAR                | DESC                                                 | DEFAULT                                                                                 |
-| ------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| DB_HOST            | The dev database host                                | `localhost`                                                                             |
-| DB_USER            | The dev database username                            | `devuser`                                                                               |
-| DB_PASSWORD        | The dev database password                            | `supersecret`                                                                           |
-| DB_NAME            | The dev database name                                | `devdb`                                                                                 |
-| DB_PORT            | The dev database port                                | `5432`                                                                                  |
-| DATABASE_URL       | The database URL (used by Prisma)                    | `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public` |
-| FAKE_AUTH_PASSWORD | The password that is required on the fake login page | `changeme`                                                                              |
-| USE_FAKE_AUTH      | Set to `true` to bypass authentication               | `true`                                                                                  |
-| EXEC_ENV           | Current execution environment                        | `development`                                                                           |
+| VAR                 | DESC                                                 | DEFAULT                                                                                 |
+| ------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| DB_HOST             | The dev database host                                | `localhost`                                                                             |
+| DB_USER             | The dev database username                            | `devuser`                                                                               |
+| DB_PASSWORD         | The dev database password                            | `supersecret`                                                                           |
+| DB_NAME             | The dev database name                                | `devdb`                                                                                 |
+| DB_PORT             | The dev database port                                | `5432`                                                                                  |
+| DATABASE_URL        | The database URL (used by Prisma)                    | `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public` |
+| DIRECT_DATABASE_URL | Used in development environment to keep Prisma happy | `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public` |
+| FAKE_AUTH_PASSWORD  | The password that is required on the fake login page | `changeme`                                                                              |
+| USE_FAKE_AUTH       | Set to `true` to bypass authentication               | `true`                                                                                  |
+| EXEC_ENV            | Current execution environment                        | `development`                                                                           |
 
 ### Starting the Dev Environment
 
