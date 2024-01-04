@@ -20,7 +20,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "engines": {
-    "node": "20.10.0"
+    "node": "18.x"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",

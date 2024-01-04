@@ -64,7 +64,7 @@ to install the proper version of node for the project (can be found in
 `package.json` in the `engines` object):
 
 ```bash
-nvm install 20.10.0
+nvm install 18
 ```
 
 Install the node dependencies:
