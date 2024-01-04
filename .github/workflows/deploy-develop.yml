@@ -48,18 +48,12 @@ jobs:
       - name: Pull Vercel Environment Information
         id: vercel_pull
         run: |
-          vercel pull --yes --environment=preview --git-branch=develop
-          --token=${{ secrets.VERCEL_TOKEN }} 
-          source .vercel/.env.DATABASE_URL
-          source .vercel/.env.DIRECT_DATABASE_URL 
-          echo "DATABASE_URL=$DATABASE_URL"
-          echo "DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL"
-          echo "DATABASE_URL=$DATABASE_URL" >> $GITHUB_OUTPUT 
-          echo "DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL" >> $GITHUB_OUTPUT
+          vercel link --yes --token=${{ secrets.VERCEL_TOKEN }} 
+          vercel env pull --yes --environment=preview --git-branch=develop --token=${{ secrets.VERCEL_TOKEN }}
+          source .env.local
+          echo "DATABASE_URL=$DATABASE_URL" >> $GITHUB_ENV 
+          echo "DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL" >> $GITHUB_ENV
 
       - name: Run Prisma Migrate
         run: |
-          touch .env
-          echo DATABASE_URL="${{ steps.vercel_pull.outputs.DATABASE_URL}}" >> .env
-          echo DIRECT_DATABASE_URL="${{ steps.vercel_pull.outputs.DIRECT_DATABASE_URL}}" >> .env
           npx prisma migrate deploy
