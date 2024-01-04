@@ -54,6 +54,7 @@
     "@sveltejs/adapter-vercel": "^4.0.3",
     "@vercel/analytics": "^1.1.1",
     "@vercel/speed-insights": "^1.0.2",
+    "cssnano": "^6.0.3",
     "dotenv": "^16.3.1",
     "ws": "^8.16.0"
   }
