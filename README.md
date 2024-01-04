@@ -58,6 +58,15 @@ The following variables can be configured:
 
 ### Starting the Dev Environment
 
+Use
+[nvm](https://www.freecodecamp.org/news/node-version-manager-nvm-install-guide/)
+to install the proper version of node for the project (can be found in
+`package.json` in the `engines` object):
+
+```bash
+nvm install 20.10.0
+```
+
 Install the node dependencies:
 
 ```bash
