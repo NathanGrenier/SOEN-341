@@ -24,8 +24,7 @@ jobs:
       - name: Pull Vercel Environment Information
         id: vercel_pull
         run: |
-          vercel pull --yes --environment=preview --git-branch=develop
-          --token=${{ secrets.VERCEL_TOKEN }} 
+          vercel pull --yes --environment=preview --git-branch=develop --token=${{ secrets.VERCEL_TOKEN }} 
           source .vercel/.env.DATABASE_URL
           source .vercel/.env.DIRECT_DATABASE_URL 
           echo "DATABASE_URL=$DATABASE_URL" >> $GITHUB_ENV 
