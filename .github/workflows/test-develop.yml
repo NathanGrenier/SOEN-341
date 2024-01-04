@@ -1,8 +1,9 @@
-name: Run Tests (production)
+name: Run Tests (develop)
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    branches: develop
 
 jobs:
   Test:

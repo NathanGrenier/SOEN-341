@@ -3,6 +3,7 @@ name: Run Tests (production)
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    branches: main
 
 jobs:
   Test:
