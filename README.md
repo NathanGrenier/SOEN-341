@@ -58,6 +58,15 @@ The following variables can be configured:
 
 ### Starting the Dev Environment
 
+Use
+[nvm](https://www.freecodecamp.org/news/node-version-manager-nvm-install-guide/)
+to install the proper version of node for the project (can be found in
+`package.json` in the `engines` object):
+
+```bash
+nvm install 18
+```
+
 Install the node dependencies:
 
 ```bash
@@ -84,14 +93,16 @@ npm run dev -- --open
 
 ### Prisma
 
-When you prototype a change to the Prisma schema, in order to sync the changes
-with your development database use the following command:
+#### Prototype Database Change:
+
+To prototype a change to the Prisma schema and sync the modification with your
+development database, use the following command:
 
 ```bash
 npx prisma db push
 ```
 
----
+#### Create Database Migration:
 
 When the Prisma schema is in a stable condition (in the desired state), create a
 [migration](https://www.prisma.io/docs/orm/prisma-migrate/getting-started) file
@@ -102,13 +113,13 @@ prisma migrate dev
 ```
 
 This migration file can then be used to update the databases in other
-environments (development, production).
+environments (preview, production).
 
 For more detail, visit the
 [Prisma Docs](https://www.prisma.io/docs/orm/prisma-migrate/workflows/prototyping-your-schema)
 on the topic.
 
----
+#### Exploring the Database in Development:
 
 If you want to see a visual representation of the database, use the
 [Prisma Studio](https://www.prisma.io/docs/orm/tools/prisma-studio) tool by
