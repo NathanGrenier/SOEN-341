@@ -165,6 +165,6 @@ jobs:
 
       - name: Lint
         run: |
-          cat .env  # TODO: for debugging. Remove later.
+          echo "DATABASE_URL=$DATABASE_URL, DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL"  
           npm run lint
           npm run prisma:validate
