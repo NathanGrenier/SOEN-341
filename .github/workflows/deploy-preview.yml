@@ -47,8 +47,8 @@ jobs:
         run: |
           echo "DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/neondb?sslmode=require&pgbouncer=true" >> $GITHUB_ENV 
           echo "DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/neondb?sslmode=require" >> $GITHUB_ENV
-          echo "preview_db_url=${{ steps.create_branch.outputs.db_url_with_pooler }}" >> $GITHUB_OUTPUT
-          echo "preview_db_url_direct=${{ steps.create_branch.outputs.db_url }}" >> $GITHUB_OUTPUT
+          echo "preview_db_url=${{ steps.create_branch.outputs.db_url_with_pooler }}" >> "$GITHUB_OUTPUT"
+          echo "preview_db_url_direct=${{ steps.create_branch.outputs.db_url }}" >> "$GITHUB_OUTPUT"
 
       - name: Run Prisma Migrate
         run: |
