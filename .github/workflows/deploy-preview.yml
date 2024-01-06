@@ -39,8 +39,6 @@ jobs:
 
       - name: Set Database URL in .environment
         run: |
-          echo DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}  # TODO: Remove this (only for testing)  
-          echo DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}       # TODO: Remove this (only for testing)  
           echo DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/neondb?sslmode=require&pgbouncer=true >> $GITHUB_ENV 
           echo DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/neondb?sslmode=require >> $GITHUB_ENV
 
