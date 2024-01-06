@@ -1,10 +1,8 @@
 name: Deploy Preview
 
 on:
-  workflow_run:
-    workflows: ["Run Tests (develop)"]
-    types:
-      - completed
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   deploy_preview:
@@ -39,17 +37,21 @@ jobs:
           username: ${{ secrets.PG_USERNAME }}
           password: ${{ secrets.PG_PASSWORD }}
 
+      - name: Set Database URL in .environment
+        run: |
+          echo DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}  # TODO: Remove this (only for testing)  
+          echo DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}       # TODO: Remove this (only for testing)  
+          echo DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/neondb?sslmode=require&pgbouncer=true >> $GITHUB_ENV 
+          echo DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/neondb?sslmode=require >> $GITHUB_ENV
+
       - name: Run Prisma Migrate
         run: |
-          touch .env
-          echo DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/neondb >> .env
-          echo DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/neondb >> .env
           npx prisma generate
           npx prisma migrate deploy
 
       - name: Run Prisma Seed
-        env:
-          EXEC_ENV: ${{ vars.EXEC_ENV }}
+        # env:  TODO: Uncomment if needed
+        #   EXEC_ENV: ${{ vars.EXEC_ENV }}
         run: |
           npx prisma db seed
 
@@ -132,3 +134,39 @@ jobs:
             Vercel Preview URL :rocket: : ${{ steps.vercel.outputs.preview_url }}
             Neon branch :elephant: : https://console.neon.tech/app/projects/${{ secrets.NEON_PROJECT_ID }}/branches/${{ steps.create_branch.outputs.branch_id }}
           edit-mode: replace
+    outputs:
+      preview_db_url: ${{ steps.create_branch.outputs.db_url_with_pooler }}
+      preview_db_url_direct: ${{ steps.create_branch.outputs.db_url }}
+
+  test_preview:
+    runs-on: ubuntu-latest
+    environment: Preview
+    needs: [deploy_preview]
+    env:
+      DATABASE_URL: ${{ needs.deploy_preview.outputs.preview_db_url }}
+      DIRECT_DATABASE_URL:
+        ${{ needs.deploy_preview.outputs.preview_db_url_direct }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Test
+        run: |
+          npm run test
+
+      - name: Lint
+        run: |
+          npm run lint
+          npm run prisma:validate
