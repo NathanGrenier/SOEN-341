@@ -163,12 +163,18 @@ jobs:
         run: |
           npm run build
 
-      - name: Test
-        run: |
-          npm run test
+      - name: output_test
+        env:
+          OUTPUT1: ${{needs.deploy_preview.outputs.preview_db_url}}
+          OUTPUT2: ${{needs.deploy_preview.outputs.preview_db_url_direct}}
+        run: echo "DATABASE_URL=$OUTPUT1, DIRECT_DATABASE_URL=$OUTPUT2"
 
       - name: Lint
         run: |
           echo "DATABASE_URL=$DATABASE_URL, DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL"  
           npm run lint
           npm run prisma:validate
+
+      - name: Test
+        run: |
+          npm run test
