@@ -11,6 +11,10 @@ jobs:
       statuses: write
       pull-requests: write
     runs-on: ubuntu-latest
+    outputs:
+      preview_db_url: ${{ steps.set_db_url.outputs.preview_db_url }}
+      preview_db_url_direct:
+        ${{ steps.set_db_url.outputs.preview_db_url_direct }}
     environment: Preview
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -39,6 +43,7 @@ jobs:
           password: ${{ secrets.PG_PASSWORD }}
 
       - name: Set Database URL in .environment and output
+        id: set_db_url
         run: |
           echo "DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/neondb?sslmode=require&pgbouncer=true" >> $GITHUB_ENV 
           echo "DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/neondb?sslmode=require" >> $GITHUB_ENV
