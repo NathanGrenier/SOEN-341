@@ -16,6 +16,7 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      EXEC_ENV: ${{ vars.EXEC_ENV }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -44,15 +45,10 @@ jobs:
 
       - name: Run Prisma Migrate
         run: |
-          # touch .env
-          # echo DATABASE_URL="${{ secrets.DATABASE_URL}}" >> .env
-          # echo DIRECT_DATABASE_URL="${{ secrets.DIRECT_DATABASE_URL}}" >> .env  
           npx prisma generate
           npx prisma migrate deploy
 
       - name: Run Prisma Seed
-        # env:  TODO: Uncomment if needed
-        #   EXEC_ENV: ${{ vars.EXEC_ENV }}
         run: |
           npx prisma db seed
 
