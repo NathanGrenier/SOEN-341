@@ -11,10 +11,6 @@ jobs:
       statuses: write
       pull-requests: write
     runs-on: ubuntu-latest
-    outputs:
-      preview_db_url: ${{ steps.set_db_url.outputs.preview_db_url }}
-      preview_db_url_direct:
-        ${{ steps.set_db_url.outputs.preview_db_url_direct }}
     environment: Preview
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -23,7 +19,7 @@ jobs:
       EXEC_ENV: ${{ vars.EXEC_ENV }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get PR sha
         id: get_pull_request_sha
@@ -41,14 +37,6 @@ jobs:
           api_key: ${{ secrets.NEON_API_KEY }}
           username: ${{ secrets.PG_USERNAME }}
           password: ${{ secrets.PG_PASSWORD }}
-
-      - name: Set Database URL in .environment and output
-        id: set_db_url
-        run: |
-          echo "DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/neondb?sslmode=require&pgbouncer=true" >> $GITHUB_ENV 
-          echo "DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/neondb?sslmode=require" >> $GITHUB_ENV
-          echo "preview_db_url=${{ steps.create_branch.outputs.db_url_with_pooler }}" >> "$GITHUB_OUTPUT"
-          echo "preview_db_url_direct=${{ steps.create_branch.outputs.db_url }}" >> "$GITHUB_OUTPUT"
 
       - name: Run Prisma Migrate
         run: |
@@ -73,8 +61,10 @@ jobs:
           input: ${{ steps.extract_branch.outputs.branch }}
           method: MD5
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
 
       - name: Cache dependencies
         uses: actions/cache@v2
@@ -87,6 +77,23 @@ jobs:
       - name: Install dependencies
         if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         run: npm ci --ignore-scripts
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Lint
+        run: |
+          echo "DATABASE_URL=$DATABASE_URL, DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL"  
+          npm run lint
+          npm run prisma:validate
+
+      - name: Test
+        run: |
+          npm run test
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
 
       - name: Pull Vercel Environment Information
         run:
@@ -138,43 +145,3 @@ jobs:
             Vercel Preview URL :rocket: : ${{ steps.vercel.outputs.preview_url }}
             Neon branch :elephant: : https://console.neon.tech/app/projects/${{ secrets.NEON_PROJECT_ID }}/branches/${{ steps.create_branch.outputs.branch_id }}
           edit-mode: replace
-
-  test_preview:
-    runs-on: ubuntu-latest
-    environment: Preview
-    needs: [deploy_preview]
-    env:
-      DATABASE_URL: ${{ needs.deploy_preview.outputs.preview_db_url }}
-      DIRECT_DATABASE_URL:
-        ${{ needs.deploy_preview.outputs.preview_db_url_direct }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: |
-          npm run build
-
-      - name: output_test
-        env:
-          OUTPUT1: ${{needs.deploy_preview.outputs.preview_db_url}}
-          OUTPUT2: ${{needs.deploy_preview.outputs.preview_db_url_direct}}
-        run: echo "DATABASE_URL=$OUTPUT1, DIRECT_DATABASE_URL=$OUTPUT2"
-
-      - name: Lint
-        run: |
-          echo "DATABASE_URL=$DATABASE_URL, DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL"  
-          npm run lint
-          npm run prisma:validate
-
-      - name: Test
-        run: |
-          npm run test
