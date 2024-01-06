@@ -57,7 +57,7 @@ jobs:
         run: |
           vercel link --yes --token=${{ secrets.VERCEL_TOKEN }}
           vercel env pull --yes --environment=preview --git-branch=develop --token=${{ secrets.VERCEL_TOKEN }}
-          # source .env.local
+          source .env.local
           # echo "DATABASE_URL=$DATABASE_URL" >> $GITHUB_ENV
           # echo "DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL" >> $GITHUB_ENV
 
