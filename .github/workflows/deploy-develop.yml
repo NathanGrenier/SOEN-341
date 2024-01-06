@@ -1,0 +1,67 @@
+name: Deploy Develop
+
+on:
+  push:
+    branches:
+      - "develop"
+
+jobs:
+  deploy_production:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    environment: Develop
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get last commit SHA
+        id: get_sha
+        run: |
+          echo sha="${{ github.event.before }}" | cut -c1-8 >> $GITHUB_OUTPUT
+
+      - name: Search branch by name
+        id: get_branch_id
+        # list all branches and filter by name
+        run: |
+          branch_id=$(curl --silent \
+            "https://console.neon.tech/api/v2/projects/${{ secrets.NEON_PROJECT_ID }}/branches" \
+            --header "Accept: application/json" \
+            --header "Content-Type: application/json" \
+            --header "Authorization: Bearer ${{ secrets.NEON_API_KEY }}" \
+            | jq -r .branches \
+            | jq -c '.[] | select(.name | contains("'${{ steps.get_sha.outputs.sha }}'")) .id' \
+            | jq -r \
+            ) \
+            
+          echo "branch_id=${branch_id}" >> $GITHUB_OUTPUT
+
+      - name: Delete Neon Branch (latest Preview Branch)
+        uses: neondatabase/delete-branch-action@v2
+        with:
+          project_id: ${{ secrets.NEON_PROJECT_ID }}
+          branch_id: ${{ steps.get_branch_id.outputs.branch_id }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+
+      - name: Run Prisma Migrate
+        run: |
+          npx prisma migrate deploy
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        id: vercel_pull
+        run: |
+          vercel link --yes --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env pull --yes --environment=preview --git-branch=develop --token=${{ secrets.VERCEL_TOKEN }}
+          # source .env.local
+          # echo "DATABASE_URL=$DATABASE_URL" >> $GITHUB_ENV
+          # echo "DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL" >> $GITHUB_ENV
+
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: |
+          vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+          vercel alias --token=${{ secrets.VERCEL_TOKEN }} set "$url" ${{vars.DEVELOP_DOMAIN}}
