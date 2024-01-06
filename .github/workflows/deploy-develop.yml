@@ -6,10 +6,13 @@ on:
       - "develop"
 
 jobs:
-  deploy_production:
+  deploy_develop:
     permissions: write-all
     runs-on: ubuntu-latest
     environment: Develop
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
