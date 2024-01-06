@@ -165,5 +165,6 @@ jobs:
 
       - name: Lint
         run: |
+          cat .env  # TODO: for debugging. Remove later.
           npm run lint
           npm run prisma:validate
