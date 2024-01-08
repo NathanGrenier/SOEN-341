@@ -24,6 +24,8 @@ TODO: Add project description
 
 ## Development
 
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
 ### VSCode Setup
 
 1. Install the `Svelte for VS Code` and `Svelte Intellisense` VSCode Extensions
