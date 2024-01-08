@@ -1,8 +1,30 @@
 # SOEN-341
 
-TODO: Add project description, table of contents.
+| Environment | Status                                                                                                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Production  | [![Deploy Production](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-production.yml/badge.svg)](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-production.yml)       |
+| Develop     | [![Deploy Develop](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-develop.yml/badge.svg?branch=develop)](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-develop.yml) |
+
+- [SOEN-341](#soen-341)
+  - [Development](#development)
+    - [VSCode Setup](#vscode-setup)
+    - [Installing Docker](#installing-docker)
+    - [Environment Variables](#environment-variables)
+    - [Starting the Dev Environment](#starting-the-dev-environment)
+    - [Prisma](#prisma)
+      - [Prototype Database Change:](#prototype-database-change)
+      - [Create Database Migration:](#create-database-migration)
+      - [Exploring the Database in Development:](#exploring-the-database-in-development)
+    - [Tests](#tests)
+    - [Before Merging](#before-merging)
+  - [Building](#building)
+  - [Deployment](#deployment)
+
+TODO: Add project description
 
 ## Development
+
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
 ### VSCode Setup
 
