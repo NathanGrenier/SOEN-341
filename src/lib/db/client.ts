@@ -16,6 +16,7 @@ switch (process.env.EXEC_ENV) {
     break;
   }
   case "production":
+  case "develop": // develop branche's environment. Different from "development" which corresponds to the local development env.
   case "preview": {
     neonConfig.webSocketConstructor = ws;
 
