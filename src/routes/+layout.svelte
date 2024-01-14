@@ -1,12 +1,70 @@
-<script>
-  import "../app.css";
+<script lang="ts">
+  import "../app.postcss";
   import { dev } from "$app/environment";
   import { inject } from "@vercel/analytics";
-  import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
-
-  injectSpeedInsights();
-
   inject({ mode: dev ? "development" : "production" });
+
+  import {
+    initializeStores,
+    AppShell,
+    AppBar,
+    Avatar,
+    Drawer,
+    getDrawerStore,
+    Toast,
+    LightSwitch,
+    Modal,
+  } from "@skeletonlabs/skeleton";
+  import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
+  import Navigation from "$lib/components/Navigation.svelte";
+  import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
+
+  initializeStores();
+
+  // Add custom modals to this registry. They can then be triggered by name elsewhere.
+  const modalRegistry = {
+    modalComponentTest: { ref: ModalComponentTest },
+  };
+
+  const drawerStore = getDrawerStore();
+
+  function drawerOpen() {
+    drawerStore.open();
+  }
 </script>
 
-<slot />
+<Toast position="br" />
+
+<Modal components={modalRegistry} />
+
+<Drawer>
+  <Navigation />
+</Drawer>
+
+<AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10">
+  <svelte:fragment slot="header">
+    <AppBar>
+      <svelte:fragment slot="lead">
+        <button class="btn btn-sm mr-4 md:hidden" on:click={drawerOpen}>
+          <span>
+            <HamburgerMenuIcon />
+          </span>
+        </button>
+        <strong class="text-xl uppercase">App Name</strong></svelte:fragment>
+      <svelte:fragment slot="trail">
+        <LightSwitch class="mr-2" />
+        <Avatar initials="RM" background="bg-primary-500" width="w-12" />
+      </svelte:fragment>
+    </AppBar>
+  </svelte:fragment>
+  <svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
+  <!-- (sidebarRight) -->
+  <!-- (pageHeader) -->
+  <!-- Router Slot -->
+  <div class="container mx-auto p-10">
+    <slot />
+  </div>
+  <!-- ---- / ---- -->
+  <!-- (pageFooter) -->
+  <!-- (footer) -->
+</AppShell>
