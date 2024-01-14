@@ -11,6 +11,9 @@
     Avatar,
     Drawer,
     getDrawerStore,
+    Toast,
+    LightSwitch,
+    Modal,
   } from "@skeletonlabs/skeleton";
   import Navigation from "$lib/components/Navigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
@@ -23,6 +26,10 @@
     drawerStore.open();
   }
 </script>
+
+<Toast position="br" />
+
+<Modal />
 
 <Drawer>
   <Navigation />
@@ -39,10 +46,9 @@
         </button>
         <strong class="text-xl uppercase">App Name</strong></svelte:fragment>
       <svelte:fragment slot="trail">
-        <Avatar
-          initials="JD"
-          background="bg-primary-500"
-          width="w-12" /></svelte:fragment>
+        <LightSwitch class="mr-2" />
+        <Avatar initials="RM" background="bg-primary-500" width="w-12" />
+      </svelte:fragment>
     </AppBar>
   </svelte:fragment>
   <svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
