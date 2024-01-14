@@ -1,9 +1,58 @@
-<script>
+<script lang="ts">
   import "../app.postcss";
   import { dev } from "$app/environment";
   import { inject } from "@vercel/analytics";
-
   inject({ mode: dev ? "development" : "production" });
+
+  import {
+    initializeStores,
+    AppShell,
+    AppBar,
+    Avatar,
+    Drawer,
+    getDrawerStore,
+  } from "@skeletonlabs/skeleton";
+  import Navigation from "$lib/components/Navigation.svelte";
+  import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
+
+  initializeStores();
+
+  const drawerStore = getDrawerStore();
+
+  function drawerOpen() {
+    drawerStore.open();
+  }
 </script>
 
-<slot />
+<Drawer>
+  <Navigation />
+</Drawer>
+
+<AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10">
+  <svelte:fragment slot="header">
+    <AppBar>
+      <svelte:fragment slot="lead">
+        <button class="btn btn-sm mr-4 md:hidden" on:click={drawerOpen}>
+          <span>
+            <HamburgerMenuIcon />
+          </span>
+        </button>
+        <strong class="text-xl uppercase">App Name</strong></svelte:fragment>
+      <svelte:fragment slot="trail">
+        <Avatar
+          initials="JD"
+          background="bg-primary-500"
+          width="w-12" /></svelte:fragment>
+    </AppBar>
+  </svelte:fragment>
+  <svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
+  <!-- (sidebarRight) -->
+  <!-- (pageHeader) -->
+  <!-- Router Slot -->
+  <div class="container mx-auto p-10">
+    <slot />
+  </div>
+  <!-- ---- / ---- -->
+  <!-- (pageFooter) -->
+  <!-- (footer) -->
+</AppShell>
