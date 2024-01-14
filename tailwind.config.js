@@ -1,5 +1,6 @@
 import { skeleton } from "@skeletonlabs/tw-plugin";
 import { join } from "path";
+import { customTheme } from "./src/custom-theme";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -14,5 +15,15 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [skeleton],
+  plugins: [
+    skeleton({
+      themes: {
+        preset: [
+          { name: "skeleton", enhancements: true },
+          { name: "modern", enhancements: true },
+        ],
+        custom: [customTheme],
+      },
+    }),
+  ],
 };
