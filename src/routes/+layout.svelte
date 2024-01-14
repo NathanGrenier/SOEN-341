@@ -15,10 +15,16 @@
     LightSwitch,
     Modal,
   } from "@skeletonlabs/skeleton";
+  import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import Navigation from "$lib/components/Navigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
 
   initializeStores();
+
+  // Add custom modals to this registry. They can then be triggered by name elsewhere.
+  const modalRegistry = {
+    modalComponentTest: { ref: ModalComponentTest },
+  };
 
   const drawerStore = getDrawerStore();
 
@@ -29,7 +35,7 @@
 
 <Toast position="br" />
 
-<Modal />
+<Modal components={modalRegistry} />
 
 <Drawer>
   <Navigation />
