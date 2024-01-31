@@ -1,4 +1,5 @@
 <script lang="ts">
+  import TransmissionIcon from "$lib/icons/TransmissionIcon.svelte";
   import { getToastStore, getModalStore } from "@skeletonlabs/skeleton";
   import type { ToastSettings, ModalSettings } from "@skeletonlabs/skeleton";
 
@@ -31,5 +32,6 @@
     <button
       class="variant-outline-primary btn w-52"
       on:click={() => modalStore.trigger(testModal)}>Test Modal</button>
+    <TransmissionIcon />
   </div>
 </div>
