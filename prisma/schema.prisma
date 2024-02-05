@@ -44,6 +44,7 @@ model Branch {
   iataAirportCode String?  @db.Char(3)
   latitude        Float
   longitude       Float
+  timezone        String // IANA Timezone identifier
   disabled        Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -59,11 +60,9 @@ model Car {
   colour          CarColour
   seats           Int
   description     String
-  photo_url       String?
-  // Floats can't be used for money because of floating-point rounding errors.
-  // We can either keep this all prices in our schema as simple Ints and divide
-  // by 100 at the end (storing the price as cents), or we can use Decimal.js
-  // (but that's another dependency).
+  photoUrl        String?
+  // In the database, all prices are in cents to avoid float rounding errors.
+  // For the UI, insert a decimal point. 
   dailyPrice      Int
   reservations    Reservation[]
   bookingDisabled Boolean       @default(false)
@@ -87,44 +86,36 @@ enum CarColour {
   MULTI
 }
 
-// Do we want to assume that all equipment is available for all cars? Or
-// do we need to create a table to define that relationship? Also, do we
-// need to inventory-control this equipment like we need to do for cars
-// (eg. prevent double booking?) Vs. eg. a pre-paid gas refill doesn't
-// need inventory control.
-model Equipment {
-  id              Int                            @id @default(autoincrement())
+// It may be neccesary to revise this schema down the line for daily-price vs. flat-rate accessories.
+model Accessory {
+  id              Int                              @id @default(autoincrement())
   name            String
   description     String
-  // Do we want to support both flat-rate and daily pricing models?
-  // Eg. pre-purchased gas refill is generally flat-rate. A trailer
-  // probably has a daily charge.
   price           Int
-  photo_url       String?
-  reservations    ReservationIncludedEquipment[]
-  bookingDisabled Boolean                        @default(false)
-  createdAt       DateTime                       @default(now())
-  updatedAt       DateTime                       @updatedAt
+  photoUrl        String?
+  reservations    ReservationIncludedAccessories[]
+  bookingDisabled Boolean                          @default(false)
+  createdAt       DateTime                         @default(now())
+  updatedAt       DateTime                         @updatedAt
 }
 
 model Reservation {
-  id                                Int                            @id @default(autoincrement())
-  // Through the car, the branch can be found if needed, since a car
-  // belongs to a unique branch.
-  car                               Car                            @relation(fields: [carId], references: [id])
+  id                                Int                              @id @default(autoincrement())
+  // branch can be found by car.branch
+  car                               Car                              @relation(fields: [carId], references: [id])
   carId                             Int
-  equipment                         ReservationIncludedEquipment[]
-  holder                            User                           @relation(fields: [holderId], references: [id])
+  accessory                         ReservationIncludedAccessories[]
+  holder                            User                             @relation(fields: [holderId], references: [id])
   holderId                          Int
   // When a reservation is "modified", a new reservation is created with a pointer to the previous
   // reservation. A reservation that has a replacedBy reservation should not be considered active.
   // This will allow the customer and representative to see the history of changes.
-  replaces                          Reservation?                   @relation("ReservationHistory", fields: [replacesId], references: [id])
-  replacesId                        Int                            @unique
-  replacedBy                        Reservation?                   @relation("ReservationHistory")
-  // Same money considerations as above
+  replaces                          Reservation?                     @relation("ReservationHistory", fields: [replacesId], references: [id])
+  replacesId                        Int?                             @unique
+  replacedBy                        Reservation?                     @relation("ReservationHistory")
+  // Price in cents
   quotedPrice                       Int
-  cancelled                         Boolean                        @default(false)
+  cancelled                         Boolean                          @default(false)
   // The optional fields following won't be filled in until check-in
   checkInNotes                      String?
   checkInLicenseNumber              String?
@@ -133,15 +124,15 @@ model Reservation {
   plannedReturnAt                   DateTime
   pickedUpAt                        DateTime?
   returnedAt                        DateTime?
-  createdAt                         DateTime                       @default(now())
-  updatedAt                         DateTime                       @updatedAt
+  createdAt                         DateTime                         @default(now())
+  updatedAt                         DateTime                         @updatedAt
 }
 
-model ReservationIncludedEquipment {
+model ReservationIncludedAccessories {
   reservation   Reservation @relation(fields: [reservationId], references: [id])
   reservationId Int
-  equipment     Equipment   @relation(fields: [equipmentId], references: [id])
-  equipmentId   Int
+  accessory     Accessory   @relation(fields: [accessoryId], references: [id])
+  accessoryId   Int
 
-  @@unique([reservationId, equipmentId])
+  @@unique([reservationId, accessoryId])
 }
