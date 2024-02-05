@@ -11,6 +11,7 @@
     - [Installing Docker](#installing-docker)
     - [Environment Variables](#environment-variables)
     - [Starting the Dev Environment](#starting-the-dev-environment)
+    - [Pre-commit Hook with Husky](#pre-commit-hook-with-husky)
     - [Prisma](#prisma)
       - [Prototype Database Change:](#prototype-database-change)
       - [Create Database Migration:](#create-database-migration)
@@ -32,9 +33,8 @@ TODO: Add project description
 2. Install the `Prisma` VSCode Extension
 3. Install the `Tailwind CSS InteliSense` VSCode Extension
 4. Install the `Prettier` VSCode Extension
-5. Configure Prettier to format on save in VSCode's settings
-6. Add this configuration to you VSCode settings.json file (accessible through
-   settings)
+5. Configure Prettier to format on save in VSCode's settings by adding this
+   configuration to you VSCode settings.json file (accessible through settings)
 
 ```json
    "editor.formatOnSave": true,
@@ -112,6 +112,15 @@ npm run dev
 
 # or start the server and open the app in a new browser tab
 npm run dev -- --open
+```
+
+### Pre-commit Hook with Husky
+
+In order to initialize the pre-commit hook used in the project, use the
+following command:
+
+```bash
+npx husky install
 ```
 
 ### Prisma
