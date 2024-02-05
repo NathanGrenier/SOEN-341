@@ -33,14 +33,8 @@ TODO: Add project description
 2. Install the `Prisma` VSCode Extension
 3. Install the `Tailwind CSS InteliSense` VSCode Extension
 4. Install the `Prettier` VSCode Extension
-<<<<<<< Updated upstream
-5. Configure Prettier to format on save in VSCode's settings
-6. Add this configuration to you VSCode settings.json file (accessible through
-   settings)
-=======
 5. Configure Prettier to format on save in VSCode's settings by adding this
    configuration to you VSCode settings.json file (accessible through settings)
->>>>>>> Stashed changes
 
 ```json
    "editor.formatOnSave": true,
