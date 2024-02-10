@@ -23,6 +23,10 @@
 
 TODO: Add project description
 
+## Meeting Minutes
+
+A detailed record of the meetings conducted by the team can be viewed through the following [wiki page](https://github.com/NathanGrenier/SOEN-341/wiki/Meeting-Minutes).
+
 ## Development
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
