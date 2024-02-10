@@ -7,6 +7,27 @@
 
 ## About
 
+This project is a web application built with SvelteKit for car rental services.
+
+The application allows users to browse available cars for rent through a
+seamless user-friendly web interface.
+
+> Please note that this project is for educational purposes and is part of a
+> university assignment. It's not intended for commercial use.
+
+### Features
+
+1. **User-Friendly Interface:** Creating a clean and easy interface to navigate
+   allows the user to browse, select and rent cars effortlessly.
+2. **Data Security:** Implementing a robust security system to protect personal
+   data such as credit card information is crucial to maintain trust.
+3. **Availability across Devices:** Implements and endure that the car rental
+   website is accessible and adaptable to different screen sizes.
+4. **Integration with maps:** Since we will be creating a web-based car rental
+   application we will need to integrate with maps. This integration is crucial
+   since it will be easier for the user to find the rental location and drop off
+   points.
+
 ## Team Members and their Roles
 
 | Name            | Student ID | Role     |
