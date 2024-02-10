@@ -69,9 +69,7 @@ project can be found on
 
 ## Meeting Minutes
 
-A detailed record of the meetings conducted by the team can be viewed in the
-following
-[wiki page](https://github.com/NathanGrenier/SOEN-341/wiki/Meeting-Minutes).
+A detailed record of the meetings conducted by the team can be viewed in the following [wiki page](https://github.com/NathanGrenier/SOEN-341/wiki/Meeting-Minutes).
 
 ## Development
 
