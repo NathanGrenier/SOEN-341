@@ -6,6 +6,11 @@
 | Develop     | [![Deploy Develop](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-develop.yml/badge.svg?branch=develop)](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-develop.yml) |
 
 - [SOEN-341](#soen-341)
+  - [About](#about)
+  - [Team Members and their Roles](#team-members-and-their-roles)
+    - [More on Roles](#more-on-roles)
+  - [Project Approach](#project-approach)
+  - [Technology Used](#technology-used)
   - [Development](#development)
     - [VSCode Setup](#vscode-setup)
     - [Installing Docker](#installing-docker)
@@ -21,7 +26,46 @@
   - [Building](#building)
   - [Deployment](#deployment)
 
-TODO: Add project description
+## About
+
+## Team Members and their Roles
+
+| Name            | Student ID | Role     |
+| --------------- | ---------- | -------- |
+| Nathan Grenier  | 40250986   | Devops   |
+| Brian Tkatch    | 40191139   | Devops   |
+| Annabel Zecchel | 40245507   | Frontend |
+| Jeremy Crete    | 40246576   | Frontend |
+| David Carciente | 40247907   | Backend  |
+| Nirav Patel     | 40248940   | Backend  |
+
+### More on Roles
+
+Roles are not strictly upheld. The nature of the project's framework (SvelteKit)
+makes it so every member touches on multiple aspects of the project during
+development.
+
+## Project Approach
+
+This projects approach has been outlined in the **SvelteState’s Project Approach
+and Technology Document**.
+
+This document can be accessed in 2 places:
+
+1. In this repo as a pdf named
+   `SvelteState’s Project Approach and Technology Document`
+2. As a Microsoft word document through
+   [this link 🔗](https://liveconcordia-my.sharepoint.com/:w:/g/personal/na_greni_live_concordia_ca/ET7er7FnYrJLqkYusEczgAYB2VaqA-2ry3Y7Dj7YUjQIUQ?e=SHa4Ia)
+   > Make sure to use your Concordia email to access the document.
+
+## Technology Used
+
+The decision to use certain technologies was described in the
+[Project Approach section](#Project-Approach).
+
+The full list of technologies used with explanations for their purpose in the
+project can be found on
+[this wiki page](https://github.com/NathanGrenier/SOEN-341/wiki/Technologies-Used-in-Project).
 
 ## Development
 
