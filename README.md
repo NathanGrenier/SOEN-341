@@ -5,27 +5,6 @@
 | Production  | [![Deploy Production](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-production.yml/badge.svg)](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-production.yml)       |
 | Develop     | [![Deploy Develop](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-develop.yml/badge.svg?branch=develop)](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-develop.yml) |
 
-- [SOEN-341](#soen-341)
-  - [About](#about)
-  - [Team Members and their Roles](#team-members-and-their-roles)
-    - [More on Roles](#more-on-roles)
-  - [Project Approach](#project-approach)
-  - [Technology Used](#technology-used)
-  - [Development](#development)
-    - [VSCode Setup](#vscode-setup)
-    - [Installing Docker](#installing-docker)
-    - [Environment Variables](#environment-variables)
-    - [Starting the Dev Environment](#starting-the-dev-environment)
-    - [Pre-commit Hook with Husky](#pre-commit-hook-with-husky)
-    - [Prisma](#prisma)
-      - [Prototype Database Change:](#prototype-database-change)
-      - [Create Database Migration:](#create-database-migration)
-      - [Exploring the Database in Development:](#exploring-the-database-in-development)
-    - [Tests](#tests)
-    - [Before Merging](#before-merging)
-  - [Building](#building)
-  - [Deployment](#deployment)
-
 ## About
 
 ## Team Members and their Roles
