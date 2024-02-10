@@ -46,6 +46,12 @@ The full list of technologies used with explanations for their purpose in the
 project can be found on
 [this wiki page](https://github.com/NathanGrenier/SOEN-341/wiki/Technologies-Used-in-Project).
 
+## Meeting Minutes
+
+A detailed record of the meetings conducted by the team can be viewed in the
+following
+[wiki page](https://github.com/NathanGrenier/SOEN-341/wiki/Meeting-Minutes).
+
 ## Development
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
