@@ -45,7 +45,6 @@ jobs:
 
       - name: Run Prisma Migrate
         run: |
-          cat .env
           touch .env
           echo "DATABASE_URL=${{env.DATABASE_URL}}" >> .env
           echo "DIRECT_DATABASE_URL=${{env.DIRECT_DATABASE_URL}}" >> .env
