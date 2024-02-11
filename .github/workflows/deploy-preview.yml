@@ -45,10 +45,7 @@ jobs:
 
       - name: Run Prisma Migrate
         run: |
-          touch .env
-          echo "DATABASE_URL=${{env.DATABASE_URL}}" >> .env
-          echo "DIRECT_DATABASE_URL=${{env.DIRECT_DATABASE_URL}}" >> .env
-          cat .env
+          npx prisma generate
           npx prisma migrate deploy
 
       - name: Run Prisma Seed
