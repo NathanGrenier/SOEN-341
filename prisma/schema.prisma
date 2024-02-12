@@ -13,15 +13,126 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  name         String
+  comment      String? // A note viewable/editable by the sysadmin only.
+  role         UserRole
+  passwordHash String
+  reservations Reservation[]
+  disabled     Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
-enum Role {
+enum UserRole {
   ADMIN
-  USER
+  CUSTOMER
+  REP
+}
+
+model Branch {
+  id              Int      @id @default(autoincrement())
+  cars            Car[]
+  name            String
+  description     String
+  streetAddress   String
+  city            String
+  region          String
+  country         String
+  postalCode      String
+  iataAirportCode String?  @db.Char(3)
+  latitude        Float
+  longitude       Float
+  timezone        String // IANA Timezone identifier
+  disabled        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Car {
+  id              Int           @id @default(autoincrement())
+  branch          Branch        @relation(fields: [branchId], references: [id])
+  branchId        Int
+  make            String
+  model           String
+  year            Int
+  colour          CarColour
+  seats           Int
+  description     String
+  photoUrl        String?
+  // In the database, all prices are in cents to avoid float rounding errors.
+  // For the UI, insert a decimal point. 
+  dailyPrice      Int
+  reservations    Reservation[]
+  bookingDisabled Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum CarColour {
+  BLACK
+  WHITE
+  GREY
+  SILVER
+  GOLD
+  RED
+  ORANGE
+  YELLOW
+  GREEN
+  BLUE
+  PURPLE
+  PINK
+  MULTI
+}
+
+// It may be neccesary to revise this schema down the line for daily-price vs. flat-rate accessories.
+model Accessory {
+  id              Int                              @id @default(autoincrement())
+  name            String
+  description     String
+  price           Int
+  photoUrl        String?
+  reservations    ReservationIncludedAccessories[]
+  bookingDisabled Boolean                          @default(false)
+  createdAt       DateTime                         @default(now())
+  updatedAt       DateTime                         @updatedAt
+}
+
+model Reservation {
+  id                                Int                              @id @default(autoincrement())
+  // branch can be found by car.branch
+  car                               Car                              @relation(fields: [carId], references: [id])
+  carId                             Int
+  accessory                         ReservationIncludedAccessories[]
+  holder                            User                             @relation(fields: [holderId], references: [id])
+  holderId                          Int
+  // When a reservation is "modified", a new reservation is created with a pointer to the previous
+  // reservation. A reservation that has a replacedBy reservation should not be considered active.
+  // This will allow the customer and representative to see the history of changes.
+  replaces                          Reservation?                     @relation("ReservationHistory", fields: [replacesId], references: [id])
+  replacesId                        Int?                             @unique
+  replacedBy                        Reservation?                     @relation("ReservationHistory")
+  // Price in cents
+  quotedPrice                       Int
+  cancelled                         Boolean                          @default(false)
+  // The optional fields following won't be filled in until check-in
+  checkInNotes                      String?
+  checkInLicenseNumber              String?
+  checkInLicenseIssuingJurisdiction String?
+  plannedDepartureAt                DateTime
+  plannedReturnAt                   DateTime
+  pickedUpAt                        DateTime?
+  returnedAt                        DateTime?
+  createdAt                         DateTime                         @default(now())
+  updatedAt                         DateTime                         @updatedAt
+}
+
+model ReservationIncludedAccessories {
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId Int
+  accessory     Accessory   @relation(fields: [accessoryId], references: [id])
+  accessoryId   Int
+
+  @@unique([reservationId, accessoryId])
 }

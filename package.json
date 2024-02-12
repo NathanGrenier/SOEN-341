@@ -25,10 +25,12 @@
     "node": "18.x"
   },
   "devDependencies": {
+    "@skeletonlabs/skeleton": "^2.7.0",
+    "@skeletonlabs/tw-plugin": "^0.3.1",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
-    "@types/node": "^20.10.6",
+    "@types/node": "^20.11.0",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
@@ -53,6 +55,7 @@
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.3",
+    "vite-plugin-tailwind-purgecss": "^0.2.0",
     "vitest": "^1.0.0"
   },
   "type": "module",
@@ -63,6 +66,7 @@
     "@sveltejs/adapter-vercel": "^4.0.3",
     "@vercel/analytics": "^1.1.1",
     "@vercel/speed-insights": "^1.0.2",
+    "bcrypt": "^5.1.1",
     "cssnano": "^6.0.3",
     "dotenv": "^16.3.1",
     "ws": "^8.16.0"
