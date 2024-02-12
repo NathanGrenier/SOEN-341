@@ -15,11 +15,15 @@ on:
           - "Sprint 3"
           - "Sprint 4"
 
+permissions:
+  contents: write
+
 jobs:
   new-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Conventional Changelog Action
         id: changelog
         uses: TriPSs/conventional-changelog-action@v3
