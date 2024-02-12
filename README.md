@@ -5,23 +5,73 @@
 | Production  | [![Deploy Production](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-production.yml/badge.svg)](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-production.yml)       |
 | Develop     | [![Deploy Develop](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-develop.yml/badge.svg?branch=develop)](https://github.com/NathanGrenier/SOEN-341/actions/workflows/deploy-develop.yml) |
 
-- [SOEN-341](#soen-341)
-  - [Development](#development)
-    - [VSCode Setup](#vscode-setup)
-    - [Installing Docker](#installing-docker)
-    - [Environment Variables](#environment-variables)
-    - [Starting the Dev Environment](#starting-the-dev-environment)
-    - [Pre-commit Hook with Husky](#pre-commit-hook-with-husky)
-    - [Prisma](#prisma)
-      - [Prototype Database Change:](#prototype-database-change)
-      - [Create Database Migration:](#create-database-migration)
-      - [Exploring the Database in Development:](#exploring-the-database-in-development)
-    - [Tests](#tests)
-    - [Before Merging](#before-merging)
-  - [Building](#building)
-  - [Deployment](#deployment)
+## About
 
-TODO: Add project description
+This project is a web application built with SvelteKit for car rental services.
+
+The application allows users to browse available cars for rent through a
+seamless user-friendly web interface.
+
+> Please note that this project is for educational purposes and is part of a
+> university assignment. It's not intended for commercial use.
+
+### Features
+
+1. **User-Friendly Interface:** Creating a clean and easy interface to navigate
+   allows the user to browse, select and rent cars effortlessly.
+2. **Data Security:** Implementing a robust security system to protect personal
+   data such as credit card information is crucial to maintain trust.
+3. **Availability across Devices:** Implements and endure that the car rental
+   website is accessible and adaptable to different screen sizes.
+4. **Integration with maps:** Since we will be creating a web-based car rental
+   application we will need to integrate with maps. This integration is crucial
+   since it will be easier for the user to find the rental location and drop off
+   points.
+
+## Team Members and their Roles
+
+| Name            | Student ID | Role     |
+| --------------- | ---------- | -------- |
+| Nathan Grenier  | 40250986   | Devops   |
+| Brian Tkatch    | 40191139   | Devops   |
+| Annabel Zecchel | 40245507   | Frontend |
+| Jeremy Crete    | 40246576   | Frontend |
+| David Carciente | 40247907   | Backend  |
+| Nirav Patel     | 40248940   | Backend  |
+
+### More on Roles
+
+Roles are not strictly upheld. The nature of the project's framework (SvelteKit)
+makes it so every member touches on multiple aspects of the project during
+development.
+
+## Project Approach
+
+This projects approach has been outlined in the **SvelteState’s Project Approach
+and Technology Document**.
+
+This document can be accessed in 2 places:
+
+1. In this repo as a pdf named
+   `SvelteState’s Project Approach and Technology Document`
+2. As a Microsoft word document through
+   [this link 🔗](https://liveconcordia-my.sharepoint.com/:w:/g/personal/na_greni_live_concordia_ca/ET7er7FnYrJLqkYusEczgAYB2VaqA-2ry3Y7Dj7YUjQIUQ?e=SHa4Ia)
+   > Make sure to use your Concordia email to access the document.
+
+## Technology Used
+
+The decision to use certain technologies was described in the
+[Project Approach section](#Project-Approach).
+
+The full list of technologies used with explanations for their purpose in the
+project can be found on
+[this wiki page](https://github.com/NathanGrenier/SOEN-341/wiki/Technologies-Used-in-Project).
+
+## Meeting Minutes
+
+A detailed record of the meetings conducted by the team can be viewed through
+the following
+[wiki page](https://github.com/NathanGrenier/SOEN-341/wiki/Meeting-Minutes).
 
 ## Development
 
