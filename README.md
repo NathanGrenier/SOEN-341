@@ -128,6 +128,7 @@ The following variables can be configured:
 | FAKE_AUTH_PASSWORD  | The password that is required on the fake login page | `changeme`                                                                              |
 | USE_FAKE_AUTH       | Set to `true` to bypass authentication               | `true`                                                                                  |
 | EXEC_ENV            | Current execution environment                        | `development`                                                                           |
+| SESSION_SIGNING_KEY | 32 random bytes in hex format, used to sign sessions | `480c67189f5ddb38a2b9993724e0327da90467de5628cd3897e579af71d6e7d8`                      |
 
 ### Starting the Dev Environment
 
