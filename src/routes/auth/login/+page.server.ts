@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { prisma } from "../../../lib/db/client";
+import { prisma } from "$lib/db/client";
 import { fail, redirect } from "@sveltejs/kit";
 import { createSession } from "$lib/server/session";
 
