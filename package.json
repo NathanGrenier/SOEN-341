@@ -62,6 +62,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@floating-ui/dom": "^1.6.3",
     "@neondatabase/serverless": "^0.6.1",
     "@prisma/adapter-neon": "^5.7.1",
     "@prisma/client": "^5.7.1",

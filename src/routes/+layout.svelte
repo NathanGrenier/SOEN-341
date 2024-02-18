@@ -5,6 +5,15 @@
   inject({ mode: dev ? "development" : "production" });
 
   import {
+    computePosition,
+    autoUpdate,
+    offset,
+    shift,
+    flip,
+    arrow,
+  } from "@floating-ui/dom";
+
+  import {
     initializeStores,
     AppShell,
     AppBar,
@@ -14,10 +23,16 @@
     Toast,
     LightSwitch,
     Modal,
+    popup,
+    storePopup,
+    type PopupSettings,
   } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import Navigation from "$lib/components/Navigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
+  import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+
+  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   initializeStores();
 
@@ -31,6 +46,12 @@
   function drawerOpen() {
     drawerStore.open();
   }
+
+  const profilePopup: PopupSettings = {
+    event: "click",
+    target: "profilePopup",
+    placement: "bottom",
+  };
 </script>
 
 <Toast position="br" />
@@ -53,7 +74,15 @@
         <strong class="text-xl uppercase">App Name</strong></svelte:fragment>
       <svelte:fragment slot="trail">
         <LightSwitch class="mr-2" />
-        <Avatar initials="RM" background="bg-primary-500" width="w-12" />
+        <div use:popup={profilePopup}>
+          <Avatar
+            initials="RM"
+            background="bg-tertiary-500"
+            width="w-12"
+            border="border-4 border-surface-300-600-token hover:!border-primary-500"
+            cursor="cursor-pointer" />
+        </div>
+        <ProfilePopup />
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>
