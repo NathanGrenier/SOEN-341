@@ -42,11 +42,6 @@ jobs:
         run: |
           npm run build
 
-      - name: Lint
-        run: |
-          npm run lint
-          npm run prisma:validate
-
       - name: Get PR sha
         id: get_pull_request_sha
         run: |
@@ -90,6 +85,11 @@ jobs:
         with:
           input: ${{ steps.extract_branch.outputs.branch }}
           method: MD5
+
+      - name: Lint
+        run: |
+          npm run lint
+          npm run prisma:validate
 
       - name: Test
         run: |
