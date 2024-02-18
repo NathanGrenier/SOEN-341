@@ -86,13 +86,6 @@ jobs:
         run: |
           npm run test
 
-      - name: Sanitize branch name
-        id: sanitize
-        run: |
-          BRANCH_NAME="${{ github.head_ref }}"
-          SANITIZED_BRANCH_NAME="${BRANCH_NAME//[^a-zA-Z0-9]/-}"
-          echo "SANITIZED_BRANCH_NAME=$SANITIZED_BRANCH_NAME" >> $GITHUB_OUTPUT
-
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
@@ -111,7 +104,7 @@ jobs:
           vercel --version
           vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
           vercel build --token=$VERCEL_TOKEN
-          vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} --name ${{ steps.sanitize.outputs.SANITIZED_BRANCH_NAME }}
+          vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }}
 
           vercel ls --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} &> vercel-output
           url=$(cat vercel-output | grep http | awk '{print $2}')
