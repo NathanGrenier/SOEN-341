@@ -1,3 +1,13 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+
+  let emailInput: HTMLInputElement;
+
+  onMount(() => {
+    emailInput.focus();
+  });
+</script>
+
 <div class="flex justify-center">
   <div class="card max-w-xl flex-grow">
     <header class="text4xl card-header flex justify-center font-bold">
@@ -12,6 +22,7 @@
             title="Email address"
             name="email"
             type="text"
+            bind:this={emailInput}
             placeholder="you@somewhere.example"
             required />
         </label>
