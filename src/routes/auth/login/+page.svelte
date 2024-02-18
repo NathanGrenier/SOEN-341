@@ -18,12 +18,12 @@
         <label class="label">
           <span>Email</span>
           <input
+            bind:this={emailInput}
             class="input"
             title="Email address"
             name="email"
             type="text"
-            bind:this={emailInput}
-            placeholder="you@somewhere.example"
+            placeholder="example@domain.com"
             required />
         </label>
         <label class="label">
