@@ -201,6 +201,17 @@ For more detail, visit the
 [Prisma Docs](https://www.prisma.io/docs/orm/prisma-migrate/workflows/prototyping-your-schema)
 on the topic.
 
+#### Seeding
+
+To seed you local database during development, use this command:
+
+```bash
+npx prisma db seed
+```
+
+> **Note:** Preview deployments will automatically be seeded during the
+> workflow.
+
 #### Exploring the Database in Development:
 
 If you want to see a visual representation of the database, use the
