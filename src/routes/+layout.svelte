@@ -33,7 +33,6 @@
   import Navigation from "$lib/components/Navigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
   import ProfilePopup from "$lib/components/ProfilePopup.svelte";
-
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   initializeStores();
@@ -56,6 +55,13 @@
     target: "profilePopup",
     placement: "bottom",
   };
+
+  const initials =
+    data?.user?.name
+      .match(/(\b\S)?/g)
+      ?.join("")
+      ?.match(/(^\S|\S$)?/g)
+      ?.join("") ?? "?";
 </script>
 
 <Toast position="br" />
@@ -81,13 +87,7 @@
         <div use:popup={profilePopup}>
           <!-- No good way to ignore this? sveltejs/language-tools#1026 -->
           <Avatar
-            initials={data.user
-              ? data.user.name
-                  .match(/(\b\S)?/g)
-                  .join("")
-                  .match(/(^\S|\S$)?/g)
-                  .join("")
-              : "?"}
+            {initials}
             background="bg-tertiary-500"
             width="w-12"
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
