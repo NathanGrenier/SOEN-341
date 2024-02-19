@@ -5,7 +5,8 @@ import { createSession } from "$lib/server/session";
 
 /** @type {import('./$types').Actions} */
 export const actions = {
-  default: async (event) => {
+  // eslint-disable-next-line
+  default: async (event: any) => {
     const form = await event.request.formData();
     const email = String(form.get("email") || "");
     const passwordRaw = String(form.get("password") || "");

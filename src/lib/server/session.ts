@@ -48,15 +48,23 @@ export const validateAndRefreshSession = (
       algorithms: ["HS256"],
       audience: aud,
     });
-    // Need to force-deal with all of these optionals
-    // prettier-ignore
-    // @ts-expect-error JWT has no rich type data
-    const newSession = createSession({ sub: decoded.sub, name: decoded.name, email: decoded.email, role: decoded.role, iat: decoded.iat, });
+    const newSession = createSession({
+      // @ts-expect-error JWT has no rich type data
+      sub: decoded.sub,
+      // @ts-expect-error JWT has no rich type data
+      name: decoded.name,
+      // @ts-expect-error JWT has no rich type data
+      email: decoded.email,
+      // @ts-expect-error JWT has no rich type data
+      role: decoded.role,
+      // @ts-expect-error JWT has no rich type data
+      iat: decoded.iat,
+    });
     return {
       success: true,
       user: {
         id: Number(decoded.sub),
-        /// @ts-expect-error JWT has no rich type data
+        // @ts-expect-error JWT has no rich type data
         name: decoded.name,
         // @ts-expect-error JWT has no rich type data
         email: decoded.email,

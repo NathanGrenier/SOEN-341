@@ -3,6 +3,7 @@ import { validateAndRefreshSession } from "$lib/server/session";
 
 const openRoutes = ["/", "/auth/login", "/auth/logout"];
 /** @type {import('@sveltejs/kit').Handle} */
+// @ts-expect-error event and resolve are any type
 export const handle = async ({ event, resolve }) => {
   const session = String(event.cookies.get("SvelteState-Session") || "");
   if (!session && !openRoutes.includes(event.url.pathname)) {
