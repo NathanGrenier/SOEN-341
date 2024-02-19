@@ -59,8 +59,8 @@ jobs:
       # BUG: On May 1st 2024, Vercel will no longer use secrets. See link for more info: https://vercel.com/changelog/legacy-environment-variable-secrets-are-being-sunset
       - name: Set Vercel Environment Variables
         run: |
-          vercel env ls --environment=preview --git-branch=${{steps.create_branch.outputs.branch_name}} --token=$VERCEL_TOKEN
-          vercel env add DATABASE_URL=${{github.env.DATABASE_URL}} --environment=preview --git-branch=${{steps.create_branch.outputs.branch_name}} --token=$VERCEL_TOKEN
+          vercel env ls --environment=preview --git-branch=${{steps.get_pull_request_sha.outputs.pull_request_sha}} --token=$VERCEL_TOKEN
+          vercel env add DATABASE_URL=${{env.DATABASE_URL}} --environment=preview --git-branch=${{steps.get_pull_request_sha.outputs.pull_request_sha}} --token=$VERCEL_TOKEN
 
       - name: Run Prisma Migrate
         run: |
