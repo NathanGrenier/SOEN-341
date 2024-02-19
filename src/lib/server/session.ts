@@ -2,6 +2,7 @@ import { UserRole } from "@prisma/client";
 import jwt from "jsonwebtoken";
 
 const key = Buffer.from(process.env.SESSION_SIGNING_KEY || "", "hex");
+if (key.length !== 32) throw new Error("SESSION_SIGNING_KEY must be 32 bytes");
 const aud = process.env.EXEC_ENV;
 
 export const createSession = (claims: {
