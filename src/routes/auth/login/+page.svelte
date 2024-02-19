@@ -27,7 +27,12 @@
             class="alert variant-filled-error max-w-lg self-center"
             transition:fade|local={{ duration: 200 }}>
             <!-- Icon -->
-            <div><ExclamationCircleIcon height="h-10" width="w-10" /></div>
+            <div>
+              <ExclamationCircleIcon
+                constColor={true}
+                height="h-12"
+                width="w-12" />
+            </div>
             <!-- Message -->
             <div class="alert-message">
               <h3 class="h3 font-bold">{form?.error}</h3>
