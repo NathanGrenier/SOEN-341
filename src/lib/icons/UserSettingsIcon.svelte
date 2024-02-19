@@ -1,5 +1,12 @@
+<script lang="ts">
+  export let invertColor = false;
+  let colorClass = invertColor
+    ? "text-white dark:text-black"
+    : "text-black dark:text-white";
+</script>
+
 <svg
-  class="h-6 w-6 flex-shrink-0 text-white dark:text-black"
+  class="h-6 w-6 flex-shrink-0 {colorClass}"
   aria-hidden="true"
   xmlns="http://www.w3.org/2000/svg"
   fill="currentColor"

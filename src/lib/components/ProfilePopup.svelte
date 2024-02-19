@@ -12,11 +12,11 @@
     <button
       style="justify-content: start;"
       class=" bg-secondary-hover-token gap-2"
-      ><UserIcon /><span>Profile</span></button>
+      ><UserIcon invertColor={true} /><span>Profile</span></button>
     <button
       style="justify-content: start;"
       class="bg-secondary-hover-token gap-2"
-      ><UserSettingsIcon /><span>Settings</span></button>
+      ><UserSettingsIcon invertColor={true} /><span>Settings</span></button>
   </div>
   <div>
     <button class="variant-filled-error btn mt-2 w-full">Logout</button>
