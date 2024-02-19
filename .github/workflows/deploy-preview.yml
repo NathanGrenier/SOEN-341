@@ -41,6 +41,12 @@ jobs:
           echo "pull_request_sha=${pull_request_sha}" >> $GITHUB_OUTPUT
           echo $pull_request_sha
 
+      - name: Get clean branch name
+        id: branch_name
+        run:
+          echo "clean_branch_name=${GITHUB_REF/refs\/heads\//}" >>
+          $GITHUB_OUTPUT
+
       - name: Neon Database Create Branch Action
         uses: neondatabase/create-branch-action@v3
         id: create_branch
@@ -62,7 +68,7 @@ jobs:
       # BUG: On May 1st 2024, Vercel will no longer use secrets. See link for more info: https://vercel.com/changelog/legacy-environment-variable-secrets-are-being-sunset
       - name: Set Vercel Environment Variables
         run: |
-          echo $DATABASE_URL | vercel env add DATABASE_URL preview ${{steps.get_pull_request_sha.outputs.pull_request_sha}} --token $VERCEL_TOKEN
+          echo $DATABASE_URL | vercel env add DATABASE_URL preview ${{ github.head_ref }} --token $VERCEL_TOKEN
 
       - name: Pull Vercel Environment Information (Preview Specific)
         run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
