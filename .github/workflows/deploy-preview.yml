@@ -56,11 +56,28 @@ jobs:
           echo "DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/${{secrets.DATABASE_NAME}}?sslmode=require&pgbouncer=true" >> $GITHUB_ENV 
           echo "DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/${{secrets.DATABASE_NAME}}?sslmode=require" >> $GITHUB_ENV
 
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Authenticate Vercel CLI
+        run: vercel login --token ${{secrets.VERCEL_TOKEN}}
+
       # BUG: On May 1st 2024, Vercel will no longer use secrets. See link for more info: https://vercel.com/changelog/legacy-environment-variable-secrets-are-being-sunset
       - name: Set Vercel Environment Variables
         run: |
           vercel env ls --environment=preview --git-branch=${{steps.get_pull_request_sha.outputs.pull_request_sha}} --token=$VERCEL_TOKEN
-          vercel env add DATABASE_URL=${{env.DATABASE_URL}} --environment=preview --git-branch=${{steps.get_pull_request_sha.outputs.pull_request_sha}} --token=$VERCEL_TOKEN
+          echo ${{env.DATABASE_URL}} | vercel env add DATABASE_URL secret --environment=preview --git-branch=${{steps.get_pull_request_sha.outputs.pull_request_sha}}
+
+      - name: Pull Vercel Environment Information (Preview Specific)
+        run:
+          vercel pull --yes --environment=preview --token=${{
+          secrets.VERCEL_TOKEN }}
+
+      - name: Pull Vercel Environment Information (Branch Specific)
+        run:
+          vercel pull --yes --environment=preview
+          --git-branch=${{steps.get_pull_request_sha.outputs.pull_request_sha}}
+          --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Run Prisma Migrate
         run: |
@@ -92,14 +109,6 @@ jobs:
       - name: Test
         run: |
           npm run test
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run:
-          vercel pull --yes --environment=preview --token=${{
-          secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         id: vercel
