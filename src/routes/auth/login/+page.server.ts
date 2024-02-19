@@ -27,8 +27,6 @@ export const actions = {
       return fail(400, { email, incorrect: true });
     }
 
-    console.log("here");
-
     event.cookies.set(
       "SvelteState-Session",
       createSession({
