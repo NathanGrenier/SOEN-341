@@ -5,6 +5,8 @@ const key = Buffer.from(process.env.SESSION_SIGNING_KEY || "", "hex");
 if (key.length !== 32) throw new Error("SESSION_SIGNING_KEY must be 32 bytes");
 const aud = process.env.EXEC_ENV;
 
+console.log(process.env.SESSION_SIGNING_KEY);
+
 export const createSession = (claims: {
   sub: string;
   name: string;
@@ -23,7 +25,7 @@ export const createSession = (claims: {
       exp: Math.min(now + 14400, (claims.iat || now) + 43200),
       sub: claims.sub,
       name: claims.name,
-      email: claims.name,
+      email: claims.email,
       role: claims.role,
     },
     key,
@@ -48,6 +50,14 @@ export const validateAndRefreshSession = (
       algorithms: ["HS256"],
       audience: aud,
     });
+    // @ts-expect-error JWT has no rich type data
+    if (decoded.iss !== "SvelteState") {
+      throw new Error("Session token issuer invalid");
+    }
+    // @ts-expect-error JWT has no rich type data
+    if (decoded.aud !== aud) {
+      throw new Error("Session token issued for another environment");
+    }
     const newSession = createSession({
       // @ts-expect-error JWT has no rich type data
       sub: decoded.sub,
