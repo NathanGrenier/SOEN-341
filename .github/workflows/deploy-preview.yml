@@ -116,7 +116,6 @@ jobs:
           vercel pull --yes --environment=preview --git-branch=${{github.head_ref}} --token=$VERCEL_TOKEN
           vercel build --token=$VERCEL_TOKEN
           vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }}
-          vercel --token ${{ secrets.VERCEL_TOKEN }} --scope ${{secrets.VERCEL_ORG_ID}} --github-commit-ref ${{ github.head_ref }}
 
           vercel ls --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} &> vercel-output
           url=$(cat vercel-output | grep http | awk '{print $2}')
