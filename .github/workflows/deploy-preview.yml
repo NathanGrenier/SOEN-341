@@ -83,11 +83,11 @@ jobs:
           npx prisma db seed
 
       - name: Extract branch name
+        id: extract_branch
         shell: bash
         run:
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >>
           $GITHUB_OUTPUT
-        id: extract_branch
 
       - name: Hash branch name
         uses: pplanel/hash-calculator-action@v1.3.1
@@ -113,9 +113,10 @@ jobs:
             github.run_attempt}}
         run: |
           vercel --version
-          vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+          vercel pull --yes --environment=preview --git-branch=${{github.head_ref}} --token=$VERCEL_TOKEN
           vercel build --token=$VERCEL_TOKEN
-          vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} --name ${{ github.head_ref }}
+          vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }}
+          vercel --token ${{ secrets.VERCEL_TOKEN }} --scope soen-341 --github-commit-ref ${{ github.head_ref }}
 
           vercel ls --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} &> vercel-output
           url=$(cat vercel-output | grep http | awk '{print $2}')
