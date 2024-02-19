@@ -1,6 +1,8 @@
 <script lang="ts">
   import "../app.postcss";
   import { dev } from "$app/environment";
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  import { page } from "$app/stores";
   import { inject } from "@vercel/analytics";
   inject({ mode: dev ? "development" : "production" });
 
@@ -35,6 +37,8 @@
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   initializeStores();
+
+  export let data;
 
   // Add custom modals to this registry. They can then be triggered by name elsewhere.
   const modalRegistry = {
@@ -75,14 +79,21 @@
       <svelte:fragment slot="trail">
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
+          <!-- No good way to ignore this? sveltejs/language-tools#1026 -->
           <Avatar
-            initials="RM"
+            initials={data.user
+              ? data.user.name
+                  .match(/(\b\S)?/g)
+                  .join("")
+                  .match(/(^\S|\S$)?/g)
+                  .join("")
+              : "?"}
             background="bg-tertiary-500"
             width="w-12"
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-        <ProfilePopup />
+        <ProfilePopup loggedIn={data.user ? true : false} />
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>
