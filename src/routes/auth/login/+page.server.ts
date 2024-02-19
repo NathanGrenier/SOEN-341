@@ -11,7 +11,7 @@ export const actions = {
     const email = String(form.get("email") || "");
     const passwordRaw = String(form.get("password") || "");
     if (!email) {
-      return fail(400, { email, missing: true });
+      return fail(400, { email, emailMissing: true });
     }
 
     const user = await prisma.user.findUnique({
@@ -25,7 +25,7 @@ export const actions = {
       user.disabled ||
       !(await bcrypt.compare(passwordRaw, user.passwordHash))
     ) {
-      return fail(400, { email, incorrect: true });
+      return fail(400, { email, incorrectCreds: true });
     }
 
     event.cookies.set(

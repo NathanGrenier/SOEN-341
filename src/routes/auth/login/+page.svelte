@@ -6,6 +6,8 @@
   onMount(() => {
     emailInput.focus();
   });
+
+  export let form;
 </script>
 
 <div class="flex justify-center">
@@ -15,6 +17,14 @@
     </header>
     <section class="p-4">
       <form method="POST" class="flex flex-col gap-3">
+        {#if form?.emailMissing}
+          <p class="text-error-500"><b>Please enter an email address</b></p>
+        {/if}
+        {#if form?.incorrectCreds}
+          <p class="text-error-500">
+            <b>Please check your credentials and try again.</b>
+          </p>
+        {/if}
         <label class="label">
           <span>Email</span>
           <input
@@ -22,7 +32,8 @@
             class="input"
             title="Email address"
             name="email"
-            type="text"
+            type="email"
+            value={form?.email ?? ""}
             placeholder="example@domain.com"
             required />
         </label>
