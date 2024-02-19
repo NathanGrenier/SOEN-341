@@ -15,6 +15,7 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
+      SESSION_SIGNING_KEY: ${{ secrets.SESSION_SIGNING_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
