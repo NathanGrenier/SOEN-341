@@ -59,9 +59,6 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Authenticate Vercel CLI
-        run: vercel login --token ${{secrets.VERCEL_TOKEN}}
-
       # BUG: On May 1st 2024, Vercel will no longer use secrets. See link for more info: https://vercel.com/changelog/legacy-environment-variable-secrets-are-being-sunset
       - name: Set Vercel Environment Variables
         run: |
