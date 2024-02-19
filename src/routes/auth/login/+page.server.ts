@@ -2,21 +2,42 @@ import bcrypt from "bcrypt";
 import { prisma } from "$lib/db/client";
 import { fail, redirect } from "@sveltejs/kit";
 import { createSession } from "$lib/server/session";
+import type { Actions } from "./$types";
+import { z } from "zod";
 
-/** @type {import('./$types').Actions} */
+const UserLoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
 export const actions = {
-  // eslint-disable-next-line
-  default: async (event: any) => {
-    const form = await event.request.formData();
-    const email = String(form.get("email") || "");
-    const passwordRaw = String(form.get("password") || "");
-    if (!email) {
-      return fail(400, {
-        email,
-        error: "Missing Email",
-        errorMessage: "An email is required.",
-      });
+  default: async ({ cookies, request, url }) => {
+    const form = await request.formData();
+    const data = Object.fromEntries(form);
+
+    const result = UserLoginSchema.safeParse(data);
+    if (!result.success) {
+      switch (result.error.issues[0].path[0]) {
+        case "email":
+          return fail(400, {
+            email: data.email,
+            error: "Invalid Email",
+            errorMessage: "Invalid email. Please try again.",
+          });
+        case "password":
+          return fail(400, {
+            error: "Invalid Password",
+            errorMessage: "Invalid password. Please try again.",
+          });
+        default:
+          return fail(400, {
+            error: result.error.issues[0].path[0],
+            errorMessage: result.error.issues[0].message,
+          });
+      }
     }
+
+    const { email, password: passwordRaw } = result.data;
 
     const user = await prisma.user.findUnique({
       where: {
@@ -36,7 +57,7 @@ export const actions = {
       });
     }
 
-    event.cookies.set(
+    cookies.set(
       "SvelteState-Session",
       createSession({
         sub: String(user.id),
@@ -48,10 +69,10 @@ export const actions = {
     );
 
     // Prevent open redirect, only allow destinations starting with /
-    if ((event.url.searchParams.get("destination") || "").indexOf("/") == 0) {
-      return redirect(302, event.url.searchParams.get("destination") || "/");
+    if ((url.searchParams.get("destination") || "").indexOf("/") == 0) {
+      return redirect(302, url.searchParams.get("destination") || "/");
     } else {
       return redirect(302, "/");
     }
   },
-};
+} satisfies Actions;
