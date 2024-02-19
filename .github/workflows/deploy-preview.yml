@@ -76,7 +76,6 @@ jobs:
 
       - name: display .env
         run: |
-          cat .env
           cat .vercel/.env.preview.local
 
       - name: Run Prisma Migrate
