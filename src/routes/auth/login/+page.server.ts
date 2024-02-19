@@ -26,11 +26,13 @@ export const actions = {
           });
         case "password":
           return fail(400, {
+            email: data.email,
             error: "Invalid Password",
             errorMessage: "Invalid password. Please try again.",
           });
         default:
           return fail(400, {
+            email: data.email,
             error: result.error.issues[0].path[0],
             errorMessage: result.error.issues[0].message,
           });
