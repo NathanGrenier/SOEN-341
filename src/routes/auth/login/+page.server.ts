@@ -5,6 +5,15 @@ import { createSession } from "$lib/server/session";
 import type { Actions } from "./$types";
 import { z } from "zod";
 
+import type { PageServerLoad } from "./$types";
+
+export const load: PageServerLoad = async () => {
+  const cars = await prisma.car.findMany();
+  return {
+    cars: cars,
+  };
+};
+
 const UserLoginSchema = z.object({
   email: z.string().email(),
   password: z.string(),

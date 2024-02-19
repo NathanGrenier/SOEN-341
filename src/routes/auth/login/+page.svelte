@@ -12,7 +12,13 @@
 
   export let form;
   let showErrors = form?.error != null;
+
+  import type { PageData } from "./$types";
+
+  export let data: PageData;
 </script>
+
+<pre>{JSON.stringify(data.cars, null, 2)}</pre>
 
 <div class="flex flex-col items-center justify-center gap-4">
   <div style="min-width: 36em;" class="card min-w-fit flex-grow">
