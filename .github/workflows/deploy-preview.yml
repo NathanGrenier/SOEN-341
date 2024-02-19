@@ -41,12 +41,6 @@ jobs:
           echo "pull_request_sha=${pull_request_sha}" >> $GITHUB_OUTPUT
           echo $pull_request_sha
 
-      - name: Get clean branch name
-        id: branch_name
-        run:
-          echo "clean_branch_name=${GITHUB_REF/refs\/heads\//}" >>
-          $GITHUB_OUTPUT
-
       - name: Neon Database Create Branch Action
         uses: neondatabase/create-branch-action@v3
         id: create_branch
@@ -69,6 +63,7 @@ jobs:
       - name: Set Vercel Environment Variables
         run: |
           echo $DATABASE_URL | vercel env add DATABASE_URL preview ${{ github.head_ref }} --token $VERCEL_TOKEN
+          echo $DIRECT_DATABASE_URL | vercel env add DIRECT_DATABASE_URL preview ${{ github.head_ref }} --token $VERCEL_TOKEN
 
       - name: Pull Vercel Environment Information (Preview Specific)
         run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
@@ -76,8 +71,12 @@ jobs:
       - name: Pull Vercel Environment Information (Branch Specific)
         run:
           vercel pull --yes --environment=preview
-          --git-branch=${{steps.get_pull_request_sha.outputs.pull_request_sha}}
-          --token=$VERCEL_TOKEN
+          --git-branch=${{github.head_ref}} --token=$VERCEL_TOKEN
+
+      - name: display .env
+        run: |
+          cat .env
+          cat .vercel/.env.preview.local
 
       - name: Run Prisma Migrate
         run: |
