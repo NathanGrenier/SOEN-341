@@ -59,20 +59,20 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      # BUG: On May 1st 2024, Vercel will no longer use secrets. See link for more info: https://vercel.com/changelog/legacy-environment-variable-secrets-are-being-sunset
-      - name: Set Vercel Environment Variables
-        run: |
-          # If the variabes are already present in vercel, these command will fail, but we don't want to fail the build (Due to the `|| true` at the end of the command).
-          echo $DATABASE_URL | vercel env add DATABASE_URL preview ${{ github.head_ref }} --token $VERCEL_TOKEN || true
-          echo $DIRECT_DATABASE_URL | vercel env add DIRECT_DATABASE_URL preview ${{ github.head_ref }} --token $VERCEL_TOKEN || true
+      # # BUG: On May 1st 2024, Vercel will no longer use secrets. See link for more info: https://vercel.com/changelog/legacy-environment-variable-secrets-are-being-sunset
+      # - name: Set Vercel Environment Variables
+      #   run: |
+      #     # If the variabes are already present in vercel, these command will fail, but we don't want to fail the build (Due to the `|| true` at the end of the command).
+      #     echo $DATABASE_URL | vercel env add DATABASE_URL preview ${{ github.head_ref }} --token $VERCEL_TOKEN || true
+      #     echo $DIRECT_DATABASE_URL | vercel env add DIRECT_DATABASE_URL preview ${{ github.head_ref }} --token $VERCEL_TOKEN || true
 
-      - name: Pull Vercel Environment Information (Preview Specific)
-        run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+      # - name: Pull Vercel Environment Information (Preview Specific)
+      #   run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
 
-      - name: Pull Vercel Environment Information (Branch Specific)
-        run:
-          vercel pull --yes --environment=preview
-          --git-branch=${{github.head_ref}} --token=$VERCEL_TOKEN
+      # - name: Pull Vercel Environment Information (Branch Specific)
+      #   run:
+      #     vercel pull --yes --environment=preview
+      #     --git-branch=${{github.head_ref}} --token=$VERCEL_TOKEN
 
       - name: Run Prisma Migrate
         run: |
