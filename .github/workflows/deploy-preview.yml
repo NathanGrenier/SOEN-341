@@ -61,22 +61,9 @@ jobs:
 
       # BUG: On May 1st 2024, Vercel will no longer use secrets. See link for more info: https://vercel.com/changelog/legacy-environment-variable-secrets-are-being-sunset
       - name: Set Vercel Environment Variables
-        uses: dkershner6/vercel-set-env-action@v3
-        with:
-          token: ${{ secrets.VERCEL_TOKEN }}
-          teamId: ${{ secrets.VERCEL_ORG_ID }} # optional, without will use personal
-          projectName: ${{ secrets.VERCEL_PROJECT_ID }} # project name in Vercel
-          envVariableKeys: DATABASE_URL,DIRECT_DATABASE_URL
-        env:
-          DATABASE_URL: ${{env.DATABASE_URL}}
-          TARGET_ENV_DATABASE_URL: preview # comma delimited, one of [production, preview, development]
-          TYPE_ENV_DATABASE_URL: encrypted # one of [plain, encrypted]
-          GIT_BRANCH_DATABASE_URL: ${{steps.get_pull_request_sha.outputs.pull_request_sha}}
-
-          DIRECT_DATABASE_URL: ${{env.DATABASE_URL}}
-          TARGET_ENV_DIRECT_DATABASE_URL: preview
-          TYPE_ENV_DIRECT_DATABASE_URL: encrypted
-          GIT_BRANCH_DIRECT_DATABASE_URL: ${{steps.get_pull_request_sha.outputs.pull_request_sha}}
+        run: |
+          vercel env add DATABASE_URL $DATABASE_URL --environment=preview --git-branch=${{steps.get_pull_request_sha.outputs.pull_request_sha}} --token $VERCEL_TOKEN
+          vercel env add DIRECT_DATABASE_URL $DIRECT_DATABASE_URL --environment=preview --git-branch=${{steps.get_pull_request_sha.outputs.pull_request_sha}} --token $VERCEL_TOKEN
 
       - name: Pull Vercel Environment Information (Preview Specific)
         run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
