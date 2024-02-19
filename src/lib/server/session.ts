@@ -5,8 +5,6 @@ const key = Buffer.from(process.env.SESSION_SIGNING_KEY || "", "hex");
 if (key.length !== 32) throw new Error("SESSION_SIGNING_KEY must be 32 bytes");
 const aud = process.env.EXEC_ENV;
 
-console.log(process.env.SESSION_SIGNING_KEY);
-
 export const createSession = (claims: {
   sub: string;
   name: string;
