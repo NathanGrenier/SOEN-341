@@ -18,11 +18,11 @@
     <section class="p-4">
       <form method="POST" class="flex flex-col gap-3">
         {#if form?.emailMissing}
-          <p class="text-error-500"><b>Please enter an email address</b></p>
+          <p class="font-bold text-error-500">Please enter an email address</p>
         {/if}
         {#if form?.incorrectCreds}
-          <p class="text-error-500">
-            <b>Please check your credentials and try again.</b>
+          <p class="font-bold text-error-500">
+            Please check your credentials and try again.
           </p>
         {/if}
         <label class="label">
