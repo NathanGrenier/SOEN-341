@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let invertColor: boolean = false;
+  export let invertColor = false;
   let colorClass = invertColor
     ? "text-white dark:text-black"
     : "text-black dark:text-white";

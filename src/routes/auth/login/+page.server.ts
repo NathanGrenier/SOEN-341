@@ -41,7 +41,7 @@ export const actions = {
 
     const user = await prisma.user.findUnique({
       where: {
-        email: String(email),
+        email: email,
       },
     });
 
