@@ -11,13 +11,15 @@
   });
 
   export let form;
-  let showErrors = form?.error != null;
+
+  // TODO: Implement
+  let showErrors = false;
 </script>
 
 <div class="flex flex-col items-center justify-center gap-4">
   <div style="min-width: 36em;" class="card min-w-fit flex-grow">
     <header class="text4xl card-header flex justify-center font-bold">
-      <h1 class="text-4xl">Log In</h1>
+      <h1 class="text-4xl">Register (Not Implemented)</h1>
     </header>
     <section class="p-4">
       <form method="POST" class="flex flex-col gap-3">
@@ -66,13 +68,9 @@
             required />
         </label>
         <button class="variant-filled-primary btn mt-4" type="submit"
-          >Log in</button>
+          >Register</button>
       </form>
     </section>
-    <footer class="card-footer mt-2 flex items-center justify-around">
-      <p class="font-bold">Don't have an account?</p>
-      <a class="variant-filled-secondary btn" href="/auth/register"
-        >Create Account</a>
-    </footer>
+    <footer class="card-footer mt-2 flex items-center justify-around"></footer>
   </div>
 </div>

@@ -32,7 +32,7 @@
     <div>
       <a class="variant-filled-primary btn mt-2 w-full" href="/auth/login"
         >Log In</a>
-      <a class="variant-filled-secondary btn mt-2 w-full" href="/auth/onboard"
+      <a class="variant-filled-secondary btn mt-2 w-full" href="/auth/register"
         >Create Account</a>
     </div>
   {/if}
