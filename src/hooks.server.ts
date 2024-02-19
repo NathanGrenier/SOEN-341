@@ -7,7 +7,7 @@ const openRoutes = ["/", "/auth/login", "/auth/logout"];
 export const handle = async ({ event, resolve }) => {
   const session = String(event.cookies.get("SvelteState-Session") || "");
   if (!session && !openRoutes.includes(event.url.pathname)) {
-    throw redirect(307, `/auth/login?destination=${event.url.pathname}`);
+    throw redirect(302, `/auth/login?destination=${event.url.pathname}`);
   }
 
   const result = validateAndRefreshSession(session);
@@ -15,7 +15,7 @@ export const handle = async ({ event, resolve }) => {
     // Delete cookie if session invalid or route is logout
     await event.cookies.delete("SvelteState-Session", { path: "/" });
     if (!openRoutes.includes(event.url.pathname))
-      throw redirect(307, `/auth/login?destination=${event.url.pathname}`);
+      throw redirect(302, `/auth/login?destination=${event.url.pathname}`);
   } else {
     event.locals.user = result.user;
     event.cookies.set("SvelteState-Session", String(result.newSession), {
