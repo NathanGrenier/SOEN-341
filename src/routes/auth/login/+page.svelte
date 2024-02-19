@@ -1,5 +1,8 @@
 <script lang="ts">
+  import CloseIcon from "$lib/icons/CloseIcon.svelte";
+  import ExclamationCircleIcon from "$lib/icons/ExclamationCircleIcon.svelte";
   import { onMount } from "svelte";
+  import { fade } from "svelte/transition";
 
   let emailInput: HTMLInputElement;
 
@@ -8,22 +11,38 @@
   });
 
   export let form;
+  let showErrors = form?.error != null;
 </script>
 
-<div class="flex justify-center">
-  <div class="card max-w-xl flex-grow">
+<div class="flex flex-col items-center justify-center gap-4">
+  <div style="min-width: 36em;" class="card min-w-fit flex-grow">
     <header class="text4xl card-header flex justify-center font-bold">
       <h1 class="text-4xl">Log In</h1>
     </header>
     <section class="p-4">
       <form method="POST" class="flex flex-col gap-3">
-        {#if form?.emailMissing}
-          <p class="font-bold text-error-500">Please enter an email address</p>
-        {/if}
-        {#if form?.incorrectCreds}
-          <p class="font-bold text-error-500">
-            Please check your credentials and try again.
-          </p>
+        {#if showErrors}
+          <aside
+            style="min-width: 32em;"
+            class="alert variant-filled-error max-w-lg self-center"
+            transition:fade|local={{ duration: 200 }}>
+            <!-- Icon -->
+            <div><ExclamationCircleIcon height="h-10" width="w-10" /></div>
+            <!-- Message -->
+            <div class="alert-message">
+              <h3 class="h3 font-bold">{form?.error}</h3>
+              <p>{form?.errorMessage}</p>
+            </div>
+            <!-- Actions -->
+            <div class="alert-actions">
+              <button
+                class="variant-filled btn-icon"
+                on:click={(e) => {
+                  e.preventDefault();
+                  showErrors = false;
+                }}><CloseIcon invertColor={true} /></button>
+            </div>
+          </aside>
         {/if}
         <label class="label">
           <span>Email</span>
