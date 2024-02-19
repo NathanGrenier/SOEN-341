@@ -56,6 +56,7 @@
     placement: "bottom",
   };
 
+  // Get the user's initials for the avatar. Takes the first letter of the first and last word in the name.
   const initials =
     data?.user?.name
       .match(/(\b\S)?/g)
