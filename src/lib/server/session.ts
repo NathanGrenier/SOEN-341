@@ -19,7 +19,8 @@ export const createSession = (claims: {
       aud: aud,
       iat: claims.iat || now,
       nbf: now,
-      exp: now + 14400,
+      // Expiry is lesser of 4 hours from now, or 12 hours from successful auth
+      exp: Math.min(now + 14400, (claims.iat || now) + 43200),
       sub: claims.sub,
       name: claims.name,
       email: claims.name,
