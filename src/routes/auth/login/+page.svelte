@@ -40,6 +40,7 @@
             </div>
             <!-- Actions -->
             <div class="alert-actions">
+              <!-- TODO: The X Button is slightly larger than the Warning Icon (3px off). Looks bad -->
               <button
                 class="variant-filled btn-icon"
                 on:click={(e) => {
