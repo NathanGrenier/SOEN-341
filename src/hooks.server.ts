@@ -1,10 +1,10 @@
 import { redirect } from "@sveltejs/kit";
 import { validateAndRefreshSession } from "$lib/server/session";
+import type { Handle } from "@sveltejs/kit";
 
-const openRoutes = ["/", "/auth/login", "/auth/logout"];
-/** @type {import('@sveltejs/kit').Handle} */
-// @ts-expect-error event and resolve are any type
-export const handle = async ({ event, resolve }) => {
+const openRoutes = ["/", "/auth/login", "/auth/logout"]; // Routes that don't need the user to be logged in
+
+export const handle: Handle = async ({ event, resolve }) => {
   const session = String(event.cookies.get("SvelteState-Session") || "");
   if (!session && !openRoutes.includes(event.url.pathname)) {
     throw redirect(302, `/auth/login?destination=${event.url.pathname}`);
