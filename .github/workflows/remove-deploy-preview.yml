@@ -35,6 +35,10 @@ jobs:
           input: ${{ steps.extract_branch.outputs.branch }}
           method: MD5
 
+      # - name: Delete Vercel Preview Branch env Variables
+      #   run: |
+      #     curl "https://api.vercel.com/v1/projects/$VERCEL_PROJECT_ID/env
+
       - name: Call the delete-deployment-preview.sh script
         env:
           META_TAG: ${{ steps.hash_branch.outputs.digest }}

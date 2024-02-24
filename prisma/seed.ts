@@ -1,7 +1,7 @@
 import { UserRole, CarColour } from "@prisma/client";
 import { prisma } from "../src/lib/db/client.ts";
 
-async function main() {
+async function firstSeed() {
   const testface = await prisma.user.upsert({
     where: { email: "testface@prisma.io" },
     update: {},
@@ -164,6 +164,10 @@ async function main() {
   });
 
   // No seeds for reservations with accessories yet because that's not a sprint 1 feature.
+}
+
+async function main() {
+  await firstSeed();
 }
 
 main();

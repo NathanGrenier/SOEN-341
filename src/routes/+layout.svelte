@@ -1,8 +1,19 @@
 <script lang="ts">
   import "../app.postcss";
   import { dev } from "$app/environment";
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  import { page } from "$app/stores";
   import { inject } from "@vercel/analytics";
   inject({ mode: dev ? "development" : "production" });
+
+  import {
+    computePosition,
+    autoUpdate,
+    offset,
+    shift,
+    flip,
+    arrow,
+  } from "@floating-ui/dom";
 
   import {
     initializeStores,
@@ -14,12 +25,19 @@
     Toast,
     LightSwitch,
     Modal,
+    popup,
+    storePopup,
+    type PopupSettings,
   } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import Navigation from "$lib/components/Navigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
+  import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   initializeStores();
+
+  export let data;
 
   // Add custom modals to this registry. They can then be triggered by name elsewhere.
   const modalRegistry = {
@@ -31,6 +49,20 @@
   function drawerOpen() {
     drawerStore.open();
   }
+
+  const profilePopup: PopupSettings = {
+    event: "click",
+    target: "profilePopup",
+    placement: "bottom",
+  };
+
+  // Get the user's initials for the avatar. Takes the first letter of the first and last word in the name.
+  const initials =
+    data?.user?.name
+      .match(/(\b\S)?/g)
+      ?.join("")
+      ?.match(/(^\S|\S$)?/g)
+      ?.join("") ?? "?";
 </script>
 
 <Toast position="br" />
@@ -53,7 +85,16 @@
         <strong class="text-xl uppercase">App Name</strong></svelte:fragment>
       <svelte:fragment slot="trail">
         <LightSwitch class="mr-2" />
-        <Avatar initials="RM" background="bg-primary-500" width="w-12" />
+        <div use:popup={profilePopup}>
+          <!-- No good way to ignore this? sveltejs/language-tools#1026 -->
+          <Avatar
+            {initials}
+            background="bg-tertiary-500"
+            width="w-12"
+            border="border-4 border-surface-300-600-token hover:!border-primary-500"
+            cursor="cursor-pointer" />
+        </div>
+        <ProfilePopup loggedIn={data.user ? true : false} />
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>
