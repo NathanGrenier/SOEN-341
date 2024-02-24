@@ -11,6 +11,8 @@
   });
 
   export let form;
+
+  // TODO: Implement disabling submit when submission is in progress
   let showErrors = form?.error != null;
 </script>
 

@@ -3,23 +3,38 @@
   import ExclamationCircleIcon from "$lib/icons/ExclamationCircleIcon.svelte";
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
+  import { getToastStore } from "@skeletonlabs/skeleton";
+  import type { ToastSettings } from "@skeletonlabs/skeleton";
 
-  let emailInput: HTMLInputElement;
+  const toastStore = getToastStore();
+
+  let nameInput: HTMLInputElement;
 
   onMount(() => {
-    emailInput.focus();
+    nameInput.focus();
   });
 
   export let form;
 
-  // TODO: Implement
-  let showErrors = false;
+  // TODO: Implement disabling submit when submission is in progress
+  let showErrors = form?.error != null;
+
+  const newUserToast: ToastSettings = {
+    message: `${form?.success ? form.data.name : ""}'s account has been created!`,
+    timeout: 8000,
+    hoverable: true,
+    background: "variant-filled-success",
+  };
+
+  $: if (form?.success) {
+    toastStore.trigger(newUserToast);
+  }
 </script>
 
 <div class="flex flex-col items-center justify-center gap-4">
   <div style="min-width: 36em;" class="card min-w-fit flex-grow">
     <header class="text4xl card-header flex justify-center font-bold">
-      <h1 class="text-4xl">Register (Not Implemented)</h1>
+      <h1 class="text-4xl">Register Your New Account</h1>
     </header>
     <section class="p-4">
       <form method="POST" class="flex flex-col gap-3">
@@ -47,9 +62,21 @@
           </aside>
         {/if}
         <label class="label">
+          <span>Name</span>
+          <input
+            bind:this={nameInput}
+            class="input"
+            title="Name"
+            name="name"
+            type="text"
+            value={form?.name ?? ""}
+            placeholder="John Doe"
+            autocomplete="off"
+            required />
+        </label>
+        <label class="label">
           <span>Email</span>
           <input
-            bind:this={emailInput}
             class="input"
             title="Email address"
             name="email"
@@ -64,6 +91,15 @@
             class="input"
             title="Password"
             name="password"
+            type="password"
+            required />
+        </label>
+        <label class="label">
+          <span>Confirm Password</span>
+          <input
+            class="input"
+            title="Confirm Password"
+            name="confirmPassword"
             type="password"
             required />
         </label>

@@ -108,7 +108,7 @@ your computer to be able to use the necessary commands.
 
 Secrets and other configuration values are managed through environment
 variables. When developing locally, they can be configured by creating a `.env`
-file in the project root folder.
+file in the project's root.
 
 > **Note**: Default values should be optimized for local development, such that
 > a developer can clone and run the project successfully without having to

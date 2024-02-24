@@ -18,7 +18,7 @@ model User {
   email        String        @unique
   name         String
   comment      String? // A note viewable/editable by the sysadmin only.
-  role         UserRole
+  role         UserRole      @default(CUSTOMER)
   passwordHash String
   reservations Reservation[]
   disabled     Boolean       @default(false)
