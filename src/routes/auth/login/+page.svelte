@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import CloseIcon from "$lib/icons/CloseIcon.svelte";
   import ExclamationCircleIcon from "$lib/icons/ExclamationCircleIcon.svelte";
   import { onMount } from "svelte";
@@ -79,8 +80,11 @@
     </section>
     <footer class="card-footer mt-2 flex items-center justify-around">
       <p class="font-bold">Don't have an account?</p>
-      <a class="variant-filled-secondary btn" href="/auth/register"
-        >Create Account</a>
+      <a
+        class="variant-filled-secondary btn"
+        href="/auth/register{$page.url.searchParams.get('destination')
+          ? '?destination=' + $page.url.searchParams.get('destination')
+          : ''}">Create Account</a>
     </footer>
   </div>
 </div>

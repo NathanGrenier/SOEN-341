@@ -1,9 +1,11 @@
 import bcrypt from "bcrypt";
 import { prisma } from "$lib/db/client";
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import type { Actions } from "./$types";
 import { z } from "zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { createSession } from "$lib/server/session";
+import type { User } from "@prisma/client";
 
 const UserRegisterSchema = z.object({
   name: z.string(),
@@ -13,7 +15,7 @@ const UserRegisterSchema = z.object({
 });
 
 export const actions = {
-  default: async ({ request }) => {
+  default: async ({ cookies, request, url }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
@@ -71,9 +73,10 @@ export const actions = {
     }
 
     const passwordHash = await bcrypt.hash(passwordRaw, 12);
+    let user: User;
 
     try {
-      await prisma.user.create({
+      user = await prisma.user.create({
         data: { email, name, passwordHash },
       });
     } catch (error) {
@@ -99,6 +102,22 @@ export const actions = {
       });
     }
 
-    return { success: true, data: { name, email } };
+    cookies.set(
+      "SvelteState-Session",
+      createSession({
+        sub: String(user.id),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      }),
+      { path: "/" },
+    );
+
+    // Prevent open redirect, only allow destinations starting with /
+    if ((url.searchParams.get("destination") || "").indexOf("/") == 0) {
+      return redirect(302, url.searchParams.get("destination") || "/");
+    } else {
+      return redirect(302, "/");
+    }
   },
 } satisfies Actions;
