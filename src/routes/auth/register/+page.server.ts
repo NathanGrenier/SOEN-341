@@ -70,8 +70,7 @@ export const actions = {
       });
     }
 
-    // TODO: Verify that this is the way to hash the password
-    const passwordHash = await bcrypt.hash(passwordRaw, 10);
+    const passwordHash = await bcrypt.hash(passwordRaw, 12);
 
     try {
       await prisma.user.create({
