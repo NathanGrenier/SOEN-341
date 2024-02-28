@@ -34,7 +34,7 @@
 <div class="flex flex-col items-center justify-center gap-4">
   <div style="min-width: 36em;" class="card min-w-fit flex-grow">
     <header class="text4xl card-header flex justify-center font-bold">
-      <h1 class="text-4xl">Register Your New Account</h1>
+      <h1 class="text-4xl">Create Account</h1>
     </header>
     <section class="p-4">
       <form method="POST" class="flex flex-col gap-3">
@@ -103,6 +103,13 @@
             type="password"
             required />
         </label>
+        <p>Passwords must:</p>
+        <ul class="list-inside list-disc">
+          <li>Be at least 8 characters long</li>
+          <li>Contain an uppercase letter</li>
+          <li>Contain a lowercase letter</li>
+          <li>Contain a digit</li>
+        </ul>
         <button class="variant-filled-primary btn mt-4" type="submit"
           >Register</button>
       </form>

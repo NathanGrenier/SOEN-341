@@ -72,6 +72,21 @@ export const actions = {
       });
     }
 
+    if (
+      passwordRaw.length < 8 ||
+      !passwordRaw.match(/[a-z]/) ||
+      !passwordRaw.match(/[A-Z]/) ||
+      !passwordRaw.match(/[0-9]/)
+    ) {
+      return fail(400, {
+        name: name,
+        email: email,
+        error: "Password Complexity",
+        errorMessage:
+          "Please ensure your password meets the complexity requirements.",
+      });
+    }
+
     const passwordHash = await bcrypt.hash(passwordRaw, 12);
     let user: User;
 
