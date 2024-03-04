@@ -1,26 +1,28 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import CloseIcon from "$lib/icons/CloseIcon.svelte";
   import ExclamationCircleIcon from "$lib/icons/ExclamationCircleIcon.svelte";
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
 
-  let emailInput: HTMLInputElement;
+  let passwordInput: HTMLInputElement;
 
   onMount(() => {
-    emailInput.focus();
+    passwordInput.focus();
   });
 
   export let form;
 
   // TODO: Implement disabling submit when submission is in progress
   let showErrors = form?.error != null;
+
+  // TODO: This redirects to the home page. It would be nice to have a toast on that page. Would it be
+  // better to have some sort of global toast store?
 </script>
 
 <div class="flex flex-col items-center justify-center gap-4">
   <div style="min-width: 36em;" class="card min-w-fit flex-grow">
     <header class="text4xl card-header flex justify-center font-bold">
-      <h1 class="text-4xl">Log In</h1>
+      <h1 class="text-4xl">Reset Password</h1>
     </header>
     <section class="p-4">
       <form method="POST" class="flex flex-col gap-3">
@@ -33,8 +35,8 @@
             <div>
               <ExclamationCircleIcon
                 constColor={true}
-                height="h-12"
-                width="w-12" />
+                height="h-10"
+                width="w-10" />
             </div>
             <!-- Message -->
             <div class="alert-message">
@@ -43,7 +45,6 @@
             </div>
             <!-- Actions -->
             <div class="alert-actions">
-              <!-- TODO: The X Button is slightly larger than the Warning Icon (3px off). Looks bad -->
               <button
                 class="variant-filled btn-icon"
                 on:click={(e) => {
@@ -54,41 +55,35 @@
           </aside>
         {/if}
         <label class="label">
-          <span>Email</span>
-          <input
-            bind:this={emailInput}
-            class="input"
-            title="Email address"
-            name="email"
-            type="email"
-            value={form?.email ?? ""}
-            placeholder="example@domain.com"
-            required />
-        </label>
-        <label class="label">
           <span>Password</span>
           <input
+            bind:this={passwordInput}
             class="input"
             title="Password"
-            name="password"
+            name="passwordRaw"
             type="password"
             required />
         </label>
+        <label class="label">
+          <span>Confirm Password</span>
+          <input
+            class="input"
+            title="Confirm Password"
+            name="confirmPassword"
+            type="password"
+            required />
+        </label>
+        <p>Passwords must:</p>
+        <ul class="list-inside list-disc">
+          <li>Be at least 8 characters long</li>
+          <li>Contain an uppercase letter</li>
+          <li>Contain a lowercase letter</li>
+          <li>Contain a digit</li>
+        </ul>
         <button class="variant-filled-primary btn mt-4" type="submit"
-          >Log in</button>
+          >Set New Password</button>
       </form>
     </section>
-    <div class="card-footer mt-2 flex items-center justify-around">
-      <p class="font-bold">Don't have an account?</p>
-      <a
-        class="variant-filled-secondary btn"
-        href="/auth/register{$page.url.searchParams.get('destination')
-          ? '?destination=' + $page.url.searchParams.get('destination')
-          : ''}">Create Account</a>
-    </div>
-    <div
-      class="card-footer mt-2 flex items-center justify-around text-sm underline">
-      <a class="text-tertiary-500" href="/auth/request-reset">Reset Password</a>
-    </div>
+    <footer class="card-footer mt-2 flex items-center justify-around"></footer>
   </div>
 </div>
