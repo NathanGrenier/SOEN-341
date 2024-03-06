@@ -2,7 +2,14 @@ import { redirect } from "@sveltejs/kit";
 import { validateAndRefreshSession } from "$lib/server/session";
 import type { Handle } from "@sveltejs/kit";
 
-const openRoutes = ["/", "/auth/login", "/auth/logout"]; // Routes that don't need the user to be logged in
+const openRoutes = [
+  "/",
+  "/auth/login",
+  "/auth/logout",
+  "/auth/register",
+  "/auth/request-reset",
+  "/auth/reset",
+]; // Routes that don't need the user to be logged in
 
 export const handle: Handle = async ({ event, resolve }) => {
   const session = String(event.cookies.get("SvelteState-Session") || "");

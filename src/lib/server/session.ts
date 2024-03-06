@@ -15,7 +15,7 @@ export const createSession = (claims: {
   const now = Math.floor(new Date().getTime() / 1000);
   return jwt.sign(
     {
-      iss: "SvelteState",
+      iss: "SvelteState-Session",
       aud: aud,
       iat: claims.iat || now,
       nbf: now,
@@ -49,7 +49,7 @@ export const validateAndRefreshSession = (
       audience: aud,
     });
     // @ts-expect-error JWT has no rich type data
-    if (decoded.iss !== "SvelteState") {
+    if (decoded.iss !== "SvelteState-Session") {
       throw new Error("Session token issuer invalid");
     }
     // @ts-expect-error JWT has no rich type data
@@ -83,5 +83,37 @@ export const validateAndRefreshSession = (
     };
   } catch (error) {
     return { success: false };
+  }
+};
+
+export const createResetToken = (sub: number): string => {
+  const now = Math.floor(new Date().getTime() / 1000);
+  return jwt.sign(
+    {
+      iss: "SvelteState-ResetPassword",
+      aud: aud,
+      iat: now,
+      nbf: now,
+      exp: now + 600, // 10 minutes
+      sub: sub,
+    },
+    key,
+    { algorithm: "HS256", noTimestamp: true },
+  );
+};
+
+export const validateResetToken = (token: string): number | undefined => {
+  try {
+    const decoded = jwt.verify(token, key, {
+      algorithms: ["HS256"],
+      audience: aud,
+    });
+    // @ts-expect-error JWT has no rich type data
+    if (decoded.iss !== "SvelteState-ResetPassword" || decoded.aud !== aud) {
+      return undefined;
+    }
+    return Number(decoded.sub);
+  } catch (error) {
+    return undefined;
   }
 };

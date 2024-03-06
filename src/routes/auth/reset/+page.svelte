@@ -3,15 +3,11 @@
   import ExclamationCircleIcon from "$lib/icons/ExclamationCircleIcon.svelte";
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
-  import { getToastStore } from "@skeletonlabs/skeleton";
-  import type { ToastSettings } from "@skeletonlabs/skeleton";
 
-  const toastStore = getToastStore();
-
-  let nameInput: HTMLInputElement;
+  let passwordInput: HTMLInputElement;
 
   onMount(() => {
-    nameInput.focus();
+    passwordInput.focus();
   });
 
   export let form;
@@ -19,22 +15,14 @@
   // TODO: Implement disabling submit when submission is in progress
   let showErrors = form?.error != null;
 
-  const newUserToast: ToastSettings = {
-    message: `${form?.success ? form.data.name : ""}'s account has been created!`,
-    timeout: 8000,
-    hoverable: true,
-    background: "variant-filled-success",
-  };
-
-  $: if (form?.success) {
-    toastStore.trigger(newUserToast);
-  }
+  // TODO: This redirects to the home page. It would be nice to have a toast on that page. Would it be
+  // better to have some sort of global toast store?
 </script>
 
 <div class="flex flex-col items-center justify-center gap-4">
   <div style="min-width: 36em;" class="card min-w-fit flex-grow">
     <header class="text4xl card-header flex justify-center font-bold">
-      <h1 class="text-4xl">Create Account</h1>
+      <h1 class="text-4xl">Reset Password</h1>
     </header>
     <section class="p-4">
       <form method="POST" class="flex flex-col gap-3">
@@ -67,35 +55,12 @@
           </aside>
         {/if}
         <label class="label">
-          <span>Name</span>
-          <input
-            bind:this={nameInput}
-            class="input"
-            title="Name"
-            name="name"
-            type="text"
-            value={form?.name ?? ""}
-            placeholder="John Doe"
-            autocomplete="off"
-            required />
-        </label>
-        <label class="label">
-          <span>Email</span>
-          <input
-            class="input"
-            title="Email address"
-            name="email"
-            type="email"
-            value={form?.email ?? ""}
-            placeholder="example@domain.com"
-            required />
-        </label>
-        <label class="label">
           <span>Password</span>
           <input
+            bind:this={passwordInput}
             class="input"
             title="Password"
-            name="password"
+            name="passwordRaw"
             type="password"
             required />
         </label>
@@ -116,7 +81,7 @@
           <li>Contain a digit</li>
         </ul>
         <button class="variant-filled-primary btn mt-4" type="submit"
-          >Register</button>
+          >Set New Password</button>
       </form>
     </section>
     <footer class="card-footer mt-2 flex items-center justify-around"></footer>

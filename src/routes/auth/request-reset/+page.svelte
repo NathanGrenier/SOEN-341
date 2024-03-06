@@ -8,10 +8,10 @@
 
   const toastStore = getToastStore();
 
-  let nameInput: HTMLInputElement;
+  let emailInput: HTMLInputElement;
 
   onMount(() => {
-    nameInput.focus();
+    emailInput.focus();
   });
 
   export let form;
@@ -19,22 +19,23 @@
   // TODO: Implement disabling submit when submission is in progress
   let showErrors = form?.error != null;
 
-  const newUserToast: ToastSettings = {
-    message: `${form?.success ? form.data.name : ""}'s account has been created!`,
+  const successToast: ToastSettings = {
+    message:
+      "We've sent a reset email to that account, if it exists. Check your email for the link.",
     timeout: 8000,
     hoverable: true,
     background: "variant-filled-success",
   };
 
   $: if (form?.success) {
-    toastStore.trigger(newUserToast);
+    toastStore.trigger(successToast);
   }
 </script>
 
 <div class="flex flex-col items-center justify-center gap-4">
   <div style="min-width: 36em;" class="card min-w-fit flex-grow">
     <header class="text4xl card-header flex justify-center font-bold">
-      <h1 class="text-4xl">Create Account</h1>
+      <h1 class="text-4xl">Reset Password</h1>
     </header>
     <section class="p-4">
       <form method="POST" class="flex flex-col gap-3">
@@ -67,21 +68,9 @@
           </aside>
         {/if}
         <label class="label">
-          <span>Name</span>
-          <input
-            bind:this={nameInput}
-            class="input"
-            title="Name"
-            name="name"
-            type="text"
-            value={form?.name ?? ""}
-            placeholder="John Doe"
-            autocomplete="off"
-            required />
-        </label>
-        <label class="label">
           <span>Email</span>
           <input
+            bind:this={emailInput}
             class="input"
             title="Email address"
             name="email"
@@ -90,35 +79,9 @@
             placeholder="example@domain.com"
             required />
         </label>
-        <label class="label">
-          <span>Password</span>
-          <input
-            class="input"
-            title="Password"
-            name="password"
-            type="password"
-            required />
-        </label>
-        <label class="label">
-          <span>Confirm Password</span>
-          <input
-            class="input"
-            title="Confirm Password"
-            name="confirmPassword"
-            type="password"
-            required />
-        </label>
-        <p>Passwords must:</p>
-        <ul class="list-inside list-disc">
-          <li>Be at least 8 characters long</li>
-          <li>Contain an uppercase letter</li>
-          <li>Contain a lowercase letter</li>
-          <li>Contain a digit</li>
-        </ul>
         <button class="variant-filled-primary btn mt-4" type="submit"
-          >Register</button>
+          >Continue</button>
       </form>
     </section>
-    <footer class="card-footer mt-2 flex items-center justify-around"></footer>
   </div>
 </div>

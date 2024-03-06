@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import CloseIcon from "$lib/icons/CloseIcon.svelte";
   import ExclamationCircleIcon from "$lib/icons/ExclamationCircleIcon.svelte";
   import { onMount } from "svelte";
@@ -11,6 +12,8 @@
   });
 
   export let form;
+
+  // TODO: Implement disabling submit when submission is in progress
   let showErrors = form?.error != null;
 </script>
 
@@ -75,10 +78,17 @@
           >Log in</button>
       </form>
     </section>
-    <footer class="card-footer mt-2 flex items-center justify-around">
+    <div class="card-footer mt-2 flex items-center justify-around">
       <p class="font-bold">Don't have an account?</p>
-      <a class="variant-filled-secondary btn" href="/auth/register"
-        >Create Account</a>
-    </footer>
+      <a
+        class="variant-filled-secondary btn"
+        href="/auth/register{$page.url.searchParams.get('destination')
+          ? '?destination=' + $page.url.searchParams.get('destination')
+          : ''}">Create Account</a>
+    </div>
+    <div
+      class="card-footer mt-2 flex items-center justify-around text-sm underline">
+      <a class="text-tertiary-500" href="/auth/request-reset">Reset Password</a>
+    </div>
   </div>
 </div>
