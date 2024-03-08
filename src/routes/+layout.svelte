@@ -96,6 +96,28 @@
         </div>
         <ProfilePopup loggedIn={data.user ? true : false} />
       </svelte:fragment>
+      <nav>
+        <ul>
+          <li>
+            <a href="/">Home</a>
+          </li>
+          <li>
+            <a href="/browse-vehicles">Browse Vehicles</a>
+          </li>
+          <li>
+            <a href="/">Placeholder</a>
+          </li>
+          <li>
+            <a href="/">Placeholder</a>
+          </li>
+          <li>
+            <a href="/">Contact</a>
+          </li>
+          <li>
+            <a href="/account" class="account-button">Account</a>
+          </li>
+        </ul>
+      </nav>
     </AppBar>
   </svelte:fragment>
   <svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
@@ -109,3 +131,33 @@
   <!-- (pageFooter) -->
   <!-- (footer) -->
 </AppShell>
+
+<style>
+  nav {
+    display: flex;
+  }
+
+  ul {
+    display: flex;
+    margin: 0;
+    margin-left: auto;
+    list-style: none;
+  }
+
+  li {
+    margin-right: 20px;
+  }
+
+  nav ul li a {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #08417a;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  nav ul li a:hover {
+    background-color: #08417a;
+  }
+</style>
