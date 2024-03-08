@@ -1,42 +1,10 @@
-<script lang="ts">
-  import TransmissionIcon from "$lib/icons/TransmissionIcon.svelte";
-  import { getToastStore, getModalStore } from "@skeletonlabs/skeleton";
-  import type { ToastSettings, ModalSettings } from "@skeletonlabs/skeleton";
-
-  const toastStore = getToastStore();
-  const modalStore = getModalStore();
-
-  const testToast: ToastSettings = {
-    message: "This is a test toast. It will disappear in 3 seconds.",
-    timeout: 3000,
-    hoverable: true,
-  };
-
-  const testModal: ModalSettings = {
-    type: "alert",
-    // Data
-    title: "Example Alert",
-    body: "This is an example modal.",
-    image: "https://i.imgur.com/WOgTG96.gif",
-  };
-
-  const browseVehicleURL = "src/routes/browse-Vehicles/browseVehicle.svelte"; // todo: verify relative path
-</script>
-
-<div class="flex flex-col items-center justify-center gap-4">
-  <h1 class="text-4xl font-bold">Welcome to SvelteKit</h1>
-  <div class="container flex flex-row items-center justify-center gap-4">
-    <button
-      class="variant-filled-primary btn w-52"
-      on:click={() => {
-        toastStore.trigger(testToast);
-      }}>Test Toast</button>
-    <button
-      class="variant-outline-primary btn w-52"
-      on:click={() => modalStore.trigger(testModal)}>Test Modal</button>
-    <a href={browseVehicleURL} class="variant-outline-primary btn w-52"
-      >Browse Vehicles</a>
-    <!-- Link to the Browse Vehicles page -->
-    <TransmissionIcon />
+<div class="relative flex h-screen flex-col items-center justify-center gap-4">
+  <div class="absolute bottom-0 right-0 p-4" style="padding-right: 0;">
+    <h1
+      class="text-4xl font-bold"
+      style="font-size: 2rem; color: black; margin-top: -16px; margin-right: -20px;">
+      Welcome to DriveXperience
+    </h1>
+    <p style="color: black;">Rent your dream car today</p>
   </div>
 </div>

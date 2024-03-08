@@ -82,7 +82,8 @@
             <HamburgerMenuIcon />
           </span>
         </button>
-        <strong class="text-xl uppercase">App Name</strong></svelte:fragment>
+        <img src="SiteLogoFor.png" alt="DriveXperience" class="h-20" />
+      </svelte:fragment>
       <svelte:fragment slot="trail">
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
@@ -120,11 +121,19 @@
       </nav>
     </AppBar>
   </svelte:fragment>
-  <svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
+
   <!-- (sidebarRight) -->
   <!-- (pageHeader) -->
   <!-- Router Slot -->
   <div class="container mx-auto p-10">
+    <!-- Your Video Embed Here -->
+    <div class="text-center">
+      <!-- Full Bleed Video Setup -->
+      <video src="HomePageVid.mp4" autoplay muted class="full-bleed-video">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <!-- Keep the <slot /> if you still want to inject other content into this container -->
     <slot />
   </div>
   <!-- ---- / ---- -->
@@ -133,6 +142,7 @@
 </AppShell>
 
 <style>
+  /* Existing styles */
   nav {
     display: flex;
   }
@@ -159,5 +169,16 @@
 
   nav ul li a:hover {
     background-color: #08417a;
+  }
+
+  /* Full Bleed Video Styles */
+  .full-bleed-video {
+    position: fixed; /* or 'absolute', depending on your layout needs */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover; /* Covers the full viewport without losing aspect ratio */
+    z-index: -1; /* Sit behind other content; adjust as necessary */
   }
 </style>
