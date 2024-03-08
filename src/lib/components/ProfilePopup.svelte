@@ -1,6 +1,7 @@
 <script lang="ts">
   import UserSettingsIcon from "$lib/icons/UserSettingsIcon.svelte";
   import UserIcon from "$lib/icons/UserIcon.svelte";
+  import GridIcon from "$lib/icons/GridIcon.svelte";
 
   export let loggedIn: boolean;
 </script>
@@ -17,6 +18,11 @@
         style="justify-content: start;"
         class=" bg-secondary-hover-token gap-2"
         ><UserIcon invertColor={true} /><span>Profile</span></button>
+      <a
+        href="/dashboard"
+        style="justify-content: start;"
+        class=" bg-secondary-hover-token gap-2"
+        ><GridIcon invertColor={true} /><span>Dashboard</span></a>
       <button
         style="justify-content: start;"
         class="bg-secondary-hover-token gap-2"
