@@ -1,18 +1,30 @@
-<script lang="ts">
-  import { Paginator, Table, tableMapperValues } from "@skeletonlabs/skeleton";
-  import type { PaginationSettings, TableSource } from "@skeletonlabs/skeleton";
+<script lang="ts" context="module">
+  import type { PageData } from "./$types";
 
-  export let data;
-  console.log(data);
-
-  type DisplayReservation = Omit<
-    (typeof data.userReserverations)[0],
+  export type DisplayReservation = Omit<
+    PageData["userReserverations"][0],
     "plannedDepartureAt" | "plannedReturnAt" | "quotedPrice"
   > & {
     plannedDepartureAt: string;
     plannedReturnAt: string;
     quotedPrice: string;
   };
+
+  export type TableType = {
+    head: string[];
+    body: DisplayReservation[];
+  };
+
+  export type TabStatus = "active" | "expired" | "cancelled";
+</script>
+
+<script lang="ts">
+  import { TabGroup, Tab } from "@skeletonlabs/skeleton";
+  import { page } from "$app/stores";
+  import ReservationTable from "$lib/components/ReservationTable.svelte";
+  import { replaceState } from "$app/navigation";
+
+  export let data;
 
   function formatReservations(
     reservations: typeof data.userReserverations,
@@ -27,52 +39,72 @@
     });
   }
 
-  let formatedReservations = formatReservations(data.userReserverations);
-
   $: formatedReservations = formatReservations(data.userReserverations);
-
-  console.log(formatedReservations);
-
-  const tableSource: TableSource = {
-    head: ["Car", "Departure Time", "Return Time", "Price"],
-    // The data visibly shown in your table body UI.
-    body: tableMapperValues(formatedReservations, [
-      "car",
-      "plannedDepartureAt",
-      "plannedReturnAt",
-      "quotedPrice",
-    ]),
-    // Optional: The data returned when interactive is enabled and a row is clicked.
-    meta: tableMapperValues(data.userReserverations, ["id"]),
-    // Optional: A list of footer labels.
-    // foot: ["Total", "", '<code class="code">5</code>'],
+  $: table = {
+    head: ["Branch", "Car", "Departure Time", "Return Time", "Price"],
+    body: formatedReservations,
   };
 
-  let paginationSettings = {
-    page: 0,
-    limit: 5,
-    size: tableSource.body.length,
-    amounts: [2, 5, 10],
-  } satisfies PaginationSettings;
+  let tabSet: TabStatus =
+    ($page.url.searchParams.get("status") as TabStatus) || "active";
 
-  $: paginationSettings.size = tableSource.body.length;
-
-  function onPageChange(e: CustomEvent): void {
-    fetch(`http://localhost:3000/api/reservations?page=${e.detail}`);
-    console.log("event:page", e.detail);
-  }
-
-  function onAmountChange(e: CustomEvent): void {
-    console.log("event:amount", e.detail);
+  function upadteURLState(url: string) {
+    replaceState(
+      `/dashboard?status=${url}&amount=${$page.url.searchParams.get("amount") ?? 5}`,
+      {},
+    );
   }
 </script>
 
-<div class="flex flex-col gap-2">
-  <Table interactive={true} source={tableSource} />
-  <Paginator
-    bind:settings={paginationSettings}
-    showFirstLastButtons={true}
-    showPreviousNextButtons={true}
-    on:page={onPageChange}
-    on:amount={onAmountChange} />
-</div>
+<h1 class=" text-center text-4xl font-bold">Your Reservations</h1>
+
+<TabGroup>
+  <Tab
+    bind:group={tabSet}
+    name="active"
+    value="active"
+    on:click={() => upadteURLState("active")}>
+    <span class="font-bold">Active</span>
+  </Tab>
+  <Tab
+    bind:group={tabSet}
+    name="expired"
+    value="expired"
+    on:click={() => upadteURLState("expired")}>
+    <span class="font-bold">Expired</span></Tab>
+  <Tab
+    bind:group={tabSet}
+    name="cancelled"
+    value="cancelled"
+    on:click={() => upadteURLState("cancelled")}>
+    <span class="font-bold">Cancelled</span></Tab>
+  <!-- Tab Panels --->
+  <svelte:fragment slot="panel">
+    {#if tabSet === "active"}
+      <ReservationTable
+        table={{
+          ...table,
+          body: table.body.filter(
+            (res) => res.cancelled === false && res.returnedAt === null,
+          ),
+        }}
+        tabStatus={tabSet} />
+    {:else if tabSet === "expired"}
+      <ReservationTable
+        active={false}
+        tabStatus={tabSet}
+        table={{
+          ...table,
+          body: table.body.filter((res) => res.returnedAt !== null),
+        }} />
+    {:else if tabSet === "cancelled"}
+      <ReservationTable
+        active={false}
+        tabStatus={tabSet}
+        table={{
+          ...table,
+          body: table.body.filter((res) => res.cancelled),
+        }} />
+    {/if}
+  </svelte:fragment>
+</TabGroup>

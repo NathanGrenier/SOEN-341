@@ -1,8 +1,14 @@
 <script lang="ts">
   export let invertColor = false;
-  let colorClass = invertColor
-    ? "text-white dark:text-gray-800"
-    : "text-gray-800 dark:text-white";
+  export let constColor = false;
+  let colorClass: string;
+  if (constColor) {
+    colorClass = "text-white";
+  } else {
+    colorClass = invertColor
+      ? "text-white dark:text-gray-800"
+      : "text-gray-800 dark:text-white";
+  }
 </script>
 
 <svg
