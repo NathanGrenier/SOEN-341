@@ -1,55 +1,42 @@
 <script>
-  // You can add JavaScript logic here if needed
+  let cars = [
+    {
+      src: "cars/corola.png",
+      alt: "Car 1",
+      model: "Car Model 1",
+      description: "Description of Car 1",
+    },
+    // Add more initial cars as needed
+  ];
+
+  function addCar() {
+    cars = [
+      ...cars,
+      {
+        src: "cars/corola.png",
+        alt: "New Car",
+        model: "New Car Model",
+        description: "New Car Description",
+      },
+    ];
+  }
 </script>
 
 <div class="car-container">
-  <div class="car">
-    <img src="cars/corola.png" alt="Car 1" />
-    <h2>Car Model 1</h2>
-    <p>Description of Car 1</p>
-  </div>
-  <div class="car">
-    <img src="cars/corola.png" alt="Car 2" />
-    <h2>Car Model 2</h2>
-    <p>Description of Car 2</p>
-  </div>
-  <div class="car">
-    <img src="cars/corola.png" alt="Car 1" />
-    <h2>Car Model 1</h2>
-    <p>Description of Car 1</p>
-  </div>
-  <div class="car">
-    <img src="cars/corola.png" alt="Car 1" />
-    <h2>Car Model 1</h2>
-    <p>Description of Car 1</p>
-  </div>
-  <div class="car">
-    <img src="cars/corola.png" alt="Car 1" />
-    <h2>Car Model 1</h2>
-    <p>Description of Car 1</p>
-  </div>
-  <div class="car">
-    <img src="cars/corola.png" alt="Car 1" />
-    <h2>Car Model 1</h2>
-    <p>Description of Car 1</p>
-  </div>
-  <div class="car">
-    <img src="cars/corola.png" alt="Car 1" />
-    <h2>Car Model 1</h2>
-    <p>Description of Car 1</p>
-  </div>
-  <div class="car">
-    <img src="cars/corola.png" alt="Car 1" />
-    <h2>Car Model 1</h2>
-    <p>Description of Car 1</p>
-  </div>
-  <div class="car">
-    <img src="cars/corola.png" alt="Car 1" />
-    <h2>Car Model 1</h2>
-    <p>Description of Car 1</p>
-  </div>
-  <!-- Add more cars as needed -->
+  {#each cars as car}
+    <div class="car">
+      <img src={car.src} alt={car.alt} />
+      <h2>{car.model}</h2>
+      <p>{car.description}</p>
+      <button
+        class="cursor-pointer rounded-lg border-b-[4px] border-blue-600 bg-blue-500 px-6 py-2 text-white transition-all hover:-translate-y-[1px] hover:border-b-[6px] hover:brightness-110 active:translate-y-[2px] active:border-b-[2px] active:brightness-90">
+        Button
+      </button>
+    </div>
+  {/each}
 </div>
+
+<button on:click={addCar}>Add Car</button>
 
 <style>
   .car-container {
@@ -82,6 +69,10 @@
 
   .car p {
     margin: 0;
+  }
+
+  .car button {
+    margin-top: 10px; /* Adjust margin as needed */
   }
 
   .car:nth-child(3n) {
