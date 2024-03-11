@@ -72,10 +72,12 @@ export async function createReservation(
     const conflictingReservation = existingReservations.find((reservation) => {
       console.log("Existing Reservation:", reservation);
       console.log("plannedDepartureAt:", reservation.plannedDepartureAt);
+      console.log(reservationData.plannedReturnAt);
       console.log("plannedReturnAt:", reservation.plannedReturnAt);
+      console.log(reservationData.plannedDepartureAt);
 
       const isConflict =
-        reservation.plannedDepartureAt <= reservationData.plannedReturnAt &&
+        reservation.plannedDepartureAt <= reservationData.plannedReturnAt ||
         reservation.plannedReturnAt >= reservationData.plannedDepartureAt;
 
       console.log("Conflict:", isConflict);

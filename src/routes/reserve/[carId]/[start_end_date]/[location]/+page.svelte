@@ -431,10 +431,7 @@
               class="{duskMap
                 ? 'pointer-events-none opacity-50'
                 : 'opacity-100'} transition-opacity duration-300 ease-in-out">
-              <Map
-                bind:branches
-                bind:selectedBranchId
-                on:branchSelected={handleBranchSelected} />
+              <Map bind:branches on:branchSelected={handleBranchSelected} />
             </div>
           {/if}
         </div>
