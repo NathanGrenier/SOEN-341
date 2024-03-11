@@ -1,17 +1,19 @@
 <script lang="ts">
   //Import local datatable components
-  import ThSort from "$lib/components/client/ThSort.svelte";
-  import ThFilter from "$lib/components/client/ThFilter.svelte";
-  import Search from "$lib/components/client/Search.svelte";
-  import RowsPerPage from "$lib/components/client/RowsPerPage.svelte";
-  import RowCount from "$lib/components/client/RowCount.svelte";
-  import Pagination from "$lib/components/client/Pagination.svelte";
+  import ThSort from "$lib/components/dTable/ThSort.svelte";
+  import ThFilter from "$lib/components/dTable/ThFilter.svelte";
+  import Search from "$lib/components/dTable/Search.svelte";
+  import RowsPerPage from "$lib/components/dTable/RowsPerPage.svelte";
+  import RowCount from "$lib/components/dTable/RowCount.svelte";
+  import Pagination from "$lib/components/dTable/Pagination.svelte";
 
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
 
   export let fetchCase = -1;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export let userData: any;
 
   console.log("buttoncase=" + fetchCase);
 
@@ -20,15 +22,11 @@
     dispatch("rowClick", rowId);
   }
 
-  //Load local data
-
-  import data from "$lib/components/client/data";
-
   //Import handler from SSD
   import { DataHandler } from "@vincjo/datatables";
 
   //Init data handler - CLIENT
-  const handler = new DataHandler(data, { rowsPerPage: 5 });
+  const handler = new DataHandler(userData, { rowsPerPage: 5 });
   const rows = handler.getRows();
 </script>
 
@@ -45,24 +43,24 @@
       <thead>
         <tr>
           <ThSort {handler} orderBy="id">ID</ThSort>
-          <ThSort {handler} orderBy="first_name">Name</ThSort>
+          <ThSort {handler} orderBy="name">Name</ThSort>
           <ThSort {handler} orderBy="email">Email</ThSort>
-          <ThSort {handler} orderBy="last_name">Role</ThSort>
+          <ThSort {handler} orderBy="role">Role</ThSort>
         </tr>
         <tr>
           <ThFilter {handler} filterBy="id" />
-          <ThFilter {handler} filterBy="first_name" />
+          <ThFilter {handler} filterBy="name" />
           <ThFilter {handler} filterBy="email" />
-          <ThFilter {handler} filterBy="last_name" />
+          <ThFilter {handler} filterBy="role" />
         </tr>
       </thead>
       <tbody>
         {#each $rows as row}
           <tr on:click={() => handleClick(row.id)}>
             <td>{row.id}</td>
-            <td>{row.first_name}</td>
+            <td>{row.name}</td>
             <td>{row.email}</td>
-            <td>{row.last_name}</td>
+            <td>{row.role}</td>
           </tr>
         {/each}
       </tbody>
@@ -86,24 +84,24 @@
       <thead>
         <tr>
           <ThSort {handler} orderBy="id">ID</ThSort>
-          <ThSort {handler} orderBy="first_name">Model</ThSort>
-          <ThSort {handler} orderBy="email">BookingDisabled</ThSort>
-          <ThSort {handler} orderBy="last_name">Branch</ThSort>
+          <ThSort {handler} orderBy="model">Model</ThSort>
+          <ThSort {handler} orderBy="bookingDisabled">BookingDisabled</ThSort>
+          <ThSort {handler} orderBy="branchId">Branch Id</ThSort>
         </tr>
         <tr>
           <ThFilter {handler} filterBy="id" />
-          <ThFilter {handler} filterBy="first_name" />
-          <ThFilter {handler} filterBy="email" />
-          <ThFilter {handler} filterBy="last_name" />
+          <ThFilter {handler} filterBy="model" />
+          <ThFilter {handler} filterBy="bookingDisabled" />
+          <ThFilter {handler} filterBy="branchId" />
         </tr>
       </thead>
       <tbody>
         {#each $rows as row}
           <tr on:click={() => handleClick(row.id)}>
             <td>{row.id}</td>
-            <td>{row.first_name}</td>
-            <td>{row.email}</td>
-            <td>{row.last_name}</td>
+            <td>{row.model}</td>
+            <td>{row.bookingDisabled}</td>
+            <td>{row.branchId}</td>
           </tr>
         {/each}
       </tbody>
@@ -127,24 +125,24 @@
       <thead>
         <tr>
           <ThSort {handler} orderBy="id">ID</ThSort>
-          <ThSort {handler} orderBy="first_name">Holder ID</ThSort>
-          <ThSort {handler} orderBy="email">Cancelled?</ThSort>
-          <ThSort {handler} orderBy="last_name">Quoted Price</ThSort>
+          <ThSort {handler} orderBy="holderId">Holder ID</ThSort>
+          <ThSort {handler} orderBy="cancelled">Cancelled?</ThSort>
+          <ThSort {handler} orderBy="quotedPrice">Quoted Price</ThSort>
         </tr>
         <tr>
           <ThFilter {handler} filterBy="id" />
-          <ThFilter {handler} filterBy="first_name" />
-          <ThFilter {handler} filterBy="email" />
-          <ThFilter {handler} filterBy="last_name" />
+          <ThFilter {handler} filterBy="holderId" />
+          <ThFilter {handler} filterBy="cancelled" />
+          <ThFilter {handler} filterBy="quotedPrice" />
         </tr>
       </thead>
       <tbody>
         {#each $rows as row}
           <tr on:click={() => handleClick(row.id)}>
             <td>{row.id}</td>
-            <td>{row.first_name}</td>
-            <td>{row.email}</td>
-            <td>{row.last_name}</td>
+            <td>{row.holderId}</td>
+            <td>{row.cancelled}</td>
+            <td>{row.quotedPrice}</td>
           </tr>
         {/each}
       </tbody>
