@@ -5,7 +5,6 @@
   let filteredPrice = 0;
 
   const cars = data.props.cars;
-  console.log(data.props.cars);
 
   function showPopup(index: number) {
     const popup = document.getElementById(`popupCard_${index}`);
