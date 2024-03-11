@@ -1,8 +1,12 @@
+<script lang="ts" context="module">
+  import type { PageData } from "./$types";
+
+  export type User = PageData["user"];
+</script>
+
 <script lang="ts">
   import "../app.postcss";
   import { dev } from "$app/environment";
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  import { page } from "$app/stores";
   import { inject } from "@vercel/analytics";
   inject({ mode: dev ? "development" : "production" });
 
@@ -94,7 +98,7 @@
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-        <ProfilePopup loggedIn={data.user ? true : false} />
+        <ProfilePopup user={data.user} />
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>
