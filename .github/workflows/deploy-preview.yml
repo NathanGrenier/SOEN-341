@@ -40,7 +40,6 @@ jobs:
           pull_request_sha=$(jq --raw-output .pull_request.base.sha "$GITHUB_EVENT_PATH" | cut -c1-8)
           echo "pull_request_sha=${pull_request_sha}" >> $GITHUB_OUTPUT
           echo $pull_request_sha
-          echo ${{github.event.pull_request.base.sha}}
 
       - name: Neon Database Create Branch Action
         uses: neondatabase/create-branch-action@v3
