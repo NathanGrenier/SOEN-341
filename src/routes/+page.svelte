@@ -19,8 +19,6 @@
     body: "This is an example modal.",
     image: "https://i.imgur.com/WOgTG96.gif",
   };
-
-  const browseVehicleURL = "src/routes/browse-Vehicles/browseVehicle.svelte"; // todo: verify relative path
 </script>
 
 <div class="flex flex-col items-center justify-center gap-4">
@@ -34,7 +32,7 @@
     <button
       class="variant-outline-primary btn w-52"
       on:click={() => modalStore.trigger(testModal)}>Test Modal</button>
-    <a href={browseVehicleURL} class="variant-outline-primary btn w-52"
+    <a href={"/browse-vehicles"} class="variant-outline-primary btn w-52"
       >Browse Vehicles</a>
     <!-- Link to the Browse Vehicles page -->
     <TransmissionIcon />
