@@ -39,7 +39,7 @@
       <RowsPerPage {handler} />
     </header>
     <!-- Table -->
-    <table class="table table-hover table-compact w-full table-auto">
+    <table class="table table-interactive table-compact w-full table-auto">
       <thead>
         <tr>
           <ThSort {handler} orderBy="id">ID</ThSort>
