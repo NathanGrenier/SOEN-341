@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
   import type { Branch } from "@prisma/client";
-  import "leaflet/dist/leaflet.css";
   import type { Map, Marker, PopupEvent } from "leaflet";
 
   let map: Map;

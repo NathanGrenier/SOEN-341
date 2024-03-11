@@ -9,6 +9,7 @@
   import { onMount } from "svelte";
   import { createReservation } from "$lib/controllers/reservationController.js";
   import type { Reservation } from "@prisma/client";
+  import "leaflet/dist/leaflet.css";
 
   export let data;
 
@@ -258,17 +259,21 @@
     modalStore.trigger(userInfoModal);
   }
 
-  function handlePaymentMethodChange(event: MouseEvent) {
-    isOnline = event.target.value === "online";
+  function handlePaymentMethodChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    isOnline = target.value === "online";
   }
 
-  function handleBranchSelected(event: MouseEvent) {
+  function handleBranchSelected(
+    event: CustomEvent<{ selectedBranchId: number }>,
+  ) {
     selectedBranchId = event.detail.selectedBranchId;
     console.log("Selected Branch ID:", selectedBranchId);
   }
 
-  function handleCheckboxChange(event: MouseEvent) {
-    const { value, checked } = event.target;
+  function handleCheckboxChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const { value, checked } = target;
     if (checked) {
       extraEquipment = [...extraEquipment, value];
     } else {
