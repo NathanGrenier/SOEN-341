@@ -1,5 +1,4 @@
 <script lang="ts">
-  //Import local datatable components
   import ThSort from "$lib/components/dTable/ThSort.svelte";
   import ThFilter from "$lib/components/dTable/ThFilter.svelte";
   import Search from "$lib/components/dTable/Search.svelte";

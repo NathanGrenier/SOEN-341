@@ -1,8 +1,5 @@
 <script lang="ts">
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-nocheck
   import Datatable from "$lib/components/dTable/Datatable.svelte";
-
   import {
     getAllUsers,
     updateUser,
@@ -18,6 +15,7 @@
     updateCar,
     createCar,
   } from "$lib/controllers/carController";
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let fetchedData: any;
   let isLoading = false;
