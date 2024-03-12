@@ -434,7 +434,7 @@
         <div>
           <h3 class="h3">Branch Location</h3>
 
-          <div class="rounded-d bg-slate-900 card mx-auto my-2 overflow-hidden">
+          <div class="rounded-d card mx-auto my-2 overflow-hidden bg-slate-900">
             <div class="px-4 py-2">
               <div class="flex items-center">
                 <span class="mr-2 text-base font-bold">Branch Name:</span>
@@ -539,7 +539,7 @@
         !currentCar}>
       <span
         ><svg
-          class="text-black dark:text-white h-[28px] w-[28px]"
+          class="h-[28px] w-[28px] text-black dark:text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
