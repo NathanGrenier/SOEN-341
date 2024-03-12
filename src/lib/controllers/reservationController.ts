@@ -1,21 +1,20 @@
-import { z } from "zod";
 import type { Reservation } from "@prisma/client";
 
 // Define Zod schema for Reservation
-const reservationSchema = z.object({
-  carId: z.number(),
-  holderId: z.number(),
-  replacesId: z.number().optional(),
-  quotedPrice: z.number(),
-  cancelled: z.boolean(),
-  checkInNotes: z.string().optional(),
-  checkInLicenseNumber: z.string().optional(),
-  checkInLicenseIssuingJurisdiction: z.string().optional(),
-  plannedDepartureAt: z.date(),
-  plannedReturnAt: z.date(),
-  pickedUpAt: z.date().optional(),
-  returnedAt: z.date().optional(),
-});
+// const reservationSchema = z.object({
+//   carId: z.number(),
+//   holderId: z.number(),
+//   replacesId: z.number().optional(),
+//   quotedPrice: z.number(),
+//   cancelled: z.boolean(),
+//   checkInNotes: z.string().optional(),
+//   checkInLicenseNumber: z.string().optional(),
+//   checkInLicenseIssuingJurisdiction: z.string().optional(),
+//   plannedDepartureAt: z.date(),
+//   plannedReturnAt: z.date(),
+//   pickedUpAt: z.date().optional(),
+//   returnedAt: z.date().optional(),
+// });
 // Function to fetch all reservations
 export async function getAllReservations(): Promise<Reservation[] | null> {
   try {

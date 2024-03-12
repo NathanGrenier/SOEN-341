@@ -17,14 +17,14 @@ export const branchSchema = z.object({
   disabled: z.boolean(),
 });
 
-// Function to validate branch data
-function validateBranchData(data: unknown): Branch {
-  const result = branchSchema.safeParse(data);
-  if (!result.success) {
-    throw new Error(result.error.errors.map((err) => err.message).join(", "));
-  }
-  return result.data as Branch;
-}
+// // Function to validate branch data
+// function validateBranchData(data: unknown): Branch {
+//   const result = branchSchema.safeParse(data);
+//   if (!result.success) {
+//     throw new Error(result.error.errors.map((err) => err.message).join(", "));
+//   }
+//   return result.data as Branch;
+// }
 // Function to fetch all branches
 export async function getAllBranches(): Promise<Branch[] | null> {
   try {
@@ -117,4 +117,3 @@ export async function deleteBranch(id: number): Promise<boolean> {
     return false;
   }
 }
-

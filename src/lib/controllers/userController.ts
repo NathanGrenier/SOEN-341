@@ -1,29 +1,26 @@
-
-import { z } from "zod";
 import type { User } from "@prisma/client";
 
 // Define Zod schema for User
-const userSchema = z.object({
-  email: z.string().email(),
-  name: z.string(),
-  comment: z.string().optional(),
-  role: z.enum(["CUSTOMER"]),
-  passwordHash: z.string(),
-  reservations: z.array(z.string()).optional(), // Adjust the type based on the actual Reservation type
-  disabled: z.boolean().optional(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-});
+// const userSchema = z.object({
+//   email: z.string().email(),
+//   name: z.string(),
+//   comment: z.string().optional(),
+//   role: z.enum(["CUSTOMER"]),
+//   passwordHash: z.string(),
+//   reservations: z.array(z.string()).optional(), // Adjust the type based on the actual Reservation type
+//   disabled: z.boolean().optional(),
+//   createdAt: z.date().optional(),
+//   updatedAt: z.date().optional(),
+// });
 
 // Function to validate user data
-function validateUserData(data: unknown): User {
-  const result = userSchema.safeParse(data);
-  if (!result.success) {
-    throw new Error(result.error.errors.map((err) => err.message).join(", "));
-  }
-  return result.data as User;
-}
-
+// function validateUserData(data: unknown): User {
+//   const result = userSchema.safeParse(data);
+//   if (!result.success) {
+//     throw new Error(result.error.errors.map((err) => err.message).join(", "));
+//   }
+//   return result.data as User;
+// }
 
 // Function to fetch all users
 export async function getAllUsers(): Promise<User[] | null> {

@@ -16,13 +16,13 @@ export const carSchema = z.object({
 });
 
 // Function to validate car data
-function validateCarData(data: unknown): Car {
-  const result = carSchema.safeParse(data);
-  if (!result.success) {
-    throw new Error(result.error.errors.map((err) => err.message).join(", "));
-  }
-  return result.data as Car;
-}
+// function validateCarData(data: unknown): Car {
+//   const result = carSchema.safeParse(data);
+//   if (!result.success) {
+//     throw new Error(result.error.errors.map((err) => err.message).join(", "));
+//   }
+//   return result.data as Car;
+// }
 
 // Function to fetch all cars
 export async function getAllCars(): Promise<Car[] | null> {
@@ -69,7 +69,6 @@ export async function createCar(carData: Partial<Car>): Promise<Car | null> {
     }
     const { newCar } = await response.json();
     return newCar;
-
   } catch (error) {
     console.error("Error creating car:", error);
     return null;
