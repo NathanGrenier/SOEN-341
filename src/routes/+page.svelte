@@ -1,7 +1,3 @@
-<script>
-  // Nothing here yet.
-</script>
-
 <!-- Full Bleed Video Setup -->
 <div class="video-container">
   <div class="welcome-text">Welcome to DriveXperience</div>
