@@ -66,8 +66,8 @@
   "dependencies": {
     "@floating-ui/dom": "^1.6.3",
     "@neondatabase/serverless": "^0.6.1",
-    "@prisma/adapter-neon": "^5.7.1",
-    "@prisma/client": "^5.7.1",
+    "@prisma/adapter-neon": "^5.10.2",
+    "@prisma/client": "^5.10.2",
     "@sveltejs/adapter-vercel": "^4.0.3",
     "@vercel/analytics": "^1.1.1",
     "@vercel/speed-insights": "^1.0.2",
