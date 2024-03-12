@@ -70,7 +70,6 @@
       ?.join("")
       ?.match(/(^\S|\S$)?/g)
       ?.join("") ?? "?";
-
 </script>
 
 <Toast position="br" />

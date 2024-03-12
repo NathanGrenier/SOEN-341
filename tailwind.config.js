@@ -3,7 +3,6 @@ import { join } from "path";
 import { customTheme } from "./src/custom-theme";
 import forms from "@tailwindcss/forms";
 
-
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class", // dark mode is handled via the class method
