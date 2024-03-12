@@ -13,7 +13,7 @@
     "lint": "prettier --check . && eslint .",
     "prisma:validate": "npx prisma format && npx prisma validate",
     "format": "prettier --write . && npx prisma format",
-    "typecheck": "tsc",
+    "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
     "prepare": "husky install",
     "pre-commit": "lint-staged && npm test"
@@ -30,6 +30,10 @@
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "@types/bcrypt": "^5.0.2",
+    "@types/d3-scale": "^4.0.8",
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.11.0",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -60,16 +64,21 @@
   },
   "type": "module",
   "dependencies": {
+    "@floating-ui/dom": "^1.6.3",
     "@neondatabase/serverless": "^0.6.1",
     "@prisma/adapter-neon": "^5.7.1",
     "@prisma/client": "^5.7.1",
     "@sveltejs/adapter-vercel": "^4.0.3",
     "@vercel/analytics": "^1.1.1",
     "@vercel/speed-insights": "^1.0.2",
+    "@vincjo/datatables": "^1.14.5",
     "bcrypt": "^5.1.1",
     "cssnano": "^6.0.3",
+    "d3-scale": "^4.0.2",
     "dotenv": "^16.3.1",
-    "ws": "^8.16.0"
+    "jsonwebtoken": "^9.0.2",
+    "ws": "^8.16.0",
+    "zod": "^3.22.4"
   },
   "config": {
     "commitizen": {

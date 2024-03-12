@@ -1,6 +1,7 @@
 import { skeleton } from "@skeletonlabs/tw-plugin";
 import { join } from "path";
 import { customTheme } from "./src/custom-theme";
+import forms from "@tailwindcss/forms";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -14,8 +15,12 @@ export default {
   ],
   theme: {
     extend: {},
+    colors: {
+      greyHeader: "195 194 196",
+    },
   },
   plugins: [
+    forms,
     skeleton({
       themes: {
         preset: [

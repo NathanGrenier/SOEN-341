@@ -1,7 +1,7 @@
 import { UserRole, CarColour } from "@prisma/client";
 import { prisma } from "../src/lib/db/client.ts";
 
-async function main() {
+async function firstSeed() {
   const testface = await prisma.user.upsert({
     where: { email: "testface@prisma.io" },
     update: {},
@@ -70,6 +70,8 @@ async function main() {
     update: {},
     create: {
       branchId: yulAirport.id,
+      photoUrl:
+        "https://images.unsplash.com/photo-1592198084033-aade902d1aae?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       make: "Ferrari",
       model: "F8 Tributo",
       year: 2020,
@@ -163,7 +165,39 @@ async function main() {
     },
   });
 
+  for (let i = 5; i <= 10; i++) {
+    await prisma.reservation.upsert({
+      where: { id: i },
+      create: {
+        carId: redFerrari.id,
+        holderId: testface.id,
+        quotedPrice: 10000 * i,
+        plannedDepartureAt: new Date("2024-05-01T09:00:00.000-04:00"),
+        plannedReturnAt: new Date("2024-05-03T19:00:00.000-04:00"),
+      },
+      update: {},
+    });
+  }
+
+  await prisma.reservation.upsert({
+    where: { id: 11 },
+    create: {
+      carId: redFerrari.id,
+      holderId: testface.id,
+      quotedPrice: 100000,
+      plannedDepartureAt: new Date("2024-05-01T09:00:00.000-04:00"),
+      pickedUpAt: new Date("2024-05-01T09:30:00.000-04:00"),
+      plannedReturnAt: new Date("2024-05-03T19:00:00.000-04:00"),
+      returnedAt: new Date("2024-05-03T19:00:00.000-04:00"),
+    },
+    update: {},
+  });
+
   // No seeds for reservations with accessories yet because that's not a sprint 1 feature.
+}
+
+async function main() {
+  await firstSeed();
 }
 
 main();

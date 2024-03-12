@@ -22,6 +22,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: |
+          npm run build
+
       - name: Get PR sha
         id: get_pull_request_sha
         run: |
@@ -44,9 +56,26 @@ jobs:
           echo "DATABASE_URL=${{ steps.create_branch.outputs.db_url_with_pooler}}/${{secrets.DATABASE_NAME}}?sslmode=require&pgbouncer=true" >> $GITHUB_ENV 
           echo "DIRECT_DATABASE_URL=${{ steps.create_branch.outputs.db_url}}/${{secrets.DATABASE_NAME}}?sslmode=require" >> $GITHUB_ENV
 
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      # # BUG: On May 1st 2024, Vercel will no longer use secrets. See link for more info: https://vercel.com/changelog/legacy-environment-variable-secrets-are-being-sunset
+      # - name: Set Vercel Environment Variables
+      #   run: |
+      #     # If the variabes are already present in vercel, these command will fail, but we don't want to fail the build (Due to the `|| true` at the end of the command).
+      #     echo $DATABASE_URL | vercel env add DATABASE_URL preview ${{ github.head_ref }} --token $VERCEL_TOKEN || true
+      #     echo $DIRECT_DATABASE_URL | vercel env add DIRECT_DATABASE_URL preview ${{ github.head_ref }} --token $VERCEL_TOKEN || true
+
+      # - name: Pull Vercel Environment Information (Preview Specific)
+      #   run: vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+
+      # - name: Pull Vercel Environment Information (Branch Specific)
+      #   run:
+      #     vercel pull --yes --environment=preview
+      #     --git-branch=${{github.head_ref}} --token=$VERCEL_TOKEN
+
       - name: Run Prisma Migrate
         run: |
-          npx prisma generate
           npx prisma migrate deploy
 
       - name: Run Prisma Seed
@@ -54,11 +83,11 @@ jobs:
           npx prisma db seed
 
       - name: Extract branch name
+        id: extract_branch
         shell: bash
         run:
           echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >>
           $GITHUB_OUTPUT
-        id: extract_branch
 
       - name: Hash branch name
         uses: pplanel/hash-calculator-action@v1.3.1
@@ -67,44 +96,14 @@ jobs:
           input: ${{ steps.extract_branch.outputs.branch }}
           method: MD5
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        id: cache-npm
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-
-
-      - name: Install dependencies
-        if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        run: npm ci --ignore-scripts
-
-      - name: Build
-        run: |
-          npm run build
-
       - name: Lint
         run: |
-          echo "DATABASE_URL=$DATABASE_URL, DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL"  
           npm run lint
           npm run prisma:validate
 
       - name: Test
         run: |
           npm run test
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run:
-          vercel pull --yes --environment=preview --token=${{
-          secrets.VERCEL_TOKEN }}
 
       - name: Deploy Project Artifacts to Vercel
         id: vercel
@@ -114,7 +113,7 @@ jobs:
             github.run_attempt}}
         run: |
           vercel --version
-          vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+          vercel pull --yes --environment=preview --git-branch=${{github.head_ref}} --token=$VERCEL_TOKEN
           vercel build --token=$VERCEL_TOKEN
           vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} --env DATABASE_URL=$DATABASE_URL --env DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL --env SESSION_SIGNING_KEY=$SESSION_SIGNING_KEY --env EXEC_ENV=$EXEC_ENV
 
