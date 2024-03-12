@@ -32,11 +32,17 @@
     popup,
     storePopup,
     type PopupSettings,
+    TabGroup,
+    TabAnchor,
   } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import Navigation from "$lib/components/Navigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
   import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+  import { page } from "$app/stores";
+  import CarIcon from "$lib/icons/CarIcon.svelte";
+  import HomeIcon from "$lib/icons/HomeIcon.svelte";
+
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   initializeStores();
@@ -77,13 +83,40 @@
 
 <AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10" class="bg-light-100">
   <svelte:fragment slot="header">
-    <AppBar>
+    <AppBar padding="py-0 px-4">
       <svelte:fragment slot="lead">
         <button class="btn btn-sm mr-4 md:hidden" on:click={drawerOpen}>
           <HamburgerMenuIcon />
         </button>
-        <img src="SiteLogoFor.png" alt="DriveXperience" class="h-20" />
+        <a href="/" style="height: 68px">
+          <img src="SiteLogoFor.png" alt="DriveXperience" class="h-full" />
+        </a>
       </svelte:fragment>
+      <TabGroup
+        justify="justify-center"
+        active="variant-filled-primary"
+        hover="hover:variant-soft-primary"
+        flex="flex-1 lg:flex-none justify-center"
+        rounded=""
+        border=""
+        class="bg-surface-100-800-token h-full">
+        <TabAnchor href="/" selected={$page.url.pathname === "/"}>
+          <svelte:fragment slot="lead"
+            ><div class="flex justify-center">
+              <HomeIcon />
+            </div></svelte:fragment>
+          <span>Home</span>
+        </TabAnchor>
+        <TabAnchor
+          href="/browse-vehicles"
+          selected={$page.url.pathname === "/browse-vehicles"}>
+          <svelte:fragment slot="lead"
+            ><div class="flex justify-center">
+              <CarIcon />
+            </div></svelte:fragment>
+          <span>Browse Vehicles</span>
+        </TabAnchor>
+      </TabGroup>
       <svelte:fragment slot="trail">
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
@@ -96,16 +129,6 @@
         </div>
         <ProfilePopup user={data.user} />
       </svelte:fragment>
-      <nav>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/browse-vehicles">Browse Vehicles</a></li>
-          <li><a href="/">Placeholder</a></li>
-          <li><a href="/">Placeholder</a></li>
-          <li><a href="/">Contact</a></li>
-          <li><a href="/account" class="account-button">Account</a></li>
-        </ul>
-      </nav>
     </AppBar>
   </svelte:fragment>
   <div class="container mx-auto p-10">
@@ -123,34 +146,3 @@
     </footer> -->
   </svelte:fragment>
 </AppShell>
-
-<style>
-  /* Existing styles adjusted for layout consistency */
-  nav {
-    display: flex;
-  }
-
-  ul {
-    display: flex;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    margin-left: auto;
-  }
-
-  li {
-    margin-right: 20px;
-  }
-
-  nav ul li a {
-    padding: 10px 20px;
-    border-radius: 5px;
-    background-color: #08417a;
-    color: #fff;
-    text-decoration: none;
-  }
-
-  nav ul li a:hover {
-    background-color: darken(#08417a, 5%);
-  }
-</style>
