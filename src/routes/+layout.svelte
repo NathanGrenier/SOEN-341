@@ -106,14 +106,16 @@
     <slot />
   </div>
 
-  <footer
-    class="text-white p-4 text-center"
-    style="background-color: var(--color-surface-800);">
-    <a href="/contact" class="p-2">Contact Us</a>
-    <a href="/account" class="p-2">My Account</a>
-    <a href="/help" class="p-2">Help</a>
-    <a href="/policies" class="p-2">Our Policies</a>
-  </footer>
+  <svelte:fragment slot="pageFooter">
+    <!-- <footer
+      class="text-white p-4 text-center"
+      style="background-color: var(--color-surface-800);">
+      <a href="/contact" class="p-2">Contact Us</a>
+      <a href="/account" class="p-2">My Account</a>
+      <a href="/help" class="p-2">Help</a>
+      <a href="/policies" class="p-2">Our Policies</a>
+    </footer> -->
+  </svelte:fragment>
 </AppShell>
 
 <style>
@@ -144,15 +146,5 @@
 
   nav ul li a:hover {
     background-color: darken(#08417a, 5%);
-  }
-
-  footer {
-    background-color: #08417a; /* Matching navigation bar color */
-  }
-
-  footer a {
-    color: #fff;
-    text-decoration: none;
-    margin: 0 10px;
   }
 </style>
