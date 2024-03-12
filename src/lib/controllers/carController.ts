@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Car, Reservation } from "@prisma/client";
 
 // Define Zod schema for Car
-const carSchema = z.object({
+export const carSchema = z.object({
   branchId: z.number(),
   make: z.string(),
   model: z.string(),

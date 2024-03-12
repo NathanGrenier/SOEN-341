@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Branch } from "@prisma/client";
 
 // Define Zod schema for Branch
-const branchSchema = z.object({
+export const branchSchema = z.object({
   name: z.string(),
   description: z.string(),
   streetAddress: z.string(),
