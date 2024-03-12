@@ -1,8 +1,12 @@
+<script lang="ts" context="module">
+  import type { PageData } from "./$types";
+
+  export type User = PageData["user"];
+</script>
+
 <script lang="ts">
   import "../app.postcss";
   import { dev } from "$app/environment";
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  import { page } from "$app/stores";
   import { inject } from "@vercel/analytics";
   inject({ mode: dev ? "development" : "production" });
 
@@ -39,7 +43,6 @@
 
   export let data;
 
-  // Add custom modals to this registry. They can then be triggered by name elsewhere.
   const modalRegistry = {
     modalComponentTest: { ref: ModalComponentTest },
   };
@@ -56,7 +59,6 @@
     placement: "bottom",
   };
 
-  // Get the user's initials for the avatar. Takes the first letter of the first and last word in the name.
   const initials =
     data?.user?.name
       .match(/(\b\S)?/g)
@@ -73,20 +75,18 @@
   <Navigation />
 </Drawer>
 
-<AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10">
+<AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10" class="bg-light-100">
   <svelte:fragment slot="header">
     <AppBar>
       <svelte:fragment slot="lead">
         <button class="btn btn-sm mr-4 md:hidden" on:click={drawerOpen}>
-          <span>
-            <HamburgerMenuIcon />
-          </span>
+          <HamburgerMenuIcon />
         </button>
-        <strong class="text-xl uppercase">App Name</strong></svelte:fragment>
+        <img src="SiteLogoFor.png" alt="DriveXperience" class="h-20" />
+      </svelte:fragment>
       <svelte:fragment slot="trail">
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
-          <!-- No good way to ignore this? sveltejs/language-tools#1026 -->
           <Avatar
             {initials}
             background="bg-tertiary-500"
@@ -94,18 +94,63 @@
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-        <ProfilePopup loggedIn={data.user ? true : false} />
+        <ProfilePopup user={data.user} />
       </svelte:fragment>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/browse-vehicles">Browse Vehicles</a></li>
+          <li><a href="/">Placeholder</a></li>
+          <li><a href="/">Placeholder</a></li>
+          <li><a href="/">Contact</a></li>
+          <li><a href="/account" class="account-button">Account</a></li>
+        </ul>
+      </nav>
     </AppBar>
   </svelte:fragment>
-  <svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
-  <!-- (sidebarRight) -->
-  <!-- (pageHeader) -->
-  <!-- Router Slot -->
   <div class="container mx-auto p-10">
     <slot />
   </div>
-  <!-- ---- / ---- -->
-  <!-- (pageFooter) -->
-  <!-- (footer) -->
+
+  <svelte:fragment slot="pageFooter">
+    <!-- <footer
+      class="text-white p-4 text-center"
+      style="background-color: var(--color-surface-800);">
+      <a href="/contact" class="p-2">Contact Us</a>
+      <a href="/account" class="p-2">My Account</a>
+      <a href="/help" class="p-2">Help</a>
+      <a href="/policies" class="p-2">Our Policies</a>
+    </footer> -->
+  </svelte:fragment>
 </AppShell>
+
+<style>
+  /* Existing styles adjusted for layout consistency */
+  nav {
+    display: flex;
+  }
+
+  ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    margin-left: auto;
+  }
+
+  li {
+    margin-right: 20px;
+  }
+
+  nav ul li a {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #08417a;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  nav ul li a:hover {
+    background-color: darken(#08417a, 5%);
+  }
+</style>

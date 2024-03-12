@@ -15,6 +15,9 @@ export default {
   ],
   theme: {
     extend: {},
+    colors: {
+      greyHeader: "195 194 196",
+    },
   },
   plugins: [
     forms,
