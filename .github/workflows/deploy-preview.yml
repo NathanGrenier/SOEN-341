@@ -3,6 +3,7 @@ name: Deploy Preview
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    branches-ignore: [main, master, develop]
 
 jobs:
   deploy_preview:
