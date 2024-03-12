@@ -1,22 +1,20 @@
-import { z } from "zod";
 import type { Reservation } from "@prisma/client";
 
 // Define Zod schema for Reservation
-const reservationSchema = z.object({
-  carId: z.number(),
-  holderId: z.number(),
-  replacesId: z.number().optional(),
-  quotedPrice: z.number(),
-  cancelled: z.boolean(),
-  checkInNotes: z.string().optional(),
-  checkInLicenseNumber: z.string().optional(),
-  checkInLicenseIssuingJurisdiction: z.string().optional(),
-  plannedDepartureAt: z.date(),
-  plannedReturnAt: z.date(),
-  pickedUpAt: z.date().optional(),
-  returnedAt: z.date().optional(),
-});
-
+// const reservationSchema = z.object({
+//   carId: z.number(),
+//   holderId: z.number(),
+//   replacesId: z.number().optional(),
+//   quotedPrice: z.number(),
+//   cancelled: z.boolean(),
+//   checkInNotes: z.string().optional(),
+//   checkInLicenseNumber: z.string().optional(),
+//   checkInLicenseIssuingJurisdiction: z.string().optional(),
+//   plannedDepartureAt: z.date(),
+//   plannedReturnAt: z.date(),
+//   pickedUpAt: z.date().optional(),
+//   returnedAt: z.date().optional(),
+// });
 // Function to fetch all reservations
 export async function getAllReservations(): Promise<Reservation[] | null> {
   try {
@@ -78,13 +76,12 @@ export async function updateReservation(
   updatedData: Partial<Reservation>,
 ): Promise<Reservation | null> {
   try {
-    const validatedData = reservationSchema.safeParse(updatedData);
     const response = await fetch(`/api/reservations/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(validatedData),
+      body: JSON.stringify(updatedData),
     });
     if (!response.ok) {
       throw new Error(`Failed to update reservation with ID ${id}`);

@@ -16,13 +16,13 @@ export const carSchema = z.object({
 });
 
 // Function to validate car data
-function validateCarData(data: unknown): Car {
-  const result = carSchema.safeParse(data);
-  if (!result.success) {
-    throw new Error(result.error.errors.map((err) => err.message).join(", "));
-  }
-  return result.data as Car;
-}
+// function validateCarData(data: unknown): Car {
+//   const result = carSchema.safeParse(data);
+//   if (!result.success) {
+//     throw new Error(result.error.errors.map((err) => err.message).join(", "));
+//   }
+//   return result.data as Car;
+// }
 
 // Function to fetch all cars
 export async function getAllCars(): Promise<Car[] | null> {
@@ -32,7 +32,7 @@ export async function getAllCars(): Promise<Car[] | null> {
       throw new Error("Failed to fetch cars");
     }
     const { cars } = await response.json();
-    return cars.map(validateCarData);
+    return cars;
   } catch (error) {
     console.error("Error fetching cars:", error);
     return null;
@@ -57,19 +57,18 @@ export async function getCarById(id: number): Promise<Car | null> {
 // Function to create a new car
 export async function createCar(carData: Partial<Car>): Promise<Car | null> {
   try {
-    const validatedData = validateCarData(carData);
     const response = await fetch("/api/cars", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(validatedData),
+      body: JSON.stringify(carData),
     });
     if (!response.ok) {
       throw new Error("Failed to create car");
     }
     const { newCar } = await response.json();
-    return validateCarData(newCar);
+    return newCar;
   } catch (error) {
     console.error("Error creating car:", error);
     return null;
@@ -82,19 +81,18 @@ export async function updateCar(
   updatedData: Partial<Car>,
 ): Promise<Car | null> {
   try {
-    const validatedData = validateCarData(updatedData);
     const response = await fetch(`/api/cars/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(validatedData),
+      body: JSON.stringify(updatedData),
     });
     if (!response.ok) {
       throw new Error(`Failed to update car with ID ${id}`);
     }
     const { updatedCar } = await response.json();
-    return validateCarData(updatedCar);
+    return updatedCar;
   } catch (error) {
     console.error(`Error updating car with ID ${id}:`, error);
     return null;
@@ -116,7 +114,6 @@ export async function deleteCar(id: number): Promise<boolean> {
     return false;
   }
 }
-
 // Function to fetch existing reservations for a given car
 export async function getReservationsForCar(
   carId: number,

@@ -1,27 +1,26 @@
-import { z } from "zod";
 import type { User } from "@prisma/client";
 
 // Define Zod schema for User
-const userSchema = z.object({
-  email: z.string().email(),
-  name: z.string(),
-  comment: z.string().optional(),
-  role: z.enum(["CUSTOMER"]),
-  passwordHash: z.string(),
-  reservations: z.array(z.string()).optional(), // Adjust the type based on the actual Reservation type
-  disabled: z.boolean().optional(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-});
+// const userSchema = z.object({
+//   email: z.string().email(),
+//   name: z.string(),
+//   comment: z.string().optional(),
+//   role: z.enum(["CUSTOMER"]),
+//   passwordHash: z.string(),
+//   reservations: z.array(z.string()).optional(), // Adjust the type based on the actual Reservation type
+//   disabled: z.boolean().optional(),
+//   createdAt: z.date().optional(),
+//   updatedAt: z.date().optional(),
+// });
 
 // Function to validate user data
-function validateUserData(data: unknown): User {
-  const result = userSchema.safeParse(data);
-  if (!result.success) {
-    throw new Error(result.error.errors.map((err) => err.message).join(", "));
-  }
-  return result.data as User;
-}
+// function validateUserData(data: unknown): User {
+//   const result = userSchema.safeParse(data);
+//   if (!result.success) {
+//     throw new Error(result.error.errors.map((err) => err.message).join(", "));
+//   }
+//   return result.data as User;
+// }
 
 // Function to fetch all users
 export async function getAllUsers(): Promise<User[] | null> {
@@ -58,19 +57,18 @@ export async function createUser(
   userData: Partial<User>,
 ): Promise<User | null> {
   try {
-    const validatedData = validateUserData(userData);
     const response = await fetch("/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(validatedData),
+      body: JSON.stringify(userData),
     });
     if (!response.ok) {
       throw new Error("Failed to create user");
     }
     const { newUser } = await response.json();
-    return validateUserData(newUser);
+    return newUser;
   } catch (error) {
     console.error("Error creating user:", error);
     return null;
@@ -83,19 +81,18 @@ export async function updateUser(
   updatedData: Partial<User>,
 ): Promise<User | null> {
   try {
-    const validatedData = validateUserData(updatedData);
     const response = await fetch(`/api/users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(validatedData),
+      body: JSON.stringify(updatedData),
     });
     if (!response.ok) {
       throw new Error(`Failed to update user with ID ${id}`);
     }
     const { updatedUser } = await response.json();
-    return validateUserData(updatedUser);
+    return updatedUser;
   } catch (error) {
     console.error(`Error updating user with ID ${id}:`, error);
     return null;
