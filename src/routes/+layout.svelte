@@ -48,7 +48,6 @@
   initializeStores();
 
   export let data;
-
   const modalRegistry = {
     modalComponentTest: { ref: ModalComponentTest },
   };
@@ -71,6 +70,7 @@
       ?.join("")
       ?.match(/(^\S|\S$)?/g)
       ?.join("") ?? "?";
+
 </script>
 
 <Toast position="br" />
