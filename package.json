@@ -73,6 +73,7 @@
     "bcrypt": "^5.1.1",
     "cssnano": "^6.0.3",
     "dotenv": "^16.3.1",
+    "@vincjo/datatables": "^1.14.5",
     "jsonwebtoken": "^9.0.2",
     "ws": "^8.16.0",
     "zod": "^3.22.4"
