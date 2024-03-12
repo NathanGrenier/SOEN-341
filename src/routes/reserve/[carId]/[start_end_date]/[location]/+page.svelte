@@ -258,8 +258,8 @@
                 // Call createReservation function
                 createReservation(reservationData)
                   .then(() => {
-                    console.log("Reservation confirmed: ");
                     modalStore.close();
+                    window.location.href = "/";
                   })
                   .catch((error) => {
                     console.error("Error creating reservation: " + error);
