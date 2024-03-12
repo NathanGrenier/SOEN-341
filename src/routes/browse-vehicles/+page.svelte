@@ -1,10 +1,49 @@
 <script lang="ts">
-  export let data;
+  import { onMount } from "svelte";
 
   let filteredColor = "";
   let filteredPrice = 0;
 
-  const cars = data.props.cars;
+  export let data;
+
+  let { cars } = data;
+
+  onMount(async () => {
+    if (!cars) {
+      window.location.href = "/";
+    }
+  });
+
+  function redirectToBooking(carId: string, branchId: string) {
+    const dateRange = generateRandomDate();
+    const redirectUrl = `/reserve/${carId}/${dateRange}/${branchId}`;
+    window.location.href = redirectUrl;
+  }
+
+  function generateRandomDate() {
+    const today = new Date();
+    const randomFutureStartDate = new Date(
+      today.getTime() + Math.random() * 26 * 24 * 60 * 60 * 1000,
+    ); // Random date in the next 26 days to ensure a five-day range
+    const randomFutureEndDate = new Date(
+      randomFutureStartDate.getTime() + Math.random() * 5 * 24 * 60 * 60 * 1000,
+    ); // Random date within the next 5 days for end date
+    const startDateYear = randomFutureStartDate.getFullYear();
+    const startDateMonth = String(
+      randomFutureStartDate.getMonth() + 1,
+    ).padStart(2, "0");
+    const startDateDay = String(randomFutureStartDate.getDate()).padStart(
+      2,
+      "0",
+    );
+    const endDateYear = randomFutureEndDate.getFullYear();
+    const endDateMonth = String(randomFutureEndDate.getMonth() + 1).padStart(
+      2,
+      "0",
+    );
+    const endDateDay = String(randomFutureEndDate.getDate()).padStart(2, "0");
+    return `${startDateYear}-${startDateMonth}-${startDateDay}~${endDateYear}-${endDateMonth}-${endDateDay}`;
+  }
 
   function showPopup(index: number) {
     const popup = document.getElementById(`popupCard_${index}`);
@@ -21,53 +60,71 @@
   }
 </script>
 
-<div class="filter-container">
-  <select bind:value={filteredColor}>
-    <option value="">All Colors</option>
-    {#each Array.from(new Set(cars.map((car) => car.colour))) as color}
-      <option value={color}>{color}</option>
-    {/each}
-  </select>
+{#if cars !== undefined}
+  <div class="filter-container mb-6 flex items-center">
+    <select bind:value={filteredColor} class="mr-4">
+      <option value="">All Colors</option>
+      {#each Array.from(new Set(cars?.map((car) => car.colour))) as color}
+        <option value={color}>{color}</option>
+      {/each}
+    </select>
 
-  <input
-    type="range"
-    min="0"
-    max="2000"
-    step="1"
-    bind:value={filteredPrice}
-    class="price-slider" />
-  <span class="price-display">${filteredPrice}</span>
-</div>
+    <input
+      type="range"
+      min="0"
+      max="2000"
+      step="1"
+      bind:value={filteredPrice}
+      class="price-slider mr-4" />
+    <span class="price-display">${filteredPrice}</span>
+  </div>
 
-<div class="car-container">
-  {#each cars as car, index}
-    {#if (!filteredColor || car.colour === filteredColor) && (!filteredPrice || car.dailyPrice <= filteredPrice)}
-      <div class="car">
-        <div class="car-inner">
-          <!-- <img src={car.photoUrl} alt={car.make} /> -->
-          <img src={"link"} alt={"image of a car"} />
-          <h2>{car.model}</h2>
-          <p>{car.description}</p>
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {#each cars as car, index}
+      {#if (!filteredColor || car.colour === filteredColor) && (!filteredPrice || car.dailyPrice <= filteredPrice)}
+        <div class="bg-white rounded-lg shadow-md">
+          <div class="p-4">
+            <!-- svelte-ignore a11y-img-redundant-alt -->
+            <img
+              src={car.photoUrl}
+              alt="Image of a car"
+              class="mx-auto mb-4 h-40 w-auto" />
+            <h2 class="mb-2 text-lg font-semibold">{car.model}</h2>
+            <p class="text-gray-600">{car.description}</p>
+            <button
+              on:click={() => showPopup(index)}
+              class="bg-blue-500 text-white focus:ring-blue-400 mt-2 block w-full rounded-lg px-4 py-2 transition-transform hover:translate-y-1 focus:outline-none focus:ring">
+              Show Details
+            </button>
+          </div>
+        </div>
+        <div
+          id={`popupCard_${index}`}
+          class="bg-white rounded-lg p-4 shadow-lg"
+          style="display: none;">
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <!-- svelte-ignore a11y-interactive-supports-focus -->
+          <span
+            role="button"
+            class="closeButton text-gray-500 absolute right-2 top-2 cursor-pointer"
+            on:click={() => closePopup(index)}>&times;</span>
+          <h2 class="mb-4 text-lg font-semibold">
+            {car.year + " " + car.make + " " + car.model}
+          </h2>
+          <p class="text-gray-600 mb-2">Color: {car.colour}</p>
+          <p class="text-gray-600 mb-2">Number of seats: {car.seats}</p>
+          <p class="text-gray-600 mb-2">Daily Price$: {car.dailyPrice}</p>
           <button
-            on:click={() => showPopup(index)}
-            class="border-blue-600 bg-blue-500 text-white cursor-pointer rounded-lg border-b-[4px] px-6 py-2 transition-all hover:-translate-y-[1px] hover:border-b-[6px] hover:brightness-110 active:translate-y-[2px] active:border-b-[2px] active:brightness-90">
-            Button
+            on:click={() =>
+              redirectToBooking(car.id.toString(), car.branchId.toString())}
+            class="bg-blue-500 text-white focus:ring-blue-400 mt-4 w-full rounded-lg px-4 py-2 transition-transform hover:translate-y-1 focus:outline-none focus:ring">
+            Book Now
           </button>
         </div>
-      </div>
-      <div id={`popupCard_${index}`} class="popupCard" style="display: none;">
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <span class="closeButton" on:click={() => closePopup(index)}
-          >&times;</span>
-        <h2>{car.year + " " + car.make + " " + car.model}</h2>
-        <p>Color: {car.colour}</p>
-        <p>Number of seats: {car.seats}</p>
-        <p>Daily Price$: {car.dailyPrice}</p>
-      </div>
-    {/if}
-  {/each}
-</div>
+      {/if}
+    {/each}
+  </div>
+{/if}
 
 <style>
   .filter-container {
@@ -78,61 +135,6 @@
     padding: 8px;
     font-size: 14px;
     margin-right: 10px;
-  }
-
-  .car-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-
-  .car {
-    width: calc(33.33% - 20px);
-    margin-right: 10px;
-    margin-bottom: 20px;
-  }
-
-  .car-inner {
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-  }
-
-  .car img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-  }
-
-  .car h2 {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    font-size: 1.2em;
-  }
-
-  .car p {
-    margin: 0;
-  }
-
-  .car button {
-    margin-top: 10px;
-  }
-
-  .car:nth-child(3n) {
-    margin-right: 0;
-  }
-
-  .popupCard {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 999;
   }
 
   .closeButton {
