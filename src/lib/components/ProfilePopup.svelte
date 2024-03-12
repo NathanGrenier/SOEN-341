@@ -1,6 +1,7 @@
 <script lang="ts">
   import UserSettingsIcon from "$lib/icons/UserSettingsIcon.svelte";
   import UserIcon from "$lib/icons/UserIcon.svelte";
+  import GridIcon from "$lib/icons/GridIcon.svelte";
 
   export let loggedIn: boolean;
 </script>
@@ -13,13 +14,22 @@
 
   {#if loggedIn}
     <div class=" variant-filled btn-group-vertical w-full">
+      <!-- TODO: Un-disable the button when the profile page is implemented -->
       <button
         style="justify-content: start;"
         class=" bg-secondary-hover-token gap-2"
+        disabled={true}
         ><UserIcon invertColor={true} /><span>Profile</span></button>
+      <a
+        href="/dashboard"
+        style="justify-content: start;"
+        class=" bg-secondary-hover-token gap-2"
+        ><GridIcon invertColor={true} /><span>Dashboard</span></a>
+      <!-- TODO: Un-disable the button when the settings page is implemented -->
       <button
         style="justify-content: start;"
         class="bg-secondary-hover-token gap-2"
+        disabled={true}
         ><UserSettingsIcon invertColor={true} /><span>Settings</span></button>
     </div>
     <div>

@@ -163,6 +163,34 @@ async function firstSeed() {
     },
   });
 
+  for (let i = 5; i <= 10; i++) {
+    await prisma.reservation.upsert({
+      where: { id: i },
+      create: {
+        carId: redFerrari.id,
+        holderId: testface.id,
+        quotedPrice: 10000 * i,
+        plannedDepartureAt: new Date("2024-05-01T09:00:00.000-04:00"),
+        plannedReturnAt: new Date("2024-05-03T19:00:00.000-04:00"),
+      },
+      update: {},
+    });
+  }
+
+  await prisma.reservation.upsert({
+    where: { id: 11 },
+    create: {
+      carId: redFerrari.id,
+      holderId: testface.id,
+      quotedPrice: 100000,
+      plannedDepartureAt: new Date("2024-05-01T09:00:00.000-04:00"),
+      pickedUpAt: new Date("2024-05-01T09:30:00.000-04:00"),
+      plannedReturnAt: new Date("2024-05-03T19:00:00.000-04:00"),
+      returnedAt: new Date("2024-05-03T19:00:00.000-04:00"),
+    },
+    update: {},
+  });
+
   // No seeds for reservations with accessories yet because that's not a sprint 1 feature.
 }
 
