@@ -19,9 +19,11 @@
 
   {#if loggedIn}
     <div class=" variant-filled btn-group-vertical w-full">
+      <!-- TODO: Un-disable the button when the profile page is implemented -->
       <button
         style="justify-content: start;"
         class=" bg-secondary-hover-token gap-2"
+        disabled={true}
         ><UserIcon invertColor={true} /><span>Profile</span></button>
       <a
         href="/dashboard"
@@ -35,9 +37,13 @@
           class=" bg-secondary-hover-token gap-2"
           ><GridPlusIcon invertColor={true} /><span>Admin Dashboard</span></a>
       {/if}
+
+      <!-- TODO: Un-disable the button when the settings page is implemented -->
+
       <button
         style="justify-content: start;"
         class="bg-secondary-hover-token gap-2"
+        disabled={true}
         ><UserSettingsIcon invertColor={true} /><span>Settings</span></button>
     </div>
     <div>

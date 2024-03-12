@@ -1,4 +1,28 @@
-import type { Car } from "@prisma/client";
+import { z } from "zod";
+import type { Car, Reservation } from "@prisma/client";
+
+// Define Zod schema for Car
+export const carSchema = z.object({
+  branchId: z.number(),
+  make: z.string(),
+  model: z.string(),
+  year: z.number(),
+  colour: z.string(), // Assuming CarColour is a string type
+  seats: z.number(),
+  description: z.string(),
+  photoUrl: z.string().optional(),
+  dailyPrice: z.number(),
+  bookingDisabled: z.boolean(),
+});
+
+// Function to validate car data
+function validateCarData(data: unknown): Car {
+  const result = carSchema.safeParse(data);
+  if (!result.success) {
+    throw new Error(result.error.errors.map((err) => err.message).join(", "));
+  }
+  return result.data as Car;
+}
 
 // Function to fetch all cars
 export async function getAllCars(): Promise<Car[] | null> {
@@ -45,6 +69,7 @@ export async function createCar(carData: Partial<Car>): Promise<Car | null> {
     }
     const { newCar } = await response.json();
     return newCar;
+
   } catch (error) {
     console.error("Error creating car:", error);
     return null;
@@ -88,5 +113,21 @@ export async function deleteCar(id: number): Promise<boolean> {
   } catch (error) {
     console.error(`Error deleting car with ID ${id}:`, error);
     return false;
+  }
+}
+// Function to fetch existing reservations for a given car
+export async function getReservationsForCar(
+  carId: number,
+): Promise<Reservation[]> {
+  try {
+    const response = await fetch(`/api/cars/${carId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch existing reservations for the car");
+    }
+    const { car } = await response.json();
+    return car.reservations;
+  } catch (error) {
+    console.error("Error fetching reservations for the car:", error);
+    return [];
   }
 }
