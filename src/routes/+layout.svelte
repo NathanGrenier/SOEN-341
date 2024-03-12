@@ -99,7 +99,7 @@
         flex="flex-1 lg:flex-none justify-center"
         rounded=""
         border=""
-        class="bg-surface-100-800-token h-full">
+        class="bg-surface-100-800-token hidden h-full md:block ">
         <TabAnchor href="/" selected={$page.url.pathname === "/"}>
           <svelte:fragment slot="lead"
             ><div class="flex justify-center">
