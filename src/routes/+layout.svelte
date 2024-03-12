@@ -83,12 +83,14 @@
 
 <AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10" class="bg-light-100">
   <svelte:fragment slot="header">
-    <AppBar padding="py-0 px-4" slotDefault="h-fit">
+    <AppBar padding="py-0 px-4">
       <svelte:fragment slot="lead">
         <button class="btn btn-sm mr-4 md:hidden" on:click={drawerOpen}>
           <HamburgerMenuIcon />
         </button>
-        <img src="SiteLogoFor.png" alt="DriveXperience" class="h-20" />
+        <a href="/" style="height: 68px">
+          <img src="SiteLogoFor.png" alt="DriveXperience" class="h-full" />
+        </a>
       </svelte:fragment>
       <TabGroup
         justify="justify-center"
@@ -98,10 +100,7 @@
         rounded=""
         border=""
         class="bg-surface-100-800-token h-full">
-        <TabAnchor
-          flex="flex flex-col align-middle justify-center"
-          href="/"
-          selected={$page.url.pathname === "/"}>
+        <TabAnchor href="/" selected={$page.url.pathname === "/"}>
           <svelte:fragment slot="lead"
             ><div class="flex justify-center">
               <HomeIcon />
