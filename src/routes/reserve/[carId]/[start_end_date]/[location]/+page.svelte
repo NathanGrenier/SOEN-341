@@ -1,44 +1,81 @@
 <script lang="ts">
-  import Map from "$lib/components/Map/Map.svelte";
   import type { Branch } from ".prisma/client";
   import type { Car } from ".prisma/client";
   import { getModalStore } from "@skeletonlabs/skeleton";
   import type { ModalSettings } from "@skeletonlabs/skeleton";
-  import { getAllBranches } from "$lib/controllers/branchController";
-  import { getCarById } from "$lib/controllers/carController.js";
-  import { onMount } from "svelte";
   import { createReservation } from "$lib/controllers/reservationController.js";
   import type { Reservation } from "@prisma/client";
-  import "leaflet/dist/leaflet.css";
+  import { onMount } from "svelte";
+  import {
+    getCarById,
+    getReservationsForCar,
+  } from "$lib/controllers/carController.js";
+  import { getBranchById } from "$lib/controllers/branchController.js";
 
   export let data;
+  let startDate: string = data.startDate;
+  let endDate: string = data.endDate;
+  let branch: Branch | null;
+  let currentCar: Car | null;
 
-  let branches: Branch[] | null = null;
-  let currentCar: Car | null = null;
+  onMount(async () => {
+    currentCar = await getCarById(+data.params.carId);
 
-  let hideMap = true;
-  let duskMap = false;
+    if (!currentCar) {
+      window.location.href = "/browse-vehicles";
+    }
+
+    branch = await getBranchById(+data.params.location);
+
+    if (!branch) {
+      window.location.href = "/browse-vehicles";
+    }
+
+    const existingReservations = await getReservationsForCar(
+      +data.params.carId,
+    );
+
+    const conflictingReservation = existingReservations.find((reservation) => {
+      const plannedDepartureAt = new Date(
+        reservation.plannedDepartureAt,
+      ).getTime();
+      const plannedReturnAt = new Date(reservation.plannedReturnAt).getTime();
+      const startDateTimestamp = new Date(startDate).getTime();
+      const endDateTimestamp = new Date(endDate).getTime();
+
+      const isConflict =
+        (plannedDepartureAt <= endDateTimestamp &&
+          plannedReturnAt >= startDateTimestamp) ||
+        (plannedDepartureAt <= startDateTimestamp &&
+          plannedReturnAt >= endDateTimestamp);
+
+      return isConflict;
+    });
+
+    if (conflictingReservation) {
+      window.location.href = "/browse-vehicles";
+    }
+  });
 
   let firstName = data.user?.name.split(" ")[0];
   let middleName =
     data.user?.name.split(" ").length === 3 ? data.user.name.split(" ")[1] : "";
   let lastName = data.user?.name.split(" ").slice(-1);
 
-  let startDate = "";
-  let endDate = "";
   let extraEquipment: string[] = [];
-  let selectedBranchId: number = +data.props.params.location;
+  let selectedBranchId: number = +data.params.location;
   let isOnline = false;
 
   const modalStore = getModalStore();
 
-  onMount(async () => {
-    branches = await getAllBranches();
-
-    currentCar = await getCarById(+data.props.params.carId);
-
-    hideMap = false;
-  });
+  function getToday() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const day = now.getDate().toString().padStart(2, "0");
+    const today = `${year}-${month}-${day}`;
+    return today;
+  }
 
   function handleCancel() {
     window.location.href = "/browse-vehicles";
@@ -51,7 +88,6 @@
     const startDateObj = new Date(startDate);
     const endDateObj = new Date(endDate);
 
-    // Compare the dates
     return startDateObj < endDateObj;
   }
 
@@ -65,17 +101,10 @@
   }
 
   function handleReserve() {
-    if (!branches) return;
+    if (!branch) return;
 
     const fullName = `${firstName} ${middleName ? middleName + " " : ""}${lastName}`;
 
-    const branchDetails = branches.find(
-      (branch) => branch.id === selectedBranchId,
-    );
-
-    duskMap = true;
-
-    // First Modal: User Information and Reservation Details
     const userInfoModal: ModalSettings = {
       type: "confirm",
       title: "Reservation Information",
@@ -105,11 +134,9 @@
     `,
       response: (confirmed: boolean) => {
         if (!confirmed) {
-          duskMap = false;
           return;
         }
 
-        // Second Modal: Branch Details
         const branchDetailsModal: ModalSettings = {
           type: "confirm",
           title: "Branch Details",
@@ -117,33 +144,32 @@
           <div class="space-y-4">
             <div class="flex justify-between">
               <span>Name:</span>
-              <span>${branchDetails?.name}</span>
+              <span>${branch?.name}</span>
             </div>
             <div class="flex justify-between">
               <span>Street Address:</span>
-              <span>${branchDetails?.streetAddress}</span>
+              <span>${branch?.streetAddress}</span>
             </div>
             <div class="flex justify-between">
               <span>City:</span>
-              <span>${branchDetails?.city}</span>
+              <span>${branch?.city}</span>
             </div>
             <div class="flex justify-between">
               <span>Region:</span>
-              <span>${branchDetails?.region}</span>
+              <span>${branch?.region}</span>
             </div>
             <div class="flex justify-between">
               <span>Country:</span>
-              <span>${branchDetails?.country}</span>
+              <span>${branch?.country}</span>
             </div>
             <div class="flex justify-between">
               <span>Postal Code:</span>
-              <span>${branchDetails?.postalCode}</span>
+              <span>${branch?.postalCode}</span>
             </div>
           </div>
         `,
           response: (confirmed: boolean) => {
             if (!confirmed) {
-              duskMap = false;
               return;
             }
 
@@ -181,11 +207,9 @@
             `,
               response: async (confirmed: boolean) => {
                 if (!confirmed) {
-                  duskMap = false;
                   return;
                 }
 
-                // Fourth Modal: Loading Spinner
                 const loadingModal: ModalSettings = {
                   type: "alert",
                   title: "Loading",
@@ -199,14 +223,12 @@
                         `,
                   response: (confirmed: boolean) => {
                     if (!confirmed) {
-                      duskMap = false;
                       return;
                     }
                   },
                 };
                 modalStore.trigger(loadingModal);
 
-                // Calculate the number of days between startDate and endDate
                 const timeDifference =
                   new Date(endDate).getTime() - new Date(startDate).getTime();
                 const numberOfDays = Math.ceil(
@@ -216,9 +238,6 @@
                   ? numberOfDays * currentCar?.dailyPrice
                   : 0;
 
-                console.log(quotedPrice);
-
-                // Create reservation data
                 const reservationData: Omit<Reservation, "id"> = {
                   carId: currentCar?.id || 0,
                   holderId: data.user?.id || 0,
@@ -237,16 +256,14 @@
                 };
 
                 // Call createReservation function
-                const reservationSuccess =
-                  await createReservation(reservationData);
-
-                if (reservationSuccess) {
-                  console.log("Reservation confirmed");
-                  hideMap = false;
-                  modalStore.close();
-                } else {
-                  console.error("Error creating reservation");
-                }
+                createReservation(reservationData)
+                  .then(() => {
+                    console.log("Reservation confirmed: ");
+                    modalStore.close();
+                  })
+                  .catch((error) => {
+                    console.error("Error creating reservation: " + error);
+                  });
               },
             };
             modalStore.trigger(carDetailsModal);
@@ -264,13 +281,6 @@
     isOnline = target.value === "online";
   }
 
-  function handleBranchSelected(
-    event: CustomEvent<{ selectedBranchId: number }>,
-  ) {
-    selectedBranchId = event.detail.selectedBranchId;
-    console.log("Selected Branch ID:", selectedBranchId);
-  }
-
   function handleCheckboxChange(event: Event) {
     const target = event.target as HTMLInputElement;
     const { value, checked } = target;
@@ -279,12 +289,6 @@
     } else {
       extraEquipment = extraEquipment.filter((item) => item !== value);
     }
-  }
-
-  if (data) {
-    const [start, end] = data.props.params.start_end_date.split("-");
-    startDate = `${start.substring(6, 10)}-${start.substring(3, 5)}-${start.substring(0, 2)}T00:00`;
-    endDate = `${end.substring(6, 10)}-${end.substring(3, 5)}-${end.substring(0, 2)}T00:00`;
   }
 </script>
 
@@ -324,12 +328,20 @@
         <div class="flex justify-center space-x-4">
           <div class="space-y-2">
             <span>Start Date</span>
-            <input class="input" type="datetime-local" bind:value={startDate} />
+            <input
+              class="input"
+              type="date"
+              bind:value={startDate}
+              min={getToday()} />
           </div>
 
           <div class="space-y-2">
             <span>End Date</span>
-            <input class="input" type="datetime-local" bind:value={endDate} />
+            <input
+              class="input"
+              type="date"
+              bind:value={endDate}
+              min={getToday()} />
           </div>
         </div>
       </section>
@@ -421,19 +433,30 @@
       <section class="space-y-4 overflow-hidden p-4">
         <div>
           <h3 class="h3">Branch Location</h3>
-        </div>
 
-        <div class="relative">
-          {#if hideMap}
-            <div class="absolute inset-0 bg-gray-800 bg-opacity-50"></div>
-          {:else}
-            <div
-              class="{duskMap
-                ? 'pointer-events-none opacity-50'
-                : 'opacity-100'} transition-opacity duration-300 ease-in-out">
-              <Map bind:branches on:branchSelected={handleBranchSelected} />
+          <div class="rounded-d card mx-auto my-2 overflow-hidden bg-slate-900">
+            <div class="px-4 py-2">
+              <div class="flex items-center">
+                <span class="mr-2 text-base font-bold">Branch Name:</span>
+                <span class="text-xl">{branch?.name}</span>
+              </div>
             </div>
-          {/if}
+            <div class="px-4 py-2">
+              <div class="flex items-center">
+                <span class="mr-2 text-base font-bold">Description:</span>
+                <span>{branch?.description}</span>
+              </div>
+            </div>
+            <div class="px-4 py-2">
+              <div class="flex items-center">
+                <span class="mr-2 text-base font-bold">Address:</span>
+                <span>
+                  {branch?.streetAddress}, {branch?.city}, {branch?.region},
+                  {branch?.country}, {branch?.postalCode}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -510,6 +533,8 @@
       disabled={!firstName ||
         !lastName ||
         !isStartDateBeforeEndDate(startDate, endDate) ||
+        startDate < getToday() ||
+        endDate < getToday() ||
         selectedBranchId === -1 ||
         !currentCar}>
       <span

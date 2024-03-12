@@ -48,7 +48,7 @@ export async function getBranchById(id: number): Promise<Branch | null> {
     if (!response.ok) {
       throw new Error(`Failed to fetch branch with ID ${id}`);
     }
-    const branch = await response.json();
+    const { branch } = await response.json();
     return branch;
   } catch (error) {
     console.error(`Error fetching branch with ID ${id}:`, error);

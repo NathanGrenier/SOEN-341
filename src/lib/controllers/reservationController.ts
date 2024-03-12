@@ -1,6 +1,5 @@
 import { z } from "zod";
 import type { Reservation } from "@prisma/client";
-import { getReservationsForCar } from "./carController";
 
 // Define Zod schema for Reservation
 const reservationSchema = z.object({
@@ -55,42 +54,6 @@ export async function createReservation(
   reservationData: Partial<Reservation>,
 ): Promise<Reservation | null> {
   try {
-    if (
-      reservationData &&
-      reservationData.plannedDepartureAt &&
-      reservationData.plannedReturnAt &&
-      reservationData.plannedDepartureAt >= reservationData.plannedReturnAt
-    ) {
-      throw new Error(
-        "Planned return date must be after planned departure date",
-      );
-    }
-    const existingReservations = await getReservationsForCar(
-      reservationData.carId,
-    );
-
-    const conflictingReservation = existingReservations.find((reservation) => {
-      console.log("Existing Reservation:", reservation);
-      console.log("plannedDepartureAt:", reservation.plannedDepartureAt);
-      console.log(reservationData.plannedReturnAt);
-      console.log("plannedReturnAt:", reservation.plannedReturnAt);
-      console.log(reservationData.plannedDepartureAt);
-
-      const isConflict =
-        reservation.plannedDepartureAt <= reservationData.plannedReturnAt ||
-        reservation.plannedReturnAt >= reservationData.plannedDepartureAt;
-
-      console.log("Conflict:", isConflict);
-
-      return isConflict;
-    });
-
-    if (conflictingReservation) {
-      throw new Error(
-        "There is a conflicting reservation for the selected car during the requested period",
-      );
-    }
-    console.log(reservationData);
     const response = await fetch("/api/reservations", {
       method: "POST",
       headers: {
