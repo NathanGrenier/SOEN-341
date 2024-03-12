@@ -35,3 +35,6 @@
     <TransmissionIcon />
   </div>
 </div>
+<form method="POST" action="?/makeAdmin">
+  <button type="submit" class="variant-filled-secondary btn">Admin</button>
+</form>
