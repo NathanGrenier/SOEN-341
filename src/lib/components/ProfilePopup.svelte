@@ -39,7 +39,6 @@
       {/if}
 
       <!-- TODO: Un-disable the button when the settings page is implemented -->
-
       <button
         style="justify-content: start;"
         class="bg-secondary-hover-token gap-2"

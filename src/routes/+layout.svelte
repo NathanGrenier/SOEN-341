@@ -36,7 +36,7 @@
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import MobileNavigation from "$lib/components/MobileNavigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
-  // import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+  import ProfilePopup from "$lib/components/ProfilePopup.svelte";
   import NavBar from "$lib/components/NavBar.svelte";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -89,13 +89,6 @@
       </svelte:fragment>
       <NavBar />
       <svelte:fragment slot="trail">
-        <!-- TODO: This is a temp logout button while the ProfilePopup is disabled  -->
-        <div>
-          <a
-            class="variant-filled-error btn mt-2 w-full"
-            href="/auth/logout"
-            data-sveltekit-reload>Log Out</a>
-        </div>
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
           <Avatar
@@ -105,7 +98,7 @@
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-        <!-- <ProfilePopup user={data.user} /> -->
+        <ProfilePopup user={data.user} />
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>

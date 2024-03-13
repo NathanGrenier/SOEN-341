@@ -4,15 +4,10 @@
   import { TabAnchor, TabGroup } from "@skeletonlabs/skeleton";
 
   import { page } from "$app/stores";
-  import GridIcon from "$lib/icons/GridIcon.svelte";
-  import GridPlusIcon from "$lib/icons/GridPlusIcon.svelte";
 
   const links = [
     { name: "Home", href: "/", icon: HomeIcon },
     { name: "Browse Vehicles", href: "/browse-vehicles", icon: CarIcon },
-    // TODO: Dashboard and Admin Dashboard are temporary links (until the avatar popup works again)
-    { name: "Dashboard", href: "/dashboard", icon: GridIcon },
-    { name: "Admin Dashboard", href: "/admin", icon: GridPlusIcon },
   ];
 </script>
 
