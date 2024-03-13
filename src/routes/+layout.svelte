@@ -1,7 +1,14 @@
 <script lang="ts" context="module">
   import type { PageData } from "./$types";
+  import type { SvelteComponent } from "svelte";
 
   export type User = PageData["user"];
+
+  export type Link = {
+    name: string;
+    href: string;
+    icon: typeof SvelteComponent;
+  };
 </script>
 
 <script lang="ts">
@@ -36,7 +43,9 @@
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import MobileNavigation from "$lib/components/MobileNavigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
-  // import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+  import CarIcon from "$lib/icons/CarIcon.svelte";
+  import HomeIcon from "$lib/icons/HomeIcon.svelte";
+  import ProfilePopup from "$lib/components/ProfilePopup.svelte";
   import NavBar from "$lib/components/NavBar.svelte";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -66,6 +75,17 @@
       ?.join("")
       ?.match(/(^\S|\S$)?/g)
       ?.join("") ?? "?";
+
+  type SvelteComponent = typeof import("svelte").SvelteComponent;
+
+  const links: Link[] = [
+    { name: "Home", href: "/", icon: HomeIcon as SvelteComponent },
+    {
+      name: "Browse Vehicles",
+      href: "/browse-vehicles",
+      icon: CarIcon as SvelteComponent,
+    },
+  ];
 </script>
 
 <Toast position="br" />
@@ -73,7 +93,7 @@
 <Modal components={modalRegistry} />
 
 <Drawer>
-  <MobileNavigation />
+  <MobileNavigation {links} />
 </Drawer>
 
 <AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10" class="bg-light-100">
@@ -87,15 +107,8 @@
           <img src="/SiteLogoFor.png" alt="DriveXperience" class="h-full" />
         </a>
       </svelte:fragment>
-      <NavBar />
+      <NavBar {links} />
       <svelte:fragment slot="trail">
-        <!-- TODO: This is a temp logout button while the ProfilePopup is disabled  -->
-        <div>
-          <a
-            class="variant-filled-error btn mt-2 w-full"
-            href="/auth/logout"
-            data-sveltekit-reload>Log Out</a>
-        </div>
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
           <Avatar
@@ -105,7 +118,7 @@
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-        <!-- <ProfilePopup user={data.user} /> -->
+        <ProfilePopup user={data.user} />
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>

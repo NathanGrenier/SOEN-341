@@ -1,19 +1,11 @@
 <script lang="ts">
-  import CarIcon from "$lib/icons/CarIcon.svelte";
-  import HomeIcon from "$lib/icons/HomeIcon.svelte";
   import { TabAnchor, TabGroup } from "@skeletonlabs/skeleton";
 
-  import { page } from "$app/stores";
-  import GridIcon from "$lib/icons/GridIcon.svelte";
-  import GridPlusIcon from "$lib/icons/GridPlusIcon.svelte";
+  import type { Link } from "../../routes/+layout.svelte";
 
-  const links = [
-    { name: "Home", href: "/", icon: HomeIcon },
-    { name: "Browse Vehicles", href: "/browse-vehicles", icon: CarIcon },
-    // TODO: Dashboard and Admin Dashboard are temporary links (until the avatar popup works again)
-    { name: "Dashboard", href: "/dashboard", icon: GridIcon },
-    { name: "Admin Dashboard", href: "/admin", icon: GridPlusIcon },
-  ];
+  import { page } from "$app/stores";
+
+  export let links: Link[];
 </script>
 
 <TabGroup
