@@ -1,8 +1,8 @@
-<script lang="ts" context="module">
+<!-- <script lang="ts" context="module">
   import type { LayoutData } from "./$types";
 
   export type User = LayoutData["user"];
-</script>
+</script> -->
 
 <script lang="ts">
   import "../app.postcss";

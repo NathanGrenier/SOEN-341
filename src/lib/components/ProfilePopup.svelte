@@ -3,11 +3,20 @@
   import UserIcon from "$lib/icons/UserIcon.svelte";
   import GridIcon from "$lib/icons/GridIcon.svelte";
 
-  import type { User } from "../../routes/+layout.svelte";
+  // import type { User } from "../../routes/+layout.svelte";
   import { UserRole } from "@prisma/client";
   import GridPlusIcon from "$lib/icons/GridPlusIcon.svelte";
 
-  export let user: User;
+  // export let user: User;
+
+  export let user:
+    | {
+        id: number;
+        name: string;
+        email: string;
+        role: UserRole;
+      }
+    | undefined;
   $: loggedIn = !!user;
 </script>
 
