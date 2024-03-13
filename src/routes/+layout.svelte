@@ -36,7 +36,7 @@
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import MobileNavigation from "$lib/components/MobileNavigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
-  import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+  // import ProfilePopup from "$lib/components/ProfilePopup.svelte";
   import NavBar from "$lib/components/NavBar.svelte";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -98,7 +98,7 @@
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-        <ProfilePopup user={data.user} />
+        <!-- <ProfilePopup user={data.user} /> -->
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>
