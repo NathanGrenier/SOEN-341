@@ -38,7 +38,7 @@
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import Navigation from "$lib/components/Navigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
-  // import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+  import ProfilePopup from "$lib/components/ProfilePopup.svelte";
   import { page } from "$app/stores";
   import CarIcon from "$lib/icons/CarIcon.svelte";
   import HomeIcon from "$lib/icons/HomeIcon.svelte";
@@ -128,7 +128,12 @@
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-        <!-- <ProfilePopup user={data.user} /> -->
+        <div
+          style="margin: 1px"
+          class="card variant-filled w-auto p-4 shadow-xl"
+          data-popup="profilePopup">
+          <ProfilePopup user={data.user} />
+        </div>
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>
