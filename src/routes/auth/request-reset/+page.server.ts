@@ -33,10 +33,9 @@ export const actions = {
     const token = createResetToken(user.id);
     if (process.env.EXEC_ENV === "development") {
       console.log(
-        url.href.replace(
-          "Password reset: /auth/request-reset",
-          "/auth/reset?token=",
-        ) + token,
+        "Password reset link: " +
+          url.href.replace("/auth/request-reset", "/auth/reset?token=") +
+          token,
       );
     }
 
