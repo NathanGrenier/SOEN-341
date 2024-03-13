@@ -2,10 +2,9 @@
   import UserSettingsIcon from "$lib/icons/UserSettingsIcon.svelte";
   import UserIcon from "$lib/icons/UserIcon.svelte";
   import GridIcon from "$lib/icons/GridIcon.svelte";
+  import GridPlusIcon from "$lib/icons/GridPlusIcon.svelte";
 
   import type { User } from "../../routes/+layout.svelte";
-  import { UserRole } from "@prisma/client";
-  import GridPlusIcon from "$lib/icons/GridPlusIcon.svelte";
 
   export let user: User;
   $: loggedIn = !!user;
@@ -30,16 +29,14 @@
         style="justify-content: start;"
         class=" bg-secondary-hover-token gap-2"
         ><GridIcon invertColor={true} /><span>Dashboard</span></a>
-      {#if user?.role === UserRole.ADMIN}
+      {#if user?.role === "ADMIN"}
         <a
           href="/admin"
           style="justify-content: start;"
           class=" bg-secondary-hover-token gap-2"
           ><GridPlusIcon invertColor={true} /><span>Admin Dashboard</span></a>
       {/if}
-
       <!-- TODO: Un-disable the button when the settings page is implemented -->
-
       <button
         style="justify-content: start;"
         class="bg-secondary-hover-token gap-2"

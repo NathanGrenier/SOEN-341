@@ -1,13 +1,10 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import CarIcon from "$lib/icons/CarIcon.svelte";
-  import HomeIcon from "$lib/icons/HomeIcon.svelte";
   import { getDrawerStore } from "@skeletonlabs/skeleton";
 
-  const links = [
-    { name: "Home", href: "/", icon: HomeIcon },
-    { name: "Browse Vehicles", href: "/browse-vehicles", icon: CarIcon },
-  ];
+  import type { Link } from "../../routes/+layout.svelte";
+
+  export let links: Link[];
 
   $: selected = $page.url.pathname;
   const drawerStore = getDrawerStore();

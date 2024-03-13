@@ -82,7 +82,7 @@
   <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
     {#each cars as car, index}
       {#if (!filteredColor || car.colour === filteredColor) && (!filteredPrice || car.dailyPrice <= filteredPrice)}
-        <div class="bg-white rounded-lg shadow-md">
+        <div class="rounded-lg bg-white shadow-md">
           <div class="p-4">
             <!-- svelte-ignore a11y-img-redundant-alt -->
             <img
@@ -93,31 +93,31 @@
             <p class="text-gray-600">{car.description}</p>
             <button
               on:click={() => showPopup(index)}
-              class="bg-blue-500 text-white focus:ring-blue-400 mt-2 block w-full rounded-lg px-4 py-2 transition-transform hover:translate-y-1 focus:outline-none focus:ring">
+              class="mt-2 block w-full rounded-lg bg-blue-500 px-4 py-2 text-white transition-transform hover:translate-y-1 focus:outline-none focus:ring focus:ring-blue-400">
               Show Details
             </button>
           </div>
         </div>
         <div
           id={`popupCard_${index}`}
-          class="bg-white rounded-lg p-4 shadow-lg"
+          class="rounded-lg bg-white p-4 shadow-lg"
           style="display: none;">
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <!-- svelte-ignore a11y-interactive-supports-focus -->
           <span
             role="button"
-            class="closeButton text-gray-500 absolute right-2 top-2 cursor-pointer"
+            class="closeButton absolute right-2 top-2 cursor-pointer text-gray-500"
             on:click={() => closePopup(index)}>&times;</span>
           <h2 class="mb-4 text-lg font-semibold">
             {car.year + " " + car.make + " " + car.model}
           </h2>
-          <p class="text-gray-600 mb-2">Color: {car.colour}</p>
-          <p class="text-gray-600 mb-2">Number of seats: {car.seats}</p>
-          <p class="text-gray-600 mb-2">Daily Price$: {car.dailyPrice}</p>
+          <p class="mb-2 text-gray-600">Color: {car.colour}</p>
+          <p class="mb-2 text-gray-600">Number of seats: {car.seats}</p>
+          <p class="mb-2 text-gray-600">Daily Price$: {car.dailyPrice}</p>
           <button
             on:click={() =>
               redirectToBooking(car.id.toString(), car.branchId.toString())}
-            class="bg-blue-500 text-white focus:ring-blue-400 mt-4 w-full rounded-lg px-4 py-2 transition-transform hover:translate-y-1 focus:outline-none focus:ring">
+            class="mt-4 w-full rounded-lg bg-blue-500 px-4 py-2 text-white transition-transform hover:translate-y-1 focus:outline-none focus:ring focus:ring-blue-400">
             Book Now
           </button>
         </div>

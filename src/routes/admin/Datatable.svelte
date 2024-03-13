@@ -1,10 +1,10 @@
 <script lang="ts">
-  import ThSort from "$lib/components/dTable/ThSort.svelte";
-  import ThFilter from "$lib/components/dTable/ThFilter.svelte";
-  import Search from "$lib/components/dTable/Search.svelte";
-  import RowsPerPage from "$lib/components/dTable/RowsPerPage.svelte";
-  import RowCount from "$lib/components/dTable/RowCount.svelte";
-  import Pagination from "$lib/components/dTable/Pagination.svelte";
+  import ThSort from "$lib/components/DataTable/ThSort.svelte";
+  import ThFilter from "$lib/components/DataTable/ThFilter.svelte";
+  import Search from "$lib/components/DataTable/Search.svelte";
+  import RowsPerPage from "$lib/components/DataTable/RowsPerPage.svelte";
+  import RowCount from "$lib/components/DataTable/RowCount.svelte";
+  import Pagination from "$lib/components/DataTable/Pagination.svelte";
 
   import { createEventDispatcher } from "svelte";
 
