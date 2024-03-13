@@ -1,3 +1,9 @@
+<script lang="ts" context="module">
+  import type { LayoutData } from "./$types";
+
+  export type User = LayoutData["user"];
+</script>
+
 <script lang="ts">
   import "../app.postcss";
   import { dev } from "$app/environment";
@@ -122,8 +128,7 @@
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-
-        <ProfilePopup loggedIn={data.user ? true : false} />
+        <ProfilePopup user={data.user} />
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>
