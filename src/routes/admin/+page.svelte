@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Datatable from "$lib/components/dTable/Datatable.svelte";
+  import Datatable from "./Datatable.svelte";
   import {
     getAllUsers,
     updateUser,
