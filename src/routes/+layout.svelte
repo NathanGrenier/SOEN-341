@@ -89,6 +89,13 @@
       </svelte:fragment>
       <NavBar />
       <svelte:fragment slot="trail">
+        <!-- TODO: This is a temp logout button while the ProfilePopup is disabled  -->
+        <div>
+          <a
+            class="variant-filled-error btn mt-2 w-full"
+            href="/auth/logout"
+            data-sveltekit-reload>Log Out</a>
+        </div>
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
           <Avatar
