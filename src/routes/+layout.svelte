@@ -1,8 +1,8 @@
-<!-- <script lang="ts" context="module">
+<script lang="ts" context="module">
   import type { LayoutData } from "./$types";
 
   export type User = LayoutData["user"];
-</script> -->
+</script>
 
 <script lang="ts">
   import "../app.postcss";
@@ -38,7 +38,7 @@
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import Navigation from "$lib/components/Navigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
-  import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+  // import ProfilePopup from "$lib/components/ProfilePopup.svelte";
   import { page } from "$app/stores";
   import CarIcon from "$lib/icons/CarIcon.svelte";
   import HomeIcon from "$lib/icons/HomeIcon.svelte";
@@ -128,7 +128,7 @@
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-        <ProfilePopup user={data.user} />
+        <!-- <ProfilePopup user={data.user} /> -->
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>
