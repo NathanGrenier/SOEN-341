@@ -32,16 +32,12 @@
     popup,
     storePopup,
     type PopupSettings,
-    TabGroup,
-    TabAnchor,
   } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
-  import Navigation from "$lib/components/Navigation.svelte";
+  import MobileNavigation from "$lib/components/MobileNavigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
   import ProfilePopup from "$lib/components/ProfilePopup.svelte";
-  import { page } from "$app/stores";
-  import CarIcon from "$lib/icons/CarIcon.svelte";
-  import HomeIcon from "$lib/icons/HomeIcon.svelte";
+  import NavBar from "$lib/components/NavBar.svelte";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -77,7 +73,7 @@
 <Modal components={modalRegistry} />
 
 <Drawer>
-  <Navigation />
+  <MobileNavigation />
 </Drawer>
 
 <AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10" class="bg-light-100">
@@ -91,31 +87,7 @@
           <img src="/SiteLogoFor.png" alt="DriveXperience" class="h-full" />
         </a>
       </svelte:fragment>
-      <TabGroup
-        justify="justify-center"
-        active="variant-filled-primary"
-        hover="hover:variant-soft-primary"
-        flex="flex-1 lg:flex-none justify-center"
-        rounded=""
-        border=""
-        class="bg-surface-100-800-token hidden h-full md:block ">
-        <TabAnchor href="/" selected={$page.url.pathname === "/"}>
-          <svelte:fragment slot="lead"
-            ><div class="flex justify-center">
-              <HomeIcon />
-            </div></svelte:fragment>
-          <span>Home</span>
-        </TabAnchor>
-        <TabAnchor
-          href="/browse-vehicles"
-          selected={$page.url.pathname === "/browse-vehicles"}>
-          <svelte:fragment slot="lead"
-            ><div class="flex justify-center">
-              <CarIcon />
-            </div></svelte:fragment>
-          <span>Browse Vehicles</span>
-        </TabAnchor>
-      </TabGroup>
+      <NavBar />
       <svelte:fragment slot="trail">
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
