@@ -1,14 +1,11 @@
 <script lang="ts">
-  import CarIcon from "$lib/icons/CarIcon.svelte";
-  import HomeIcon from "$lib/icons/HomeIcon.svelte";
   import { TabAnchor, TabGroup } from "@skeletonlabs/skeleton";
+
+  import type { Link } from "../../routes/+layout.svelte";
 
   import { page } from "$app/stores";
 
-  const links = [
-    { name: "Home", href: "/", icon: HomeIcon },
-    { name: "Browse Vehicles", href: "/browse-vehicles", icon: CarIcon },
-  ];
+  export let links: Link[];
 </script>
 
 <TabGroup
