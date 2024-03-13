@@ -22,37 +22,37 @@
     <header class="text4xl card-header flex justify-center font-bold">
       <h1 class="text-4xl">Log In</h1>
     </header>
-    <section class="p-4">
+    <section class="flex flex-col gap-3 p-4">
+      {#if showErrors}
+        <aside
+          style="min-width: 32em;"
+          class="alert variant-filled-error max-w-lg self-center"
+          transition:fade|local={{ duration: 200 }}>
+          <!-- Icon -->
+          <div>
+            <ExclamationCircleIcon
+              constColor={true}
+              height="h-12"
+              width="w-12" />
+          </div>
+          <!-- Message -->
+          <div class="alert-message">
+            <h3 class="h3 font-bold">{form?.error}</h3>
+            <p>{form?.errorMessage}</p>
+          </div>
+          <!-- Actions -->
+          <div class="alert-actions">
+            <!-- TODO: The X Button is slightly larger than the Warning Icon (3px off). Looks bad -->
+            <button
+              class="variant-filled btn-icon"
+              on:click={(e) => {
+                e.preventDefault();
+                showErrors = false;
+              }}><CloseIcon invertColor={true} /></button>
+          </div>
+        </aside>
+      {/if}
       <form method="POST" class="flex flex-col gap-3">
-        {#if showErrors}
-          <aside
-            style="min-width: 32em;"
-            class="alert variant-filled-error max-w-lg self-center"
-            transition:fade|local={{ duration: 200 }}>
-            <!-- Icon -->
-            <div>
-              <ExclamationCircleIcon
-                constColor={true}
-                height="h-12"
-                width="w-12" />
-            </div>
-            <!-- Message -->
-            <div class="alert-message">
-              <h3 class="h3 font-bold">{form?.error}</h3>
-              <p>{form?.errorMessage}</p>
-            </div>
-            <!-- Actions -->
-            <div class="alert-actions">
-              <!-- TODO: The X Button is slightly larger than the Warning Icon (3px off). Looks bad -->
-              <button
-                class="variant-filled btn-icon"
-                on:click={(e) => {
-                  e.preventDefault();
-                  showErrors = false;
-                }}><CloseIcon invertColor={true} /></button>
-            </div>
-          </aside>
-        {/if}
         <label class="label">
           <span>Email</span>
           <input
