@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Branch } from ".prisma/client";
-  import type { Car } from ".prisma/client";
+  import type { Branch } from "@prisma/client";
+  import type { Car } from "@prisma/client";
   import { getModalStore } from "@skeletonlabs/skeleton";
   import type { ModalSettings } from "@skeletonlabs/skeleton";
   import { createReservation } from "$lib/controllers/reservationController.js";
