@@ -1,8 +1,12 @@
+<script lang="ts" context="module">
+  import type { PageData } from "./$types";
+
+  export type User = PageData["user"];
+</script>
+
 <script lang="ts">
   import "../app.postcss";
   import { dev } from "$app/environment";
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  import { page } from "$app/stores";
   import { inject } from "@vercel/analytics";
   inject({ mode: dev ? "development" : "production" });
 
@@ -30,16 +34,16 @@
     type PopupSettings,
   } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
-  import Navigation from "$lib/components/Navigation.svelte";
+  import MobileNavigation from "$lib/components/MobileNavigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
-  import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+  // import ProfilePopup from "$lib/components/ProfilePopup.svelte";
+  import NavBar from "$lib/components/NavBar.svelte";
+
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   initializeStores();
 
   export let data;
-
-  // Add custom modals to this registry. They can then be triggered by name elsewhere.
   const modalRegistry = {
     modalComponentTest: { ref: ModalComponentTest },
   };
@@ -56,7 +60,6 @@
     placement: "bottom",
   };
 
-  // Get the user's initials for the avatar. Takes the first letter of the first and last word in the name.
   const initials =
     data?.user?.name
       .match(/(\b\S)?/g)
@@ -70,23 +73,31 @@
 <Modal components={modalRegistry} />
 
 <Drawer>
-  <Navigation />
+  <MobileNavigation />
 </Drawer>
 
-<AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10">
+<AppShell slotSidebarLeft="w-0 md:w-52 bg-surface-500/10" class="bg-light-100">
   <svelte:fragment slot="header">
-    <AppBar>
+    <AppBar padding="py-0 px-4">
       <svelte:fragment slot="lead">
         <button class="btn btn-sm mr-4 md:hidden" on:click={drawerOpen}>
-          <span>
-            <HamburgerMenuIcon />
-          </span>
+          <HamburgerMenuIcon />
         </button>
-        <strong class="text-xl uppercase">App Name</strong></svelte:fragment>
+        <a href="/" style="height: 68px">
+          <img src="/SiteLogoFor.png" alt="DriveXperience" class="h-full" />
+        </a>
+      </svelte:fragment>
+      <NavBar />
       <svelte:fragment slot="trail">
+        <!-- TODO: This is a temp logout button while the ProfilePopup is disabled  -->
+        <div>
+          <a
+            class="variant-filled-error btn mt-2 w-full"
+            href="/auth/logout"
+            data-sveltekit-reload>Log Out</a>
+        </div>
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
-          <!-- No good way to ignore this? sveltejs/language-tools#1026 -->
           <Avatar
             {initials}
             background="bg-tertiary-500"
@@ -94,18 +105,22 @@
             border="border-4 border-surface-300-600-token hover:!border-primary-500"
             cursor="cursor-pointer" />
         </div>
-        <ProfilePopup loggedIn={data.user ? true : false} />
+        <!-- <ProfilePopup user={data.user} /> -->
       </svelte:fragment>
     </AppBar>
   </svelte:fragment>
-  <svelte:fragment slot="sidebarLeft"><Navigation /></svelte:fragment>
-  <!-- (sidebarRight) -->
-  <!-- (pageHeader) -->
-  <!-- Router Slot -->
   <div class="container mx-auto p-10">
     <slot />
   </div>
-  <!-- ---- / ---- -->
-  <!-- (pageFooter) -->
-  <!-- (footer) -->
+
+  <svelte:fragment slot="pageFooter">
+    <!-- <footer
+      class="text-white p-4 text-center"
+      style="background-color: var(--color-surface-800);">
+      <a href="/contact" class="p-2">Contact Us</a>
+      <a href="/account" class="p-2">My Account</a>
+      <a href="/help" class="p-2">Help</a>
+      <a href="/policies" class="p-2">Our Policies</a>
+    </footer> -->
+  </svelte:fragment>
 </AppShell>
