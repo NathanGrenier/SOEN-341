@@ -88,7 +88,7 @@
           <HamburgerMenuIcon />
         </button>
         <a href="/" style="height: 68px">
-          <img src="SiteLogoFor.png" alt="DriveXperience" class="h-full" />
+          <img src="/SiteLogoFor.png" alt="DriveXperience" class="h-full" />
         </a>
       </svelte:fragment>
       <TabGroup
