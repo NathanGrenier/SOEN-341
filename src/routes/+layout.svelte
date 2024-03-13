@@ -4,8 +4,6 @@
 
   export type User = PageData["user"];
 
-  // export type UserRole = NonNullable<User>["role"];
-
   export type Link = {
     name: string;
     href: string;

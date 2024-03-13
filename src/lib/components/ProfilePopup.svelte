@@ -1,7 +1,3 @@
-<script lang="ts" context="module">
-  import { UserRole } from "@prisma/client";
-</script>
-
 <script lang="ts">
   import UserSettingsIcon from "$lib/icons/UserSettingsIcon.svelte";
   import UserIcon from "$lib/icons/UserIcon.svelte";
@@ -33,7 +29,7 @@
         style="justify-content: start;"
         class=" bg-secondary-hover-token gap-2"
         ><GridIcon invertColor={true} /><span>Dashboard</span></a>
-      {#if user?.role === UserRole.ADMIN}
+      {#if user?.role === "ADMIN"}
         <a
           href="/admin"
           style="justify-content: start;"
