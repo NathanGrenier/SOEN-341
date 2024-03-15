@@ -3,6 +3,7 @@
   import type { PageData } from "../$types";
   import { licenseNumberFormats } from "$lib/licenses";
   export let data: PageData;
+  let checkInForm: HTMLFormElement;
   let confirmName: boolean;
   let confirmPhoto: boolean;
   let confirmExpiry: boolean;
@@ -26,10 +27,12 @@
     } else {
       // Validate the license number
       if (licenseNumberFormats[licenseIssuingJurisdiction]) {
+        let matches = licenseNumber
           .trim()
           .toUpperCase()
           .match(licenseNumberFormats[licenseIssuingJurisdiction].regex);
         if (!matches) {
+          licenseNumberInvalid = true;
           idVerificationLocked = true;
         } else {
           licenseNumber = matches.slice(1).join("-");
@@ -37,6 +40,7 @@
           idVerificationLocked = false;
         }
       } else {
+        licenseNumberInvalid = false;
         idVerificationLocked = false;
       }
     }
@@ -50,40 +54,42 @@
 
 <h1 class="text-center text-4xl font-bold">Check-in</h1>
 
-<form on:change={validateCheckIn}>
-  <Stepper>
+<form bind:this={checkInForm} on:change={validateCheckIn} method="POST">
+  <!-- These values need to exist outside the stepper and be bound to values inside the stepper, otherwise, they will
+  not be present when the form is submitted because the earlier steps will no longer be present in the DOM. See issue
+  https://github.com/skeletonlabs/skeleton/discussions/1490 in the Skeleton project. -->
+  <input type="hidden" name="reservationId" value={data.reservation.id} />
+  <input type="hidden" name="confirmName" value={confirmName} />
+  <input type="hidden" name="confirmPhoto" value={confirmPhoto} />
+  <input type="hidden" name="confirmExpiry" value={confirmExpiry} />
+  <input
+    type="hidden"
+    name="licenseIssuingJurisdiction"
+    value={licenseIssuingJurisdiction} />
+  <input type="hidden" name="licenseNumber" value={licenseNumber} />
+  <input type="hidden" name="confirmDeposit" value={confirmDeposit} />
+  <input type="hidden" name="damageReport" value={damageReport} />
+  <Stepper on:complete={() => checkInForm.submit()}>
     <Step locked={idVerificationLocked}>
       <svelte:fragment slot="header">Identity Verification</svelte:fragment>
       <p>Ask the customer for their driver's licence.</p>
 
       <label class="flex items-center space-x-2">
-        <input
-          class="checkbox"
-          type="checkbox"
-          name="confirmName"
-          bind:checked={confirmName} />
+        <input class="checkbox" type="checkbox" bind:checked={confirmName} />
         <p>
           Confirm the name on the driver's licence: <b
             >{data.reservation.holder.name}</b>
         </p>
       </label>
       <label class="flex items-center space-x-2">
-        <input
-          class="checkbox"
-          type="checkbox"
-          name="confirmPhoto"
-          bind:checked={confirmPhoto} />
+        <input class="checkbox" type="checkbox" bind:checked={confirmPhoto} />
         <p>
           Check that the <b>photo</b> on the licence resembles the individual presenting
           it
         </p>
       </label>
       <label class="flex items-center space-x-2">
-        <input
-          class="checkbox"
-          type="checkbox"
-          name="confirmExpiry"
-          bind:checked={confirmExpiry} />
+        <input class="checkbox" type="checkbox" bind:checked={confirmExpiry} />
         <p>
           Check that the licence <b
             >will not expire before {data.reservation.plannedReturnAt.toLocaleString()}</b>
@@ -253,7 +259,7 @@
       <p>Name: {data.reservation.holder.name}</p>
       <p>Email address: {data.reservation.holder.email}</p>
       <p>
-        Driver's licence number: {licenceNumber} ({licenceIssuingJurisdiction.slice(
+        Driver's licence number: {licenseNumber} ({licenseIssuingJurisdiction.slice(
           -2,
         )})
       </p>
