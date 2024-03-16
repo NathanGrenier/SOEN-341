@@ -8,10 +8,10 @@
     "editor.tabSize": 2,
     "editor.formatOnSave": true,
     "[svelte]": {
-       "editor.defaultFormatter": "svelte.svelte-vscode"
+      "editor.defaultFormatter": "svelte.svelte-vscode",
     },
     "[prisma]": {
-       "editor.defaultFormatter": "Prisma.prisma"
+      "editor.defaultFormatter": "Prisma.prisma",
     },
   },
 }
