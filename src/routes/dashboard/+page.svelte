@@ -15,7 +15,7 @@
     body: DisplayReservation[];
   };
 
-  export type TabStatus = "active" | "expired" | "cancelled";
+  export type TabStatus = "upcoming" | "in-progress" | "expired" | "cancelled";
 </script>
 
 <script lang="ts">
@@ -23,8 +23,10 @@
   import { page } from "$app/stores";
   import ReservationTable from "$lib/components/ReservationTable.svelte";
   import { replaceState } from "$app/navigation";
+  import { UserRole } from "@prisma/client";
 
   export let data;
+  export const now = new Date();
 
   function formatReservations(
     reservations: typeof data.userReserverations,
@@ -46,9 +48,9 @@
   };
 
   let tabSet: TabStatus =
-    ($page.url.searchParams.get("status") as TabStatus) || "active";
+    ($page.url.searchParams.get("status") as TabStatus) || "upcoming";
 
-  function upadteURLState(url: string) {
+  function updateURLState(url: string) {
     replaceState(
       `/dashboard?status=${url}&amount=${$page.url.searchParams.get("amount") ?? 5}`,
       {},
@@ -56,54 +58,73 @@
   }
 </script>
 
-<h1 class=" text-center text-4xl font-bold">Your Reservations</h1>
+<h1 class=" text-center text-4xl font-bold">Reservations</h1>
 
 <TabGroup>
   <Tab
     bind:group={tabSet}
-    name="active"
-    value="active"
-    on:click={() => upadteURLState("active")}>
-    <span class="font-bold">Active</span>
+    name="upcoming"
+    value="upcoming"
+    on:click={() => updateURLState("upcoming")}>
+    <span class="font-bold">Upcoming</span>
   </Tab>
+  <Tab
+    bind:group={tabSet}
+    name="in-progress"
+    value="in-progress"
+    on:click={() => updateURLState("in-progress")}
+    ><span class="font-bold">In-Progress</span></Tab>
   <Tab
     bind:group={tabSet}
     name="expired"
     value="expired"
-    on:click={() => upadteURLState("expired")}>
-    <span class="font-bold">Expired</span></Tab>
+    on:click={() => updateURLState("expired")}>
+    <span class="font-bold">Past</span></Tab>
   <Tab
     bind:group={tabSet}
     name="cancelled"
     value="cancelled"
-    on:click={() => upadteURLState("cancelled")}>
+    on:click={() => updateURLState("cancelled")}>
     <span class="font-bold">Cancelled</span></Tab>
   <!-- Tab Panels --->
   <svelte:fragment slot="panel">
-    {#if tabSet === "active"}
+    {#if tabSet === "upcoming"}
       <ReservationTable
         table={{
           ...table,
           body: table.body.filter(
-            (res) => res.cancelled === false && res.returnedAt === null,
+            (res) => res.cancelled === false && res.pickedUpAt === null,
           ),
         }}
-        tabStatus={tabSet} />
+        tabStatus={tabSet}
+        role={data.user?.role || UserRole.CUSTOMER} />
+    {:else if tabSet === "in-progress"}
+      <ReservationTable
+        table={{
+          ...table,
+          body: table.body.filter(
+            (res) => res.pickedUpAt !== null && res.returnedAt === null,
+          ),
+        }}
+        tabStatus={tabSet}
+        role={data.user?.role || UserRole.CUSTOMER} />
     {:else if tabSet === "expired"}
       <ReservationTable
         active={false}
         tabStatus={tabSet}
+        role={data.user?.role || UserRole.CUSTOMER}
         table={{
           ...table,
-          body: table.body.filter((res) => res.returnedAt !== null),
+          body: table.body.filter((res) => res.returnedAt),
         }} />
     {:else if tabSet === "cancelled"}
       <ReservationTable
         active={false}
         tabStatus={tabSet}
+        role={data.user?.role || UserRole.CUSTOMER}
         table={{
           ...table,
-          body: table.body.filter((res) => res.cancelled),
+          body: table.body.filter((res) => res.cancelled || res.replacedBy),
         }} />
     {/if}
   </svelte:fragment>

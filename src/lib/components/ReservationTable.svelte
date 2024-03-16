@@ -16,10 +16,12 @@
   import { flip } from "svelte/animate";
   import { onMount } from "svelte";
   import { tablePages } from "$lib/stores";
+  import { UserRole } from "@prisma/client";
 
   export let table: TableType;
   export let active = true;
   export let tabStatus: TabStatus;
+  export let role: UserRole;
 
   onMount(async () => {
     // Load the current page from the store
@@ -149,6 +151,15 @@
               <td>{row.quotedPrice}</td>
               {#if active}
                 <td class="table-cell-fit">
+                  {#if role === UserRole.REP && row.pickedUpAt}
+                    <a
+                      href="/check-out?res={row.id}"
+                      class="variant-filled-secondary btn">Check-out</a>
+                  {:else if role === UserRole.REP}
+                    <a
+                      href="/check-in?res={row.id}"
+                      class="variant-filled-success btn">Check-in</a>
+                  {/if}
                   <button
                     class="variant-filled-error btn"
                     on:click|stopPropagation={() => cancelReservation(row.id)}
