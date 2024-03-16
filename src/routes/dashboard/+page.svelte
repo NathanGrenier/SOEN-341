@@ -34,7 +34,7 @@
         ...item,
         plannedDepartureAt: new Date(item.plannedDepartureAt).toLocaleString(),
         plannedReturnAt: new Date(item.plannedReturnAt).toLocaleString(),
-        quotedPrice: `${item.quotedPrice.toLocaleString()}$`,
+        quotedPrice: `$${(item.quotedPrice / 100).toFixed(2)}`, // Price in cents
       };
     });
   }

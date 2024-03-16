@@ -57,7 +57,7 @@
             type="datetime-local" />
           <p>{reservation.plannedDepartureAt}</p>
           <p>{reservation.plannedReturnAt}</p>
-          <p>{reservation.quotedPrice}</p>
+          <p>${(reservation.quotedPrice / 100).toFixed(2)}</p>
         </div>
 
         <div class="grid-item">
