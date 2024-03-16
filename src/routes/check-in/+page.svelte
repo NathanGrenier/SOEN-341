@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Step, Stepper } from "@skeletonlabs/skeleton";
-  import type { PageData } from "../$types";
   import { licenseNumberFormats } from "$lib/licenses";
-  export let data: PageData;
+  export let data;
+
   let checkInForm: HTMLFormElement;
   let confirmName: boolean;
   let confirmPhoto: boolean;
@@ -214,7 +214,7 @@
       <p>
         Ask the customer to inspect the <b
           >{data.reservation.car.year}
-          {data.reservation.car.colourStr}
+          {data.reservation.car.colour}
           {data.reservation.car.make}
           {data.reservation.car.model}</b
         >.
@@ -267,7 +267,7 @@
       <p>Make: {data.reservation.car.make}</p>
       <p>Model: {data.reservation.car.model}</p>
       <p>Year: {data.reservation.car.year}</p>
-      <p>Colour: {data.reservation.car.colourStr}</p>
+      <p>Colour: {data.reservation.car.colour}</p>
       <p>Inventory number: {data.reservation.car.id}</p>
       <h4 class="h4">3. Rental Details</h4>
       <p>Rental start date: {data.reservation.plannedDepartureAt}</p>
@@ -276,8 +276,8 @@
       <p>Drop-off location: {data.reservation.car.branch.name}</p>
       <p>Additonal services:</p>
       <ul class="list-inside list-disc">
-        {#if data.reservation.accessories}
-          {#each data.reservation.accessories as acc}
+        {#if data.accessories.length > 0}
+          {#each data.accessories as acc}
             <li>{acc.name}</li>
           {/each}
         {:else}
@@ -370,7 +370,7 @@
       <p>
         Provide the keys for the <b
           >{data.reservation.car.year}
-          {data.reservation.car.colourStr}
+          {data.reservation.car.colour}
           {data.reservation.car.make}
           {data.reservation.car.model}</b>
         to the customer, then click <b>Complete</b>.

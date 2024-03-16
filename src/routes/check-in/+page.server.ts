@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { UserRole, type Accessory } from "@prisma/client";
 import type { PageServerLoad } from "./$types";
 import { prisma } from "$lib/db/client";
 import { error, redirect } from "@sveltejs/kit";
@@ -28,6 +28,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     where: { id: Number(reservationId) },
     select: {
       id: true,
+      plannedDepartureAt: true,
       plannedReturnAt: true,
       pickedUpAt: true,
       checkInLicenseNumber: true,
@@ -63,6 +64,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
           },
         },
       },
+      accessory: {
+        select: {
+          accessoryId: true,
+        },
+      },
     },
   });
   if (
@@ -79,17 +85,23 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     );
   }
 
+  // Get accessory names
+  let accessories: Accessory[] = [];
+  if (reservation.accessory.length > 0) {
+    const accessoryIds: number[] = [];
+    for (const acc of reservation.accessory) accessoryIds.push(acc.accessoryId);
+    accessories = await prisma.accessory.findMany({
+      where: { id: { in: accessoryIds } },
+    });
+  }
+
   // Redact unneeded digits of credit card number for security.
   reservation.creditCardNumber = reservation.creditCardNumber.slice(-4);
 
-  // Turn the car colour into a string with the first letter uppercase and the rest lowercase
-  reservation.car.colourStr =
-    reservation.car.colour.charAt(0).toUpperCase() +
-    reservation.car.colour.slice(1).toLowerCase();
-
   return {
     user: locals.user,
-    reservation: reservation,
+    reservation,
+    accessories: accessories,
   };
 };
 
