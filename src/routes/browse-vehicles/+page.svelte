@@ -1,161 +1,265 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-
-  let filteredColor = "";
-  let filteredPrice = 0;
+  import {
+    RangeSlider,
+    type PaginationSettings,
+    type ModalComponent,
+    type ToastSettings,
+  } from "@skeletonlabs/skeleton";
+  import {
+    getModalStore,
+    type ModalSettings,
+    Paginator,
+  } from "@skeletonlabs/skeleton";
+  import {} from "@skeletonlabs/skeleton";
+  import { TreeView, TreeViewItem } from "@skeletonlabs/skeleton";
+  import { getToastStore } from "@skeletonlabs/skeleton";
+  import { CarColour, type Car } from "@prisma/client";
+  import { ProgressRadial } from "@skeletonlabs/skeleton";
+  import ViewCarModal from "$lib/components/modals/ViewCarModal.svelte";
 
   export let data;
 
+  const modalStore = getModalStore();
+  const toastStore = getToastStore();
+
+  let minimumPrice = 0;
+  let maximumPrice = 2000;
   let { cars } = data;
+  let { branches } = data;
+  let selectedCarColour = "No Specific Color";
+  let selectedBranch = -1;
 
-  onMount(async () => {
-    if (!cars) {
-      window.location.href = "/";
+  $: paginatedCars = cars.slice(
+    paginationSettings.page * paginationSettings.limit,
+    paginationSettings.page * paginationSettings.limit +
+      paginationSettings.limit,
+  );
+
+  let isLoading = false;
+
+  const UTCtoday = new Date();
+
+  const today = UTCtoday.toISOString().split("T")[0];
+
+  let startDate = today;
+  let endDate = today;
+
+  const handleStartDateChange = (event: Event) => {
+    const eventTarget = event.target as HTMLTextAreaElement;
+    startDate = eventTarget.value;
+    if (startDate > endDate) {
+      endDate = startDate;
     }
-  });
+  };
 
-  function redirectToBooking(carId: string, branchId: string) {
-    const dateRange = generateRandomDate();
-    const redirectUrl = `/reserve/${carId}/${dateRange}/${branchId}`;
-    window.location.href = redirectUrl;
+  const handleEndDateChange = (event: Event) => {
+    const eventTarget = event.target as HTMLTextAreaElement;
+    endDate = eventTarget.value;
+    if (endDate < startDate) {
+      startDate = endDate;
+    }
+  };
+
+  let paginationSettings = {
+    page: 0,
+    limit: 10,
+    size: cars.length,
+    amounts: [1, 2, 5, 10],
+  } satisfies PaginationSettings;
+
+  function toTitleCase(str: string) {
+    return str.toLowerCase().replace(/\b\w/g, function (char) {
+      return char.toUpperCase();
+    });
   }
 
-  function generateRandomDate() {
-    const today = new Date();
-    const randomFutureStartDate = new Date(
-      today.getTime() + Math.random() * 26 * 24 * 60 * 60 * 1000,
-    ); // Random date in the next 26 days to ensure a five-day range
-    const randomFutureEndDate = new Date(
-      randomFutureStartDate.getTime() + Math.random() * 5 * 24 * 60 * 60 * 1000,
-    ); // Random date within the next 5 days for end date
-    const startDateYear = randomFutureStartDate.getFullYear();
-    const startDateMonth = String(
-      randomFutureStartDate.getMonth() + 1,
-    ).padStart(2, "0");
-    const startDateDay = String(randomFutureStartDate.getDate()).padStart(
-      2,
-      "0",
-    );
-    const endDateYear = randomFutureEndDate.getFullYear();
-    const endDateMonth = String(randomFutureEndDate.getMonth() + 1).padStart(
-      2,
-      "0",
-    );
-    const endDateDay = String(randomFutureEndDate.getDate()).padStart(2, "0");
-    return `${startDateYear}-${startDateMonth}-${startDateDay}~${endDateYear}-${endDateMonth}-${endDateDay}`;
+  function showPopup(car: Car) {
+    const modalComponent: ModalComponent = {
+      ref: ViewCarModal,
+      props: {
+        car: car,
+      },
+    };
+
+    const modal: ModalSettings = {
+      type: "component",
+      component: modalComponent,
+    };
+
+    modalStore.trigger(modal);
+
+    return null;
   }
 
-  function showPopup(index: number) {
-    const popup = document.getElementById(`popupCard_${index}`);
-    if (popup) {
-      popup.style.display = "block";
-    }
-  }
+  function handleFilter(): void {
+    cars = [];
+    isLoading = true;
+    const formData = new FormData();
+    formData.append("colour", selectedCarColour);
+    formData.append("minPrice", minimumPrice.toString());
+    formData.append("maxPrice", maximumPrice.toString());
+    formData.append("startDate", startDate);
+    formData.append("endDate", endDate);
 
-  function closePopup(index: number) {
-    const popup = document.getElementById(`popupCard_${index}`);
-    if (popup) {
-      popup.style.display = "none";
-    }
+    fetch("", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res: Response) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          const cancelErrorToast: ToastSettings = {
+            message: "There was an error filtering cars.",
+            background: "variant-filled-error",
+            autohide: false,
+          };
+
+          toastStore.trigger(cancelErrorToast);
+        }
+      })
+      .then((data) => {
+        const jsonData = JSON.parse(data.data);
+
+        const cars = [];
+
+        for (const item of jsonData) {
+          const parsedItem = JSON.parse(item);
+          cars.push(parsedItem);
+        }
+
+        return cars;
+      })
+      .then((formattedCars) => {
+        const flattenedCars = formattedCars.reduce((acc, current) => {
+          return acc.concat(current);
+        }, []);
+
+        isLoading = false;
+        cars = flattenedCars;
+        paginationSettings.size = cars.length;
+        paginationSettings.page = 0;
+      })
+      .catch((error) => {
+        console.error("There was a problem with the fetch operation:", error);
+      });
   }
 </script>
 
-{#if cars !== undefined}
-  <div class="filter-container mb-6 flex items-center">
-    <select bind:value={filteredColor} class="mr-4">
-      <option value="">All Colors</option>
-      {#each Array.from(new Set(cars?.map((car) => car.colour))) as color}
-        <option value={color}>{color}</option>
-      {/each}
-    </select>
-
-    <input
-      type="range"
-      min="0"
-      max="2000"
-      step="1"
-      bind:value={filteredPrice}
-      class="price-slider mr-4" />
-    <span class="price-display">${filteredPrice}</span>
-  </div>
-
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-    {#each cars as car, index}
-      {#if (!filteredColor || car.colour === filteredColor) && (!filteredPrice || car.dailyPrice <= filteredPrice)}
-        <div class="rounded-lg bg-white shadow-md">
-          <div class="p-4">
-            <!-- svelte-ignore a11y-img-redundant-alt -->
-            <img
-              src={car.photoUrl}
-              alt="Image of a car"
-              class="mx-auto mb-4 h-40 w-auto" />
-            <h2 class="mb-2 text-lg font-semibold">{car.model}</h2>
-            <p class="text-gray-600">{car.description}</p>
-            <button
-              on:click={() => showPopup(index)}
-              class="mt-2 block w-full rounded-lg bg-blue-500 px-4 py-2 text-white transition-transform hover:translate-y-1 focus:outline-none focus:ring focus:ring-blue-400">
-              Show Details
-            </button>
+<div class="card my-2 space-y-2 p-4">
+  <TreeView>
+    <TreeViewItem>
+      <h6 class="h6 font-bold">Search Filters</h6>
+      <svelte:fragment slot="children">
+        <div class="space-y-4">
+          <label class="label mt-2">
+            <span>Car Color</span>
+            <select class="select" bind:value={selectedCarColour}>
+              <option value={"No Specific Color"}>No Specific Color</option>
+              {#each Object.values(CarColour) as colour}
+                <option value={colour}>{toTitleCase(colour)}</option>
+              {/each}
+            </select>
+          </label>
+          <label class="label">
+            <span>Branch Location</span>
+            <select class="select" bind:value={selectedBranch}>
+              <option value={-1}>No Specific Branch</option>
+              {#each branches as branch}
+                <option value={branch.id}>{branch.name}</option>
+              {/each}
+            </select>
+          </label>
+          <div class="grid grid-cols-2 gap-6">
+            <div class="col">
+              <RangeSlider
+                name="range-slider"
+                bind:value={minimumPrice}
+                min={0}
+                max={750}
+                step={5}
+                ticked>Minimum Price</RangeSlider>
+              <span class="price-display">${minimumPrice}</span>
+            </div>
+            <div class="col">
+              <RangeSlider
+                name="range-slider"
+                bind:value={maximumPrice}
+                min={minimumPrice}
+                max={1000}
+                step={10}
+                ticked>Maximum Price</RangeSlider>
+              <span class="price-display">${maximumPrice}</span>
+            </div>
           </div>
-        </div>
-        <div
-          id={`popupCard_${index}`}
-          class="rounded-lg bg-white p-4 shadow-lg"
-          style="display: none;">
-          <!-- svelte-ignore a11y-click-events-have-key-events -->
-          <!-- svelte-ignore a11y-interactive-supports-focus -->
-          <span
-            role="button"
-            class="closeButton absolute right-2 top-2 cursor-pointer text-gray-500"
-            on:click={() => closePopup(index)}>&times;</span>
-          <h2 class="mb-4 text-lg font-semibold">
-            {car.year + " " + car.make + " " + car.model}
-          </h2>
-          <p class="mb-2 text-gray-600">Color: {car.colour}</p>
-          <p class="mb-2 text-gray-600">Number of seats: {car.seats}</p>
-          <p class="mb-2 text-gray-600">Daily Price$: {car.dailyPrice}</p>
+          <div class="grid grid-cols-2 gap-6">
+            <div class="col">
+              <label class="label">
+                <span>Start Date</span>
+                <input
+                  type="date"
+                  class="input"
+                  bind:value={startDate}
+                  min={today}
+                  on:input={handleStartDateChange} />
+              </label>
+            </div>
+            <div class="col">
+              <label class="label">
+                <span>End Date</span>
+                <input
+                  type="date"
+                  class="input"
+                  bind:value={endDate}
+                  min={startDate}
+                  on:input={handleEndDateChange} />
+              </label>
+            </div>
+          </div>
           <button
-            on:click={() =>
-              redirectToBooking(car.id.toString(), car.branchId.toString())}
-            class="mt-4 w-full rounded-lg bg-blue-500 px-4 py-2 text-white transition-transform hover:translate-y-1 focus:outline-none focus:ring focus:ring-blue-400">
-            Book Now
-          </button>
+            class="btn mx-auto block w-20 bg-tertiary-500"
+            on:click={handleFilter}>Filter</button>
         </div>
-      {/if}
-    {/each}
+      </svelte:fragment>
+    </TreeViewItem>
+  </TreeView>
+</div>
+
+{#if isLoading}
+  <div class="mt-4 flex flex-col items-center justify-center space-y-4">
+    <div class="flex items-center justify-center">
+      <ProgressRadial value={undefined} class="w-9" />
+    </div>
+    <p>Searching for Cars</p>
+  </div>
+{:else if cars.length === 0}
+  <div class="mt-2 flex flex-col items-center justify-center">
+    <p class="card p-4">No cars found</p>
   </div>
 {/if}
 
-<style>
-  .filter-container {
-    margin-bottom: 20px;
-  }
+<div class="my-2 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+  {#each paginatedCars as car}
+    <div class="card bg-secondary-500">
+      <div class="p-4">
+        <img
+          src={car.photoUrl || "https://placehold.co/600x400"}
+          alt="Car"
+          class="mx-auto mb-4 h-auto w-full rounded" />
+        <h2 class="mb-2 text-lg font-semibold">{car.model}</h2>
+        <p>{car.description}</p>
+        <button
+          on:click={showPopup(car)}
+          class="btn mx-auto mt-2 block bg-tertiary-500">
+          Show Details
+        </button>
+      </div>
+    </div>
+  {/each}
+</div>
 
-  .filter-container select {
-    padding: 8px;
-    font-size: 14px;
-    margin-right: 10px;
-  }
-
-  .closeButton {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-size: 24px;
-    color: #999;
-  }
-
-  .closeButton:hover {
-    color: #333;
-  }
-
-  .price-slider {
-    width: 200px;
-    margin-left: 10px;
-  }
-
-  .price-display {
-    margin-left: 10px;
-  }
-</style>
+<Paginator
+  bind:settings={paginationSettings}
+  showFirstLastButtons={false}
+  showPreviousNextButtons={true}
+  amountText="Cars" />

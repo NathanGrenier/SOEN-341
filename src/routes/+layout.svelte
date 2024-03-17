@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
   import type { PageData } from "./$types";
   import type { SvelteComponent } from "svelte";
+  import ViewCarModal from "$lib/components/modals/ViewCarModal.svelte";
 
   export type User = PageData["user"];
 
@@ -55,6 +56,7 @@
   export let data;
   const modalRegistry = {
     modalComponentTest: { ref: ModalComponentTest },
+    viewCarModalComponent: { ref: ViewCarModal },
   };
 
   const drawerStore = getDrawerStore();

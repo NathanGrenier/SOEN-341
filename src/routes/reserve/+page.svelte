@@ -1,61 +1,14 @@
 <script lang="ts">
-  import type { Branch } from "@prisma/client";
-  import type { Car } from "@prisma/client";
   import { getModalStore } from "@skeletonlabs/skeleton";
   import type { ModalSettings } from "@skeletonlabs/skeleton";
-  import { createReservation } from "$lib/controllers/reservationController.js";
   import type { Reservation } from "@prisma/client";
-  import { onMount } from "svelte";
-  import {
-    getCarById,
-    getReservationsForCar,
-  } from "$lib/controllers/carController.js";
-  import { getBranchById } from "$lib/controllers/branchController.js";
 
   export let data;
-  let startDate: string = data.startDate;
-  let endDate: string = data.endDate;
-  let branch: Branch | null;
-  let currentCar: Car | null;
 
-  onMount(async () => {
-    currentCar = await getCarById(+data.params.carId);
-
-    if (!currentCar) {
-      window.location.href = "/browse-vehicles";
-    }
-
-    branch = await getBranchById(+data.params.location);
-
-    if (!branch) {
-      window.location.href = "/browse-vehicles";
-    }
-
-    const existingReservations = await getReservationsForCar(
-      +data.params.carId,
-    );
-
-    const conflictingReservation = existingReservations.find((reservation) => {
-      const plannedDepartureAt = new Date(
-        reservation.plannedDepartureAt,
-      ).getTime();
-      const plannedReturnAt = new Date(reservation.plannedReturnAt).getTime();
-      const startDateTimestamp = new Date(startDate).getTime();
-      const endDateTimestamp = new Date(endDate).getTime();
-
-      const isConflict =
-        (plannedDepartureAt <= endDateTimestamp &&
-          plannedReturnAt >= startDateTimestamp) ||
-        (plannedDepartureAt <= startDateTimestamp &&
-          plannedReturnAt >= endDateTimestamp);
-
-      return isConflict;
-    });
-
-    if (conflictingReservation) {
-      window.location.href = "/browse-vehicles";
-    }
-  });
+  const startDate = data.startDate;
+  const endDate = data.endDate;
+  const car = data.currentCar;
+  const branch = data.currentBranch;
 
   let firstName = data.user?.name.split(" ")[0];
   let middleName =
@@ -63,7 +16,7 @@
   let lastName = data.user?.name.split(" ").slice(-1);
 
   let extraEquipment: string[] = [];
-  let selectedBranchId: number = +data.params.location;
+  let selectedBranchId: number = data.currentBranch.id;
   let isOnline = false;
 
   const modalStore = getModalStore();
@@ -181,27 +134,27 @@
               <div class="space-y-4">
                 <div class="flex justify-between">
                   <span>Make:</span>
-                  <span>${currentCar?.make}</span>
+                  <span>${car.make}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Model:</span>
-                  <span>${currentCar?.model}</span>
+                  <span>${car.model}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Year:</span>
-                  <span>${currentCar?.year}</span>
+                  <span>${car.year}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Colour:</span>
-                  <span>${currentCar?.colour}</span>
+                  <span>${car.colour}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Seats:</span>
-                  <span>${currentCar?.seats}</span>
+                  <span>${car.seats}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Daily Price:</span>
-                  <span>${currentCar ? currentCar.dailyPrice / 100 + ".00 $" : ""}</span>
+                  <span>${car ? car.dailyPrice / 100 + ".00 $" : ""}</span>
                 </div>
               </div>
             `,
@@ -234,12 +187,12 @@
                 const numberOfDays = Math.ceil(
                   timeDifference / (1000 * 3600 * 24),
                 );
-                const quotedPrice = currentCar?.dailyPrice
-                  ? numberOfDays * currentCar?.dailyPrice
+                const quotedPrice = car.dailyPrice
+                  ? numberOfDays * car.dailyPrice
                   : 0;
 
                 const reservationData: Omit<Reservation, "id"> = {
-                  carId: currentCar?.id || 0,
+                  carId: car.id || 0,
                   holderId: data.user?.id || 0,
                   replacesId: null,
                   quotedPrice: quotedPrice || 0,
@@ -255,15 +208,7 @@
                   updatedAt: new Date(),
                 };
 
-                // Call createReservation function
-                createReservation(reservationData)
-                  .then(() => {
-                    modalStore.close();
-                    window.location.href = "/";
-                  })
-                  .catch((error) => {
-                    console.error("Error creating reservation: " + error);
-                  });
+                createReservation(reservationData);
               },
             };
             modalStore.trigger(carDetailsModal);
@@ -289,6 +234,31 @@
     } else {
       extraEquipment = extraEquipment.filter((item) => item !== value);
     }
+  }
+
+  function createReservation(
+    reservationData: Omit<
+      {
+        id: number;
+        carId: number;
+        holderId: number;
+        replacesId: number | null;
+        quotedPrice: number;
+        cancelled: boolean;
+        checkInNotes: string | null;
+        checkInLicenseNumber: string | null;
+        checkInLicenseIssuingJurisdiction: string | null;
+        plannedDepartureAt: Date;
+        plannedReturnAt: Date;
+        pickedUpAt: Date | null;
+        returnedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+      },
+      "id"
+    >,
+  ) {
+    console.log(reservationData);
   }
 </script>
 
@@ -331,7 +301,8 @@
             <input
               class="input"
               type="date"
-              bind:value={startDate}
+              value={startDate}
+              readonly
               min={getToday()} />
           </div>
 
@@ -340,7 +311,8 @@
             <input
               class="input"
               type="date"
-              bind:value={endDate}
+              value={endDate}
+              readonly
               min={getToday()} />
           </div>
         </div>
@@ -466,34 +438,31 @@
       </header>
       <div class="space-y-8">
         <div class="mb-2 flex justify-center">
-          <img
-            src={currentCar?.photoUrl}
-            alt="Car"
-            class="w-128 h-auto rounded-md" />
+          <img src={car.photoUrl} alt="Car" class="w-128 h-auto rounded-md" />
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Make:</span>
-          <span>{currentCar?.make}</span>
+          <span>{car.make}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Model:</span>
-          <span>{currentCar?.model}</span>
+          <span>{car.model}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Year:</span>
-          <span>{currentCar?.year}</span>
+          <span>{car.year}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Colour:</span>
-          <span>{currentCar?.colour}</span>
+          <span>{car.colour}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Seats:</span>
-          <span>{currentCar?.seats}</span>
+          <span>{car.seats}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Daily Price:</span>
-          <span>{currentCar ? currentCar.dailyPrice / 100 + ".00 $" : ""}</span>
+          <span>{car ? car.dailyPrice / 100 + ".00 $" : ""}</span>
         </div>
       </div>
     </div>
@@ -536,7 +505,7 @@
         startDate < getToday() ||
         endDate < getToday() ||
         selectedBranchId === -1 ||
-        !currentCar}>
+        !car}>
       <span
         ><svg
           class="h-[28px] w-[28px] text-black dark:text-white"
