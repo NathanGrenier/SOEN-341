@@ -1,6 +1,4 @@
 <script lang="ts">
-  import CarIcon from "$lib/icons/CarIcon.svelte";
-  import GridIcon from "$lib/icons/GridIcon.svelte";
   import type { PageData } from "./$types";
 
   export let data: PageData;
@@ -15,20 +13,6 @@
 </script>
 
 <div class="flex flex-col gap-2">
-  <ol class="breadcrumb mt-1">
-    <li class="crumb">
-      <a class="anchor" href="/dashboard" title="Go to dashboard">
-        <GridIcon color="variant-filled-primary" /></a>
-    </li>
-    <li class="crumb-separator" aria-hidden>&rsaquo;</li>
-    <li class="crumb">
-      <a
-        class="anchor"
-        href={`/dashboard/${car.id}`}
-        title="Current Reservation"><CarIcon /></a>
-    </li>
-  </ol>
-
   <div class="card">
     <header class="card-header">
       <h2 class="text-lg font-bold">
