@@ -37,7 +37,7 @@ jobs:
       - name: Get PR Branch Name
         id: get_pull_request_branch_name
         run: |
-          branch_name=${{ github.event.pull_request.base.ref }}
+          branch_name=${{ github.event.pull_request.head.ref }}
           echo "branch_name=${pull_request_sha}" >> $GITHUB_OUTPUT
           echo $branch_name
 
