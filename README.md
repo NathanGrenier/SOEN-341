@@ -116,19 +116,20 @@ file in the project's root.
 
 The following variables can be configured:
 
-| VAR                 | DESC                                                 | DEFAULT                                                                                 |
-| ------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| DB_HOST             | The dev database host                                | `localhost`                                                                             |
-| DB_USER             | The dev database username                            | `devuser`                                                                               |
-| DB_PASSWORD         | The dev database password                            | `supersecret`                                                                           |
-| DB_NAME             | The dev database name                                | `devdb`                                                                                 |
-| DB_PORT             | The dev database port                                | `5432`                                                                                  |
-| DATABASE_URL        | The database URL (used by Prisma)                    | `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public` |
-| DIRECT_DATABASE_URL | Used in development environment to keep Prisma happy | `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public` |
-| FAKE_AUTH_PASSWORD  | The password that is required on the fake login page | `changeme`                                                                              |
-| USE_FAKE_AUTH       | Set to `true` to bypass authentication               | `true`                                                                                  |
-| EXEC_ENV            | Current execution environment                        | `development`                                                                           |
-| SESSION_SIGNING_KEY | 32 random bytes in hex format, used to sign sessions | `480c67189f5ddb38a2b9993724e0327da90467de5628cd3897e579af71d6e7d8`                      |
+| VAR                   | DESC                                                 | DEFAULT                                                                                 |
+| --------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| DB_HOST               | The dev database host                                | `localhost`                                                                             |
+| DB_USER               | The dev database username                            | `devuser`                                                                               |
+| DB_PASSWORD           | The dev database password                            | `supersecret`                                                                           |
+| DB_NAME               | The dev database name                                | `devdb`                                                                                 |
+| DB_PORT               | The dev database port                                | `5432`                                                                                  |
+| DATABASE_URL          | The database URL (used by Prisma)                    | `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public` |
+| DIRECT_DATABASE_URL   | Used in development environment to keep Prisma happy | `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public` |
+| FAKE_AUTH_PASSWORD    | The password that is required on the fake login page | `changeme`                                                                              |
+| USE_FAKE_AUTH         | Set to `true` to bypass authentication               | `true`                                                                                  |
+| EXEC_ENV              | Current execution environment                        | `development`                                                                           |
+| SESSION_SIGNING_KEY   | 32 random bytes in hex format, used to sign sessions | `480c67189f5ddb38a2b9993724e0327da90467de5628cd3897e579af71d6e7d8`                      |
+| BLOB_READ_WRITE_TOKEN | Token used when invoking Vercel blob API             | `vercel_blob_rw_liNglaotgbpH7idJ_ZPsRHaMsVnAbja2q2xHqZg03G9Lrxz`                        |
 
 ### Starting the Dev Environment
 
@@ -222,6 +223,21 @@ running:
 ```bash
 npx prisma studio
 ```
+
+### Blob Storage
+
+This project uses Vercel's blob storage to host images (most notably of cars).
+
+You can read the docs on how to use the API calls
+[here](https://vercel.com/docs/storage/vercel-blob/using-blob-sdk).
+
+> **Note:** There's a limit on the server upload (4.5MB). Make sure to handle
+> this properly. See the
+> [docs](https://vercel.com/docs/storage/vercel-blob/server-upload) for more
+> details.
+
+> Make sure to set the new environment variables added to the
+> [table](#environment-variables).
 
 ### Tests
 
