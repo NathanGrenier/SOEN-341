@@ -63,15 +63,13 @@ async function firstSeed() {
     },
   });
 
-  // This car has a freely-usable image
-  // https://unsplash.com/photos/red-ferrari-458-italia-on-road-during-daytime-_DzW3MT-iIY
   const redFerrari = await prisma.car.upsert({
     where: { id: 1 },
     update: {},
     create: {
       branchId: yulAirport.id,
       photoUrl:
-        "https://images.unsplash.com/photo-1592198084033-aade902d1aae?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://linglaotgbph7idj.public.blob.vercel-storage.com/2021_Ferrari_F8_Tributo-Z9uuYxEmCx1XcxpYH52nI0oHiLbqJZ.jpg?download=1",
       make: "Ferrari",
       model: "F8 Tributo",
       year: 2020,
@@ -83,7 +81,6 @@ async function firstSeed() {
     },
   });
 
-  // https://unsplash.com/photos/black-audi-a-4-on-road-during-daytime-aNwtUkpb3cU
   const practicalSUV = await prisma.car.upsert({
     where: { id: 2 },
     update: {},
@@ -92,6 +89,8 @@ async function firstSeed() {
       make: "Toyota",
       model: "Highlander",
       year: 2021,
+      photoUrl:
+        "https://linglaotgbph7idj.public.blob.vercel-storage.com/Highlander_XSE-uAtUggxqVniafxdL72PWRnipeHSy9B.jpg?download=1",
       colour: CarColour.BLACK,
       seats: 7,
       description:
