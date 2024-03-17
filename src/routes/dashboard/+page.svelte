@@ -23,7 +23,6 @@
   import { page } from "$app/stores";
   import ReservationTable from "$lib/components/ReservationTable.svelte";
   import { replaceState } from "$app/navigation";
-  import { UserRole } from "@prisma/client";
 
   export let data;
   export const now = new Date();
@@ -97,7 +96,7 @@
           ),
         }}
         tabStatus={tabSet}
-        role={data.user?.role || UserRole.CUSTOMER} />
+        role={data.user?.role} />
     {:else if tabSet === "in-progress"}
       <ReservationTable
         table={{
@@ -107,12 +106,12 @@
           ),
         }}
         tabStatus={tabSet}
-        role={data.user?.role || UserRole.CUSTOMER} />
+        role={data.user?.role} />
     {:else if tabSet === "expired"}
       <ReservationTable
         active={false}
         tabStatus={tabSet}
-        role={data.user?.role || UserRole.CUSTOMER}
+        role={data.user?.role}
         table={{
           ...table,
           body: table.body.filter((res) => res.returnedAt),
@@ -121,7 +120,7 @@
       <ReservationTable
         active={false}
         tabStatus={tabSet}
-        role={data.user?.role || UserRole.CUSTOMER}
+        role={data.user?.role}
         table={{
           ...table,
           body: table.body.filter((res) => res.cancelled || res.replacedBy),

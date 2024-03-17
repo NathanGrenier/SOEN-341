@@ -23,7 +23,7 @@
   export let table: TableType;
   export let active = true;
   export let tabStatus: TabStatus;
-  export let role: UserRole;
+  export let role: UserRole = "CUSTOMER";
 
   onMount(async () => {
     // Load the current page from the store
@@ -128,7 +128,6 @@
 {:else}
   <div class="flex flex-col gap-2">
     <div class="table-interactive table-container">
-      <!-- TODO: Add `table-interactive to the class` -->
       <table class="table">
         <thead>
           <tr>
@@ -153,13 +152,13 @@
               <td>{row.quotedPrice}</td>
               {#if active}
                 <td class="table-cell-fit flex w-full flex-col gap-2">
-                  {#if role === UserRole.REP && row.pickedUpAt}
+                  {#if role === "REP" && row.pickedUpAt}
                     <a
                       href="/check-out?res={row.id}"
                       class="variant-filled-secondary btn"
                       ><span>Check-out</span><ClipboardListIcon
                         constColor={true} /></a>
-                  {:else if role === UserRole.REP}
+                  {:else if role === "REP"}
                     <a
                       href="/check-in?res={row.id}"
                       class="variant-filled-success btn"
