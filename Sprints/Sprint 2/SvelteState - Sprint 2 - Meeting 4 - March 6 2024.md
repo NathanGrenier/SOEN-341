@@ -73,7 +73,7 @@
 
 ### Sharing of Information
 
-- Gonna have to show each branch separately; auth branch can be merged.
+- Gonna have to show each branch separately; Auth branch can be merged.
 
 - When not signed in, the regular home page is shown. When signed in, the client
   dashboard will be shown.
