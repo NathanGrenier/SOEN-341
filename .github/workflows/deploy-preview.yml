@@ -38,7 +38,7 @@ jobs:
         id: get_pull_request_branch_name
         run: |
           branch_name=${{ github.event.pull_request.head.ref }}
-          echo "branch_name=${pull_request_sha}" >> $GITHUB_OUTPUT
+          echo "branch_name=${branch_name}" >> $GITHUB_OUTPUT
           echo $branch_name
 
       - name: Neon Database Create Branch Action
