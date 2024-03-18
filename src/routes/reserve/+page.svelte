@@ -46,11 +46,35 @@
   }
 
   function formatDate(dateString: string | number) {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    const components = dateString.toString().split("-");
+    const year = parseInt(components[0]);
+    const month = parseInt(components[1]);
+    const day = parseInt(components[2]);
+
+    // Validate the components
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      throw new Error("Invalid date format");
+    }
+
+    return new Date(year, month - 1, day).toLocaleDateString(undefined, {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
+  }
+
+  function parseDate(dateString: string): Date {
+    const [yearStr, monthStr, dayStr] = dateString.split("-");
+    const year = parseInt(yearStr);
+    const month = parseInt(monthStr) - 1; // Months in JavaScript are 0-indexed
+    const day = parseInt(dayStr);
+
+    // Validate the parsed components
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      throw new Error("Invalid date format");
+    }
+
+    return new Date(year, month, day);
   }
 
   function handleReserve() {
@@ -215,11 +239,11 @@
                   checkInLicenseNumber: null,
                   checkInLicenseIssuingJurisdiction: null,
                   plannedDepartureAt: convertDateToSpecificTimezone(
-                    new Date(startDate),
+                    parseDate(startDate),
                     currentBranch.timezone,
                   ),
                   plannedReturnAt: convertDateToSpecificTimezone(
-                    new Date(endDate),
+                    parseDate(endDate),
                     currentBranch.timezone,
                   ),
                   pickedUpAt: null,
