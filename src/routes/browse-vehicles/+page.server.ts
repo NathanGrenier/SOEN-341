@@ -17,16 +17,12 @@ function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
 }
 
 export const load: PageServerLoad = async () => {
-  async function getCars() {
-    const cars = await prisma.car.findMany({
-      include: { reservations: true },
-    });
+  const cars = await prisma.car.findMany({
+    include: { reservations: true },
+  });
 
-    if (!cars || cars.length === 0) {
-      error(404, "No cars found matching query");
-    }
-
-    return cars;
+  if (!cars || cars.length === 0) {
+    error(404, "No cars found matching query");
   }
 
   const branches = await prisma.branch.findMany();
@@ -36,7 +32,7 @@ export const load: PageServerLoad = async () => {
   }
 
   return {
-    cars: await getCars(),
+    cars,
     branches,
   };
 };

@@ -1,6 +1,5 @@
 <script lang="ts">
   import {
-    RangeSlider,
     type PaginationSettings,
     type ModalComponent,
     type ToastSettings,
@@ -10,41 +9,52 @@
     type ModalSettings,
     Paginator,
   } from "@skeletonlabs/skeleton";
-  import {} from "@skeletonlabs/skeleton";
   import { TreeView, TreeViewItem } from "@skeletonlabs/skeleton";
   import { getToastStore } from "@skeletonlabs/skeleton";
   import type { Car } from "@prisma/client";
   import { ProgressRadial } from "@skeletonlabs/skeleton";
   import ViewCarModal from "$lib/components/modals/ViewCarModal.svelte";
+  import RangeSlider from "svelte-range-slider-pips";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import { onMount } from "svelte";
 
   export let data;
 
   const modalStore = getModalStore();
   const toastStore = getToastStore();
 
-  let minimumPrice = 0;
-  let maximumPrice = 2000;
   let { cars } = data;
+  const maximumPrice = Math.max(...cars.map((car) => car.dailyPrice)) / 100;
+  const minimumPrice = Math.min(...cars.map((car) => car.dailyPrice)) / 100;
+  let values = [minimumPrice, maximumPrice];
   let { branches } = data;
   let selectedCarColour = "No Specific Color";
   let selectedBranch = -1;
+  let isLoading = false;
+  const UTCtoday = new Date();
+  const today = UTCtoday.toISOString().split("T")[0];
+  let startDate = today;
+  let endDate = today;
+  const uniqueColors = [...new Set(cars.map((car) => car.colour))];
+
+  onMount(() => {
+    if ($page.url.searchParams.get("carId")) {
+      const popUpCar = cars.find(
+        (car) => car.id == Number($page.url.searchParams.get("carId")),
+      );
+
+      if (!popUpCar) return;
+
+      showPopup(popUpCar);
+    }
+  });
 
   $: paginatedCars = cars.slice(
     paginationSettings.page * paginationSettings.limit,
     paginationSettings.page * paginationSettings.limit +
       paginationSettings.limit,
   );
-
-  let isLoading = false;
-
-  const UTCtoday = new Date();
-
-  const today = UTCtoday.toISOString().split("T")[0];
-
-  let startDate = today;
-  let endDate = today;
-
-  const uniqueColors = [...new Set(cars.map((car) => car.colour))];
 
   const handleStartDateChange = (event: Event) => {
     const eventTarget = event.target as HTMLTextAreaElement;
@@ -76,6 +86,8 @@
   }
 
   function showPopup(car: Car) {
+    goto(`/browse-vehicles`);
+
     const branchWithTimezone = branches.find(
       (branch) => branch.id === car.branchId,
     );
@@ -91,11 +103,14 @@
     const modal: ModalSettings = {
       type: "component",
       component: modalComponent,
+      response: (r: boolean | undefined) => {
+        if (!r) goto("/browse-vehicles");
+      },
     };
 
     modalStore.trigger(modal);
 
-    return null;
+    goto(`/browse-vehicles?carId=${car.id}`);
   }
 
   function handleFilter(): void {
@@ -103,8 +118,8 @@
     isLoading = true;
     const formData = new FormData();
     formData.append("colour", selectedCarColour);
-    formData.append("minPrice", minimumPrice.toString());
-    formData.append("maxPrice", maximumPrice.toString());
+    formData.append("minPrice", values[0].toString());
+    formData.append("maxPrice", values[1].toString());
     formData.append("startDate", startDate);
     formData.append("endDate", endDate);
 
@@ -128,17 +143,14 @@
       .then((data) => {
         const jsonData = JSON.parse(data.data);
 
-        const cars = [];
+        const fetchedCars = [];
 
         for (const item of jsonData) {
           const parsedItem = JSON.parse(item);
-          cars.push(parsedItem);
+          fetchedCars.push(parsedItem);
         }
 
-        return cars;
-      })
-      .then((formattedCars) => {
-        const flattenedCars = formattedCars.reduce((acc, current) => {
+        const flattenedCars = fetchedCars.reduce((acc, current) => {
           return acc.concat(current);
         }, []);
 
@@ -177,27 +189,20 @@
               {/each}
             </select>
           </label>
-          <div class="grid grid-cols-2 gap-6">
-            <div class="col">
-              <RangeSlider
-                name="range-slider"
-                bind:value={minimumPrice}
-                min={0}
-                max={750}
-                step={5}
-                ticked>Minimum Price</RangeSlider>
-              <span class="price-display">${minimumPrice}</span>
-            </div>
-            <div class="col">
-              <RangeSlider
-                name="range-slider"
-                bind:value={maximumPrice}
-                min={minimumPrice}
-                max={1000}
-                step={10}
-                ticked>Maximum Price</RangeSlider>
-              <span class="price-display">${maximumPrice}</span>
-            </div>
+          <div class="row py-6">
+            <p class="pb-6">Minimum and Maximum Price</p>
+            <RangeSlider
+              bind:values
+              min={minimumPrice}
+              max={maximumPrice}
+              range
+              pips
+              pushy
+              pipstep={40}
+              float
+              first="label"
+              suffix="$"
+              last="label" />
           </div>
           <div class="grid grid-cols-2 gap-6">
             <div class="col">
@@ -224,7 +229,7 @@
             </div>
           </div>
           <button
-            class="btn mx-auto block w-20 bg-tertiary-500"
+            class="btn mx-auto block w-20 bg-primary-500"
             on:click={handleFilter}>Filter</button>
         </div>
       </svelte:fragment>
@@ -248,7 +253,7 @@
 <div class="my-2 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
   {#each paginatedCars as car}
     <div class="card bg-secondary-500">
-      <div class="p-4">
+      <div class="card p-4">
         <img
           src={car.photoUrl || "https://placehold.co/600x400"}
           alt="Car"
@@ -257,7 +262,7 @@
         <p>{car.description}</p>
         <button
           on:click={showPopup(car)}
-          class="btn mx-auto mt-2 block bg-tertiary-500">
+          class="btn mx-auto mt-2 block bg-primary-500">
           Show Details
         </button>
       </div>
@@ -270,3 +275,27 @@
   showFirstLastButtons={false}
   showPreviousNextButtons={true}
   amountText="Cars" />
+
+<style>
+  :root {
+    --range-slider: hwb(180 46% 51%);
+    --range-handle-inactive: hsl(180, 4.6%, 61.8%);
+    --range-handle: neon-green;
+    --range-handle-focus: hsl(244.1, 63.2%, 54.1%);
+    --range-handle-border: neon-green;
+    --range-range-inactive: hsl(180, 4.6%, 61.8%);
+    --range-range: hsl(244.1, 63.2%, 54.1%);
+    --range-float-inactive: hsl(180, 4.6%, 61.8%);
+    --range-float: hsl(244.1, 63.2%, 54.1%);
+    --range-float-text: hsl(0, 0%, 100%);
+
+    --range-pip: hsl(210, 14.3%, 53.3%);
+    --range-pip-text: hsl(210, 14.3%, 53.3%);
+    --range-pip-active: hsl(180, 25.4%, 24.7%);
+    --range-pip-active-text: hsl(180, 25.4%, 24.7%);
+    --range-pip-hover: hsl(180, 25.4%, 24.7%);
+    --range-pip-hover-text: hsl(180, 25.4%, 24.7%);
+    --range-pip-in-range: hsl(180, 25.4%, 24.7%);
+    --range-pip-in-range-text: hsl(180, 25.4%, 24.7%);
+  }
+</style>

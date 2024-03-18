@@ -3,8 +3,8 @@
   import { getModalStore } from "@skeletonlabs/skeleton";
   import flatpickr from "flatpickr";
   import { onMount } from "svelte";
-  import "flatpickr/dist/themes/dark.css";
   import type { Reservation } from "@prisma/client";
+  import { formatDateToYYYYMMDD, setFlatpickrTheme } from "$lib/utils";
 
   export let car: Car & { reservations: Reservation[] };
   export let timezone: string;
@@ -14,7 +14,7 @@
   let ref: Node;
   let startDate: string;
   let endDate: string;
-
+  let displayModal = false;
   let disabledBookButton = true;
 
   let disable = car.reservations
@@ -52,6 +52,10 @@
         disabledBookButton = false;
       },
     });
+
+    setFlatpickrTheme();
+
+    displayModal = true;
   });
 
   function convertDateToUserTimezone(
@@ -67,22 +71,13 @@
     return userDate;
   }
 
-  function formatDateToYYYYMMDD(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  }
-
   function redirectToBooking(): void {
     const dateRange = startDate + "~" + endDate;
-    const redirectUrl = `/reserve?carId=${car.id}&dateRange=${dateRange}&branchId=${car.branchId}`;
-    window.location.href = redirectUrl;
+    window.location.href = `/reserve?carId=${car.id}&dateRange=${dateRange}&branchId=${car.branchId}`;
   }
 </script>
 
-{#if $modalStore[0]}
+{#if $modalStore[0] && displayModal}
   <div class="card flex flex-col justify-between p-4">
     <div class="grid grid-cols-2 gap-x-4">
       <div class="my-auto w-96 space-y-4">
@@ -103,8 +98,8 @@
         <div class="flex justify-center">
           <h3 class="h3">Select a Date Range</h3>
         </div>
-        <div class="ml-5 space-y-4">
-          <input class="ml-12 block bg-secondary-800" bind:this={ref} />
+        <div class="ml-7 space-y-4">
+          <input class="input block w-11/12" bind:this={ref} />
         </div>
         <button
           class="btn mx-auto mt-2 block rounded bg-primary-500 px-4 py-2"

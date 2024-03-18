@@ -40,7 +40,7 @@
         <div class="grid-item">
           <!-- TODO: Change the url to the actual path -->
 
-          <a class="card card-hover" href={`/cars/${car.id}`}>
+          <a class="card card-hover" href={`/browse-vehicles?carId=${car.id}`}>
             <!-- TODO: Change the url to `{car.photoURL}`-->
             <img
               src="../../../tempCar.png"
