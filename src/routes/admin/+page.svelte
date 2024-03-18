@@ -1,9 +1,10 @@
 <script lang="ts">
   import userModal from "./crud-forms/user-form.svelte";
+  import carModal from "./crud-forms/car-form.svelte";
 
   const modalStore = getModalStore();
 
-  function executeUserModal(id: number, mode: string) {
+  function executeUserEditModal(id: number, mode: string) {
     const modalComponent: ModalComponent = {
       ref: userModal,
       props: { id: id, mode: mode },
@@ -14,6 +15,19 @@
       component: modalComponent,
     };
     modalStore.trigger(userEditModal);
+  }
+
+  function executeCarEditModal(id: number, mode: string) {
+    const modalComponent: ModalComponent = {
+      ref: carModal,
+      props: { id: id, mode: mode },
+    };
+
+    const carEditModal: ModalSettings = {
+      type: "component",
+      component: modalComponent,
+    };
+    modalStore.trigger(carEditModal);
   }
 
   import {
@@ -89,9 +103,9 @@
       (item: { id: any }) => item.id === selectedRowId,
     );
     if (selectedKey === 1) {
-      executeUserModal(selectedRowId, "edit");
+      executeUserEditModal(selectedRowId, "edit");
     } else if (selectedKey === 2) {
-      console.log("Car selected.");
+      executeCarEditModal(selectedRowId, "edit");
     } else if (selectedKey === 3) {
       console.log("Reservation selected.");
     } else {
@@ -236,10 +250,28 @@
             {#if isLoading}
               <h1 class="h1">Loading...</h1>
             {:else}
-              <Datatable
-                fetchCase={selectedKey}
-                on:rowClick={handleRowClick}
-                userData={fetchedData} />
+              <div class="container">
+                <Datatable
+                  fetchCase={selectedKey}
+                  on:rowClick={handleRowClick}
+                  userData={fetchedData} />
+                <button
+                  on:click={() => {
+                    if (selectedKey === 1) {
+                      executeUserEditModal(-1, "create");
+                    } else if (selectedKey === 2) {
+                      executeCarEditModal(-1, "create");
+                    } else if (selectedKey === 3) {
+                      console.log("Reservation selected.");
+                    } else {
+                      console.log("Error: No key / button / type selected.");
+                    }
+                  }}
+                  type="button"
+                  class="variant-filled btn float-right font-bold">
+                  New Entry
+                </button>
+              </div>
             {/if}
           {/key}
         {:else}

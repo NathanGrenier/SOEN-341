@@ -77,6 +77,15 @@
 
     // Perform form validation (more on this later)
     if (!validateForm()) return; // Prevent submission if invalid
+    console.log("heyui");
+    console.log({
+      name: event.target.name.value,
+      email: event.target.email.value,
+      role: event.target.role.value,
+      disabled: event.target.disabled.checked,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
     let result = createUser({
       name: event.target.name.value,
@@ -156,7 +165,6 @@
           <option value={role} selected={role === data.role}>{role}</option>
         {/each}
       </select>
-      <!-- <Select items={userRoles} bind:value={data.role} /> -->
 
       <button class="button" type="submit"> Create User </button>
     </form>
