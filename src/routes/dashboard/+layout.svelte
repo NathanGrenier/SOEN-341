@@ -38,22 +38,24 @@
 </script>
 
 <div class="flex flex-col gap-2">
-  <div class="card w-fit p-2">
-    <ol class="breadcrumb">
-      {#each links as link (link.identifier)}
-        {#if routes.some((route) => route.includes(link.identifier))}
-          <li class="crumb">
-            <a class="anchor flex gap-2" href={link.href} title={link.title}>
-              <svelte:component this={link.icon} />
-              <span>{link.name}</span>
-            </a>
-          </li>
-          {#if !routes[routes.length - 1].includes(link.identifier)}
-            <li class="crumb-separator" aria-hidden>&rsaquo;</li>
+  {#if !$page.error}
+    <div class="card w-fit p-2">
+      <ol class="breadcrumb">
+        {#each links as link (link.identifier)}
+          {#if routes.some((route) => route.includes(link.identifier))}
+            <li class="crumb">
+              <a class="anchor flex gap-2" href={link.href} title={link.title}>
+                <svelte:component this={link.icon} />
+                <span>{link.name}</span>
+              </a>
+            </li>
+            {#if !routes[routes.length - 1].includes(link.identifier)}
+              <li class="crumb-separator" aria-hidden>&rsaquo;</li>
+            {/if}
           {/if}
-        {/if}
-      {/each}
-    </ol>
-  </div>
+        {/each}
+      </ol>
+    </div>
+  {/if}
   <slot />
 </div>
