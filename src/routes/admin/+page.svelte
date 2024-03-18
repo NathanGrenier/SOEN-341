@@ -1,10 +1,28 @@
 <script lang="ts">
-  import Datatable from "./Datatable.svelte";
+  import userModal from "./crud-forms/user-form.svelte";
+
+  const modalStore = getModalStore();
+
+  function executeUserModal(id: number, mode: string) {
+    const modalComponent: ModalComponent = {
+      ref: userModal,
+      props: { id: id, mode: mode },
+    };
+
+    const userEditModal: ModalSettings = {
+      type: "component",
+      component: modalComponent,
+    };
+    modalStore.trigger(userEditModal);
+  }
+
   import {
     getAllUsers,
     updateUser,
     createUser,
   } from "$lib/controllers/userController";
+
+  import Datatable from "./Datatable.svelte";
   import {
     getAllReservations,
     updateReservation,
@@ -15,6 +33,11 @@
     updateCar,
     createCar,
   } from "$lib/controllers/carController";
+  import {
+    getModalStore,
+    type ModalComponent,
+    type ModalSettings,
+  } from "@skeletonlabs/skeleton";
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let fetchedData: any;
@@ -58,12 +81,22 @@
 
   let selectedRowId: number = -1;
   let selectedData: ArrayLike<unknown> | { [s: string]: unknown };
+
   function handleRowClick(event: { detail: number }) {
     selectedRowId = event.detail;
     selectedData = fetchedData.find(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (item: { id: any }) => item.id === selectedRowId,
     );
+    if (selectedKey === 1) {
+      executeUserModal(selectedRowId, "edit");
+    } else if (selectedKey === 2) {
+      console.log("Car selected.");
+    } else if (selectedKey === 3) {
+      console.log("Reservation selected.");
+    } else {
+      console.log("Error: No key / button / type selected.");
+    }
 
     console.log(selectedData);
   }
@@ -124,29 +157,6 @@
   }
 
   async function handleCreate() {
-    // let dataCopy = { ...selectedData };
-
-    // delete (dataCopy as { [x: string]: unknown }).id;
-
-    // const convertValue = (value) => {
-    //   // Check if the value is an empty string and return it as is
-    //   if (value === "") return value;
-
-    //   // Attempt to convert to a Number
-    //   const numberValue = Number(value);
-    //   if (!isNaN(numberValue) && value !== "") return numberValue; // Return the number if it's a valid conversion
-
-    //   // Attempt to convert to a Boolean
-    //   if (value.toLowerCase() === "true") return true;
-    //   if (value.toLowerCase() === "false") return false;
-
-    //   // Default to string if no other conversions apply
-    //   return value;
-    // };
-
-    // const convertedData = Object.fromEntries(
-    //   Object.entries(dataCopy).map(([key, value]) => [key, convertValue(value)]),
-    // );
     let returnedObject;
     if (selectedKey === 1) {
       const randomObject = {
@@ -212,78 +222,6 @@
 
     console.log(returnedObject); // Log the modified copy to the console
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // function convertToType(
-  //   selectedKey: number,
-  //   data: { [key: string]: string },
-  // ): User | Car | Reservation {
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   let convertedData: any = {};
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   let targetType: any;
-  //   switch (selectedKey) {
-  //     case 1:
-  //       targetType: User;
-  //       break;
-  //     case 2:
-  //       targetType: Car;
-  //       break;
-  //     case 3:
-  //       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //       targetType: Reservation;
-  //       break;
-  //     default:
-  //       throw new Error("Invalid selectedKey");
-  //   }
-
-  //   for (let key in targetType) {
-  //     let value = data[key];
-
-  //     // Convert string to boolean if value is 'true' or 'false'
-  //     if (value === "true" || value === "false") {
-  //       convertedData[key] = value === "true";
-  //     }
-  //     // Convert string to number if value is numeric
-  //     else if (!isNaN(Number(value))) {
-  //       convertedData[key] = Number(value);
-  //     }
-  //     // Convert string to enum if value is a valid enum value
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     else if (UserRole[value] || CarColour[value]) {
-  //       convertedData[key] = value;
-  //     }
-  //     // Leave string as is
-  //     else if (value) {
-  //       convertedData[key] = value;
-  //     }
-  //     // If property is missing, add it with a random value of the correct type
-  //     else {
-  //       if (targetType[key] === "boolean") {
-  //         convertedData[key] = Math.random() >= 0.5;
-  //       } else if (targetType[key] === "number") {
-  //         convertedData[key] = Math.floor(Math.random() * 100);
-  //       } else if (targetType[key] === "string") {
-  //         convertedData[key] = Math.random().toString(36).substring(7);
-  //       } else if (targetType[key] === "UserRole") {
-  //         convertedData[key] =
-  //           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //           Object.values(UserRole)[
-  //             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //             Math.floor(Math.random() * Object.values(UserRole).length)
-  //           ];
-  //       } else if (targetType[key] === "CarColour") {
-  //         convertedData[key] =
-  //           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //           Object.values(CarColour)[
-  //             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //             Math.floor(Math.random() * Object.values(CarColour).length)
-  //           ];
-  //       }
-  //     }
-  //   }
-
-  //   return convertedData;
-  // }
 </script>
 
 <div class="card">
