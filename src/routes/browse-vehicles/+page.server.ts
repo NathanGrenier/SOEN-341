@@ -1,5 +1,5 @@
 import { prisma } from "$lib/db/client";
-import { error, redirect } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import type { Actions } from "./$types";
 import { CarColour, type Prisma } from "@prisma/client";
@@ -16,11 +16,7 @@ function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   return undefined;
 }
 
-export const load: PageServerLoad = async ({ locals }) => {
-  if (!locals.user) {
-    return redirect(300, "/auth/login?destination=/browse-vehicles");
-  }
-
+export const load: PageServerLoad = async () => {
   async function getCars() {
     const cars = await prisma.car.findMany({
       include: { reservations: true },
