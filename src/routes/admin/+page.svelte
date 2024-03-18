@@ -1,6 +1,7 @@
 <script lang="ts">
   import userModal from "./crud-forms/user-form.svelte";
   import carModal from "./crud-forms/car-form.svelte";
+  import resModal from "./crud-forms/reservation-form.svelte";
 
   const modalStore = getModalStore();
 
@@ -28,6 +29,19 @@
       component: modalComponent,
     };
     modalStore.trigger(carEditModal);
+  }
+
+  function executeResEditModal(id: number, mode: string) {
+    const modalComponent: ModalComponent = {
+      ref: resModal,
+      props: { id: id, mode: mode },
+    };
+
+    const resEditModal: ModalSettings = {
+      type: "component",
+      component: modalComponent,
+    };
+    modalStore.trigger(resEditModal);
   }
 
   import {
@@ -107,7 +121,7 @@
     } else if (selectedKey === 2) {
       executeCarEditModal(selectedRowId, "edit");
     } else if (selectedKey === 3) {
-      console.log("Reservation selected.");
+      executeResEditModal(selectedRowId, "edit");
     } else {
       console.log("Error: No key / button / type selected.");
     }
@@ -262,7 +276,7 @@
                     } else if (selectedKey === 2) {
                       executeCarEditModal(-1, "create");
                     } else if (selectedKey === 3) {
-                      console.log("Reservation selected.");
+                      executeResEditModal(-1, "create");
                     } else {
                       console.log("Error: No key / button / type selected.");
                     }
