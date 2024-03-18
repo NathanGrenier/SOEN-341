@@ -1,6 +1,6 @@
 import type { Branch, Car, Reservation } from "@prisma/client";
 import type { PageServerLoad } from "./$types";
-import { error, redirect } from "@sveltejs/kit";
+import { error, redirect, type Actions } from "@sveltejs/kit";
 import { prisma } from "$lib/db/client";
 
 function isValidDate(dateString: string | undefined) {
@@ -59,14 +59,15 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     }
   }
 
-  const car: Car | null = await prisma.car.findUnique({
-    where: {
-      id: carId,
-    },
-    include: {
-      reservations: true,
-    },
-  });
+  const car: (Car & { reservations: Reservation[] }) | null =
+    await prisma.car.findUnique({
+      where: {
+        id: carId,
+      },
+      include: {
+        reservations: true,
+      },
+    });
 
   const branch: Branch | null = await prisma.branch.findUnique({
     where: {
@@ -112,3 +113,41 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     currentBranch: branch,
   };
 };
+
+export const actions = {
+  default: async ({ request }) => {
+    const form = await request.formData();
+    const data = Object.fromEntries(form);
+
+    const reservationData: Omit<Reservation, "id"> = {
+      carId: data.carId ? parseInt(data.carId.toString(), 10) : 0,
+      holderId: data.holderId ? parseInt(data.holderId.toString(), 10) : 0,
+      quotedPrice: data.quotedPrice
+        ? parseInt(data.quotedPrice.toString(), 10) * 100
+        : 0,
+      cancelled: data.cancelled === "true",
+      plannedDepartureAt: data.plannedDepartureAt
+        ? new Date(data.plannedDepartureAt.toString())
+        : new Date(),
+      plannedReturnAt: data.plannedReturnAt
+        ? new Date(data.plannedReturnAt.toString())
+        : new Date(),
+      pickedUpAt: data.pickedUpAt ? new Date(data.pickedUpAt.toString()) : null,
+      returnedAt: data.returnedAt ? new Date(data.returnedAt.toString()) : null,
+      createdAt: data.createdAt
+        ? new Date(data.createdAt.toString())
+        : new Date(),
+      updatedAt: data.updatedAt
+        ? new Date(data.updatedAt.toString())
+        : new Date(),
+      replacesId: null,
+      checkInNotes: null,
+      checkInLicenseNumber: null,
+      checkInLicenseIssuingJurisdiction: null,
+    };
+
+    return await prisma.reservation.create({
+      data: reservationData,
+    });
+  },
+} satisfies Actions;

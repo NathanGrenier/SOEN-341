@@ -74,10 +74,15 @@
   }
 
   function showPopup(car: Car) {
+    const branchWithTimezone = branches.find(
+      (branch) => branch.id === car.branchId,
+    );
+
     const modalComponent: ModalComponent = {
       ref: ViewCarModal,
       props: {
         car: car,
+        timezone: branchWithTimezone?.timezone,
       },
     };
 

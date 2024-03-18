@@ -7,17 +7,30 @@
   import type { Reservation } from "@prisma/client";
 
   export let car: Car & { reservations: Reservation[] };
+  export let timezone: string;
 
   const modalStore = getModalStore();
 
-  let ref;
+  let ref: Node;
+  let startDate: string;
+  let endDate: string;
+
+  let disabledBookButton = true;
 
   let disable = car.reservations
     .filter((reservation: Reservation) => !reservation.cancelled)
     .map((reservation) => {
+      console.log(reservation.plannedDepartureAt);
+      console.log(
+        convertDateToUserTimezone(reservation.plannedDepartureAt, timezone) +
+          " haha",
+      );
       return {
-        from: reservation.plannedDepartureAt,
-        to: reservation.plannedReturnAt,
+        from: convertDateToUserTimezone(
+          reservation.plannedDepartureAt,
+          timezone,
+        ),
+        to: convertDateToUserTimezone(reservation.plannedReturnAt, timezone),
       };
     });
 
@@ -30,19 +43,33 @@
       minDate: new Date(),
       disable: disable,
       onChange: (selectedDates) => {
-        if (selectedDates.length !== 2) return;
-        startDate = formatDate(selectedDates[0]);
-        endDate = formatDate(selectedDates[1]);
+        if (selectedDates.length !== 2) {
+          disabledBookButton = true;
+          return;
+        }
+        startDate = formatDateToYYYYMMDD(selectedDates[0]);
+        endDate = formatDateToYYYYMMDD(selectedDates[1]);
+        disabledBookButton = false;
       },
     });
   });
 
-  let startDate: string;
-  let endDate: string;
+  function convertDateToUserTimezone(
+    date: Date,
+    originalTimezone: string,
+  ): Date {
+    const dateStringInOriginalTimezone = date.toLocaleString("en-US", {
+      timeZone: originalTimezone,
+    });
 
-  function formatDate(date: Date): string {
+    const userDate = new Date(dateStringInOriginalTimezone);
+
+    return userDate;
+  }
+
+  function formatDateToYYYYMMDD(date: Date): string {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
@@ -81,7 +108,8 @@
         </div>
         <button
           class="btn mx-auto mt-2 block rounded bg-primary-500 px-4 py-2"
-          on:click={redirectToBooking}>Book Now</button>
+          on:click={redirectToBooking}
+          disabled={disabledBookButton}>Book Now</button>
       </div>
     </div>
   </div>
