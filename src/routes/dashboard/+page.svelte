@@ -23,6 +23,7 @@
   import { page } from "$app/stores";
   import ReservationTable from "$lib/components/ReservationTable.svelte";
   import { replaceState } from "$app/navigation";
+  import { centsToDollars } from "$lib/util";
 
   export let data;
   export const now = new Date();
@@ -33,9 +34,9 @@
     return reservations.map((item) => {
       return {
         ...item,
-        plannedDepartureAt: new Date(item.plannedDepartureAt).toLocaleString(),
-        plannedReturnAt: new Date(item.plannedReturnAt).toLocaleString(),
-        quotedPrice: `$${(item.quotedPrice / 100).toFixed(2)}`, // Price in cents
+        plannedDepartureAt: item.plannedDepartureAt.toLocaleString(),
+        plannedReturnAt: item.plannedReturnAt.toLocaleString(),
+        quotedPrice: centsToDollars(item.quotedPrice),
       };
     });
   }
