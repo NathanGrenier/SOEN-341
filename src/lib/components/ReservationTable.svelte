@@ -124,7 +124,6 @@
 {:else}
   <div class="flex flex-col gap-2">
     <div class="table-container">
-      <!-- TODO: Add `table-interactive to the class` -->
       <table class="table">
         <thead>
           <tr>

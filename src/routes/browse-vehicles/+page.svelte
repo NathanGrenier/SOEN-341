@@ -13,7 +13,7 @@
   import {} from "@skeletonlabs/skeleton";
   import { TreeView, TreeViewItem } from "@skeletonlabs/skeleton";
   import { getToastStore } from "@skeletonlabs/skeleton";
-  import { CarColour, type Car } from "@prisma/client";
+  import type { Car } from "@prisma/client";
   import { ProgressRadial } from "@skeletonlabs/skeleton";
   import ViewCarModal from "$lib/components/modals/ViewCarModal.svelte";
 
@@ -43,6 +43,8 @@
 
   let startDate = today;
   let endDate = today;
+
+  const uniqueColors = [...new Set(cars.map((car) => car.colour))];
 
   const handleStartDateChange = (event: Event) => {
     const eventTarget = event.target as HTMLTextAreaElement;
@@ -161,7 +163,7 @@
             <span>Car Color</span>
             <select class="select" bind:value={selectedCarColour}>
               <option value={"No Specific Color"}>No Specific Color</option>
-              {#each Object.values(CarColour) as colour}
+              {#each uniqueColors as colour}
                 <option value={colour}>{toTitleCase(colour)}</option>
               {/each}
             </select>
