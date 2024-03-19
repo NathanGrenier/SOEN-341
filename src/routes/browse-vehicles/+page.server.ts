@@ -92,34 +92,38 @@ export const actions = {
       include: { reservations: true },
     });
 
-    const filteredCars = cars.filter((car) => {
-      const conflict = car.reservations.some((reservation) => {
-        if (reservation.cancelled) {
-          return false;
-        }
+    if (data.startDate && data.endDate) {
+      const filteredCars = cars.filter((car) => {
+        const conflict = car.reservations.some((reservation) => {
+          if (reservation.cancelled) {
+            return false;
+          }
 
-        const reservationStartDate = new Date(
-          reservation.plannedDepartureAt,
-        ).toISOString();
-        const reservationEndDate = new Date(
-          reservation.plannedReturnAt,
-        ).toISOString();
-        const startDateObj = data.startDate.toString();
-        const endDateObj = data.endDate.toString();
+          const reservationStartDate = new Date(
+            reservation.plannedDepartureAt,
+          ).toISOString();
+          const reservationEndDate = new Date(
+            reservation.plannedReturnAt,
+          ).toISOString();
+          const startDateObj = data.startDate.toString();
+          const endDateObj = data.endDate.toString();
 
-        return (
-          (startDateObj >= reservationStartDate &&
-            startDateObj <= reservationEndDate) ||
-          (endDateObj >= reservationStartDate &&
-            endDateObj <= reservationEndDate) ||
-          (startDateObj <= reservationStartDate &&
-            endDateObj >= reservationEndDate)
-        );
+          return (
+            (startDateObj >= reservationStartDate &&
+              startDateObj <= reservationEndDate) ||
+            (endDateObj >= reservationStartDate &&
+              endDateObj <= reservationEndDate) ||
+            (startDateObj <= reservationStartDate &&
+              endDateObj >= reservationEndDate)
+          );
+        });
+
+        return !conflict;
       });
 
-      return !conflict;
-    });
+      return JSON.stringify(filteredCars);
+    }
 
-    return JSON.stringify(filteredCars);
+    return JSON.stringify(cars);
   },
 } satisfies Actions;

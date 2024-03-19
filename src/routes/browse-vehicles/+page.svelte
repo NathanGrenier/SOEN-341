@@ -133,11 +133,17 @@
     cars = [];
     isLoading = true;
     const formData = new FormData();
-    formData.append("colour", selectedCarColour);
+
+    if (selectedCarColour !== "No Specific Colour")
+      formData.append("colour", selectedCarColour);
+
     formData.append("minPrice", values[0].toString());
     formData.append("maxPrice", values[1].toString());
-    formData.append("startDate", startDate.toISOString());
-    formData.append("endDate", endDate.toISOString());
+
+    if (startDate && endDate) {
+      formData.append("startDate", startDate.toISOString());
+      formData.append("endDate", endDate.toISOString());
+    }
 
     fetch("", {
       method: "POST",
@@ -251,7 +257,7 @@
   </div>
 {:else if cars.length === 0}
   <div class="mt-2 flex flex-col items-center justify-center">
-    <p class="card p-4">No cars found</p>
+    <p class="card my-12 p-4">No cars found</p>
   </div>
 {/if}
 
@@ -295,9 +301,9 @@
     --range-float-text: hsl(0, 0%, 100%);
 
     --range-pip: hsl(210, 14.3%, 53.3%);
-    --range-pip-text: hsl(210, 14.3%, 53.3%);
+    --range-pip-text: hsl(211, 38%, 75%);
     --range-pip-active: hsl(180, 25.4%, 24.7%);
-    --range-pip-active-text: hsl(180, 25.4%, 24.7%);
+    --range-pip-active-text: hsl(180, 39%, 60%);
     --range-pip-hover: hsl(180, 25.4%, 24.7%);
     --range-pip-hover-text: hsl(180, 25.4%, 24.7%);
     --range-pip-in-range: hsl(123, 70%, 42%);
