@@ -2,6 +2,7 @@
   import type { SvelteComponent } from "svelte";
   import { getModalStore } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
+  import ImageBlob from "../blob/blobCrud.svelte";
 
   const CarColour = {
     BLACK: "BLACK",
@@ -178,7 +179,7 @@
         id="description"
         name="description"
         bind:value={data.description}></textarea>
-
+      <ImageBlob imageBlobUrl={data.photoUrl} bind:data={data.photoUrl} />
       <label class="label" for="photoUrl">Photo URL:</label>
       <input
         class="input"
