@@ -45,7 +45,6 @@
     center.lng = longitude;
     center.lat = latitude;
     zoom = 10;
-    console.log(zoom);
     return null;
   }
 
@@ -55,6 +54,12 @@
     return null;
   }
 </script>
+
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://npmcdn.com/maplibre-gl/dist/maplibre-gl.css"
+  id="maplibre-css" />
 
 <div class="grid grid-cols-4 gap-4 overflow-hidden">
   <div class="col-span-3">
