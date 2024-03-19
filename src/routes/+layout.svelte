@@ -40,6 +40,7 @@
     storePopup,
     type PopupSettings,
   } from "@skeletonlabs/skeleton";
+  import type { ModalComponent } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import MobileNavigation from "$lib/components/MobileNavigation.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
@@ -53,7 +54,7 @@
   initializeStores();
 
   export let data;
-  const modalRegistry = {
+  const modalRegistry: Record<string, ModalComponent> = {
     modalComponentTest: { ref: ModalComponentTest },
   };
 
