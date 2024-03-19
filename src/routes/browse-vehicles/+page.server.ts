@@ -16,10 +16,23 @@ function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   return undefined;
 }
 
-export const load: PageServerLoad = async () => {
-  const cars = await prisma.car.findMany({
-    include: { reservations: true },
-  });
+export const load: PageServerLoad = async ({ url }) => {
+  const branchId = url.searchParams.get("branchId");
+
+  let cars;
+
+  if (branchId) {
+    cars = await prisma.car.findMany({
+      where: {
+        branchId: parseInt(branchId),
+      },
+      include: { reservations: true },
+    });
+  } else {
+    cars = await prisma.car.findMany({
+      include: { reservations: true },
+    });
+  }
 
   if (!cars || cars.length === 0) {
     error(404, "No cars found matching query");
@@ -34,6 +47,7 @@ export const load: PageServerLoad = async () => {
   return {
     cars,
     branches,
+    branchId,
   };
 };
 
@@ -84,10 +98,14 @@ export const actions = {
           return false;
         }
 
-        const reservationStartDate = new Date(reservation.plannedDepartureAt);
-        const reservationEndDate = new Date(reservation.plannedReturnAt);
-        const startDateObj = new Date(data.startDate.toString());
-        const endDateObj = new Date(data.endDate.toString());
+        const reservationStartDate = new Date(
+          reservation.plannedDepartureAt,
+        ).toISOString();
+        const reservationEndDate = new Date(
+          reservation.plannedReturnAt,
+        ).toISOString();
+        const startDateObj = data.startDate.toString();
+        const endDateObj = data.endDate.toString();
 
         return (
           (startDateObj >= reservationStartDate &&

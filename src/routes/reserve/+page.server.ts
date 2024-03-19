@@ -5,8 +5,10 @@ import { prisma } from "$lib/db/client";
 
 function isValidDate(dateString: string | undefined) {
   if (!dateString) return false;
-  const regex = /^\d{4}-\d{2}-\d{2}$/;
-  return regex.test(dateString);
+
+  const dateObject = new Date(dateString);
+
+  return !isNaN(dateObject.getTime());
 }
 
 export const load: PageServerLoad = async ({ locals, url }) => {

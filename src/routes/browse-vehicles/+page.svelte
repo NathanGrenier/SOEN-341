@@ -3,6 +3,7 @@
     type PaginationSettings,
     type ModalComponent,
     type ToastSettings,
+    getModeUserPrefers,
   } from "@skeletonlabs/skeleton";
   import {
     getModalStore,
@@ -18,6 +19,8 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
+  import flatpickr from "flatpickr";
+  import { modeCurrent } from "@skeletonlabs/skeleton";
 
   export let data;
 
@@ -30,12 +33,26 @@
   let values = [minimumPrice, maximumPrice];
   let { branches } = data;
   let selectedCarColour = "No Specific Color";
-  let selectedBranch = -1;
+  let selectedBranch = Number(data.branchId) || -1;
   let isLoading = false;
-  const UTCtoday = new Date();
-  const today = UTCtoday.toISOString().split("T")[0];
-  let startDate = today;
-  let endDate = today;
+
+  let startDate: Date;
+  let endDate: Date;
+  let ref: Node;
+  let disableFilterButton = false;
+
+  let themeMode = getModeUserPrefers() ? "material_blue" : "dark";
+
+  $: {
+    themeMode = $modeCurrent ? "material_blue" : "dark";
+    onMount(() => {
+      const link = document.getElementById(
+        "flatpickr-theme",
+      ) as HTMLAnchorElement;
+      link.href = `https://npmcdn.com/flatpickr/dist/themes/${themeMode}.css`;
+    });
+  }
+
   const uniqueColors = [...new Set(cars.map((car) => car.colour))];
 
   onMount(() => {
@@ -48,6 +65,25 @@
 
       showPopup(popUpCar);
     }
+
+    flatpickr(ref, {
+      allowInput: true,
+      clickOpens: true,
+      minDate: new Date(),
+      static: true,
+      mode: "range",
+      enableTime: true,
+      position: "below center",
+      onChange: (selectedDates) => {
+        if (selectedDates.length === 2) {
+          startDate = selectedDates[0];
+          endDate = selectedDates[1];
+          disableFilterButton = false;
+        } else {
+          disableFilterButton = true;
+        }
+      },
+    });
   });
 
   $: paginatedCars = cars.slice(
@@ -55,22 +91,6 @@
     paginationSettings.page * paginationSettings.limit +
       paginationSettings.limit,
   );
-
-  const handleStartDateChange = (event: Event) => {
-    const eventTarget = event.target as HTMLTextAreaElement;
-    startDate = eventTarget.value;
-    if (startDate > endDate) {
-      endDate = startDate;
-    }
-  };
-
-  const handleEndDateChange = (event: Event) => {
-    const eventTarget = event.target as HTMLTextAreaElement;
-    endDate = eventTarget.value;
-    if (endDate < startDate) {
-      startDate = endDate;
-    }
-  };
 
   let paginationSettings = {
     page: 0,
@@ -86,17 +106,10 @@
   }
 
   function showPopup(car: Car) {
-    goto(`/browse-vehicles`);
-
-    const branchWithTimezone = branches.find(
-      (branch) => branch.id === car.branchId,
-    );
-
     const modalComponent: ModalComponent = {
       ref: ViewCarModal,
       props: {
         car: car,
-        timezone: branchWithTimezone?.timezone,
       },
     };
 
@@ -111,17 +124,20 @@
     modalStore.trigger(modal);
 
     goto(`/browse-vehicles?carId=${car.id}`);
+
+    return null;
   }
 
   function handleFilter(): void {
+    if ((startDate && !endDate) || (!startDate && endDate)) return;
     cars = [];
     isLoading = true;
     const formData = new FormData();
     formData.append("colour", selectedCarColour);
     formData.append("minPrice", values[0].toString());
     formData.append("maxPrice", values[1].toString());
-    formData.append("startDate", startDate);
-    formData.append("endDate", endDate);
+    formData.append("startDate", startDate.toISOString());
+    formData.append("endDate", endDate.toISOString());
 
     fetch("", {
       method: "POST",
@@ -165,6 +181,12 @@
   }
 </script>
 
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://npmcdn.com/flatpickr/dist/themes/{themeMode}.css"
+  id="flatpickr-theme" />
+
 <div class="card my-2 space-y-2 p-4">
   <TreeView>
     <TreeViewItem>
@@ -204,33 +226,16 @@
               suffix="$"
               last="label" />
           </div>
-          <div class="grid grid-cols-2 gap-6">
-            <div class="col">
-              <label class="label">
-                <span>Start Date</span>
-                <input
-                  type="date"
-                  class="input"
-                  bind:value={startDate}
-                  min={today}
-                  on:input={handleStartDateChange} />
-              </label>
-            </div>
-            <div class="col">
-              <label class="label">
-                <span>End Date</span>
-                <input
-                  type="date"
-                  class="input"
-                  bind:value={endDate}
-                  min={startDate}
-                  on:input={handleEndDateChange} />
-              </label>
-            </div>
+          <div>
+            <label class="label">
+              <span>Start and End Dates</span>
+              <input class="input w-80" bind:this={ref} />
+            </label>
           </div>
           <button
             class="btn mx-auto block w-20 bg-primary-500"
-            on:click={handleFilter}>Filter</button>
+            on:click={handleFilter}
+            disabled={disableFilterButton}>Filter</button>
         </div>
       </svelte:fragment>
     </TreeViewItem>
@@ -295,7 +300,7 @@
     --range-pip-active-text: hsl(180, 25.4%, 24.7%);
     --range-pip-hover: hsl(180, 25.4%, 24.7%);
     --range-pip-hover-text: hsl(180, 25.4%, 24.7%);
-    --range-pip-in-range: hsl(180, 25.4%, 24.7%);
+    --range-pip-in-range: hsl(123, 70%, 42%);
     --range-pip-in-range-text: hsl(180, 25.4%, 24.7%);
   }
 </style>

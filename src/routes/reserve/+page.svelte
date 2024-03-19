@@ -3,7 +3,7 @@
   import type { ModalSettings, ToastSettings } from "@skeletonlabs/skeleton";
   import type { Reservation } from "@prisma/client";
   import { getToastStore } from "@skeletonlabs/skeleton";
-  import { formatDate, parseDate } from "$lib/utils.js";
+  import { parseDate } from "$lib/utils.js";
 
   export let data;
 
@@ -28,12 +28,24 @@
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, "0");
     const day = now.getDate().toString().padStart(2, "0");
-    const today = `${year}-${month}-${day}`;
+    const hour = now.getHours().toString().padStart(2, "0");
+    const minute = now.getMinutes().toString().padStart(2, "0");
+    const today = `${year}-${month}-${day} ${hour}:${minute}`;
     return today;
   }
 
   function handleCancel() {
     window.location.href = "/browse-vehicles";
+  }
+
+  function formatDatetoHuman(date: Date) {
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    });
   }
 
   function isStartDateBeforeEndDate(
@@ -62,11 +74,11 @@
         </div>
         <div class="flex justify-between">
           <span>Start Date:</span>
-          <span>${formatDate(startDate)}</span>
+          <span>${formatDatetoHuman(new Date(startDate))}</span>
         </div>
         <div class="flex justify-between">
           <span>End Date:</span>
-          <span>${formatDate(endDate)}</span>
+          <span>${formatDatetoHuman(new Date(endDate))}</span>
         </div>
         <div class="flex justify-between">
           <span>Payment Method:</span>
@@ -326,20 +338,18 @@
             <span>Start Date</span>
             <input
               class="input"
-              type="date"
-              value={startDate}
-              readonly
-              min={getToday()} />
+              type="text"
+              value={`${formatDatetoHuman(new Date(startDate))}`}
+              readonly />
           </div>
 
           <div class="space-y-2">
             <span>End Date</span>
             <input
               class="input"
-              type="date"
-              value={endDate}
-              readonly
-              min={getToday()} />
+              type="text"
+              value={`${formatDatetoHuman(new Date(endDate))}`}
+              readonly />
           </div>
         </div>
       </section>

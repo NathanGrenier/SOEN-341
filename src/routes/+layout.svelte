@@ -43,6 +43,7 @@
   } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import MobileNavigation from "$lib/components/MobileNavigation.svelte";
+  import MagnifyingGlass from "$lib/icons/MagnifyingGlass.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
   import CarIcon from "$lib/icons/CarIcon.svelte";
   import HomeIcon from "$lib/icons/HomeIcon.svelte";
@@ -86,6 +87,11 @@
       name: "Browse Vehicles",
       href: "/browse-vehicles",
       icon: CarIcon as SvelteComponent,
+    },
+    {
+      name: "Find a Branch",
+      href: "/find-branch",
+      icon: MagnifyingGlass as SvelteComponent,
     },
   ];
 </script>

@@ -4,33 +4,22 @@
   import flatpickr from "flatpickr";
   import { onMount } from "svelte";
   import type { Reservation } from "@prisma/client";
-  import { formatDateToYYYYMMDD, setFlatpickrTheme } from "$lib/utils";
 
   export let car: Car & { reservations: Reservation[] };
-  export let timezone: string;
 
   const modalStore = getModalStore();
 
   let ref: Node;
-  let startDate: string;
-  let endDate: string;
-  let displayModal = false;
+  let startDate: Date;
+  let endDate: Date;
   let disabledBookButton = true;
 
   let disable = car.reservations
     .filter((reservation: Reservation) => !reservation.cancelled)
     .map((reservation) => {
-      console.log(reservation.plannedDepartureAt);
-      console.log(
-        convertDateToUserTimezone(reservation.plannedDepartureAt, timezone) +
-          " haha",
-      );
       return {
-        from: convertDateToUserTimezone(
-          reservation.plannedDepartureAt,
-          timezone,
-        ),
-        to: convertDateToUserTimezone(reservation.plannedReturnAt, timezone),
+        from: new Date(reservation.plannedDepartureAt),
+        to: new Date(reservation.plannedReturnAt),
       };
     });
 
@@ -38,46 +27,28 @@
     flatpickr(ref, {
       allowInput: true,
       clickOpens: true,
+      minDate: new Date(),
       mode: "range",
       inline: true,
-      minDate: new Date(),
+      enableTime: true,
       disable: disable,
       onChange: (selectedDates) => {
-        if (selectedDates.length !== 2) {
-          disabledBookButton = true;
-          return;
+        startDate = selectedDates[0];
+        endDate = selectedDates[1];
+        if (startDate && endDate) {
+          disabledBookButton = false;
         }
-        startDate = formatDateToYYYYMMDD(selectedDates[0]);
-        endDate = formatDateToYYYYMMDD(selectedDates[1]);
-        disabledBookButton = false;
       },
     });
-
-    setFlatpickrTheme();
-
-    displayModal = true;
   });
 
-  function convertDateToUserTimezone(
-    date: Date,
-    originalTimezone: string,
-  ): Date {
-    const dateStringInOriginalTimezone = date.toLocaleString("en-US", {
-      timeZone: originalTimezone,
-    });
-
-    const userDate = new Date(dateStringInOriginalTimezone);
-
-    return userDate;
-  }
-
   function redirectToBooking(): void {
-    const dateRange = startDate + "~" + endDate;
+    const dateRange = startDate.toISOString() + "~" + endDate.toISOString();
     window.location.href = `/reserve?carId=${car.id}&dateRange=${dateRange}&branchId=${car.branchId}`;
   }
 </script>
 
-{#if $modalStore[0] && displayModal}
+{#if $modalStore[0]}
   <div class="card flex flex-col justify-between p-4">
     <div class="grid grid-cols-2 gap-x-4">
       <div class="my-auto w-96 space-y-4">
