@@ -263,20 +263,18 @@
 
 <div class="my-2 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
   {#each paginatedCars as car}
-    <div class="card bg-secondary-500">
-      <div class="card p-4">
-        <img
-          src={car.photoUrl || "https://placehold.co/600x400"}
-          alt="Car"
-          class="mx-auto mb-4 h-auto w-full rounded" />
-        <h2 class="mb-2 text-lg font-semibold">{car.model}</h2>
-        <p>{car.description}</p>
-        <button
-          on:click={showPopup(car)}
-          class="btn mx-auto mt-2 block bg-primary-500">
-          Show Details
-        </button>
-      </div>
+    <div class="card p-4">
+      <img
+        src={car.photoUrl || "https://placehold.co/600x400"}
+        alt="Car"
+        class="mx-auto mb-4 h-auto w-full rounded" />
+      <h2 class="mb-2 text-lg font-semibold">{car.model}</h2>
+      <p>{car.description}</p>
+      <button
+        on:click={showPopup(car)}
+        class="btn mx-auto mt-2 block bg-primary-500">
+        Show Details
+      </button>
     </div>
   {/each}
 </div>
