@@ -79,14 +79,12 @@
       modalStore.trigger(cancelConfirmationModal);
     }).then((confirm: boolean) => {
       if (!confirm) return;
-
       const formData = new FormData();
       formData.append("id", id.toString());
       fetch("/dashboard?/cancelReservation", {
         method: "POST",
         body: formData,
       }).then((res: Response) => {
-        console.log(res);
         if (res.ok) {
           invalidateAll();
         } else {

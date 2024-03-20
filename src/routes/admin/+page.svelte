@@ -8,9 +8,8 @@
     type ModalComponent,
     type ModalSettings,
   } from "@skeletonlabs/skeleton";
-  import { getToastStore } from "@skeletonlabs/skeleton";
+  import { fetchEntities, updateEntity } from "$lib/utils";
 
-  const toastStore = getToastStore();
   const modalStore = getModalStore();
 
   function executeUserEditModal(id: number, mode: string) {
@@ -22,6 +21,7 @@
     const userEditModal: ModalSettings = {
       type: "component",
       component: modalComponent,
+      response: () => fetchDataAndHandle("User"),
     };
     modalStore.trigger(userEditModal);
   }
@@ -35,6 +35,7 @@
     const carEditModal: ModalSettings = {
       type: "component",
       component: modalComponent,
+      response: () => fetchDataAndHandle("Car"),
     };
     modalStore.trigger(carEditModal);
   }
@@ -48,170 +49,45 @@
     const resEditModal: ModalSettings = {
       type: "component",
       component: modalComponent,
+      response: () => fetchDataAndHandle("Reservation"),
     };
     modalStore.trigger(resEditModal);
   }
 
-  export let data;
+  async function fetchDataAndHandle(entityName: string) {
+    const result = await fetchEntities(entityName);
 
-  let allUsers = data.allUsers;
-  let allVehicles = data.allCars;
-  let allReservations = data.allReservations;
+    if (result.flattenedEntities) {
+      fetchedData = result.flattenedEntities;
+    }
+
+    restart();
+
+    switch (entityName) {
+      case "User":
+        selectedKey = 1;
+        break;
+
+      case "Car":
+        selectedKey = 2;
+        break;
+
+      case "Reservation":
+        selectedKey = 3;
+        break;
+
+      default:
+        selectedKey = -1;
+        break;
+    }
+
+    isSelected = true;
+
+    selectedRowId = -1;
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let fetchedData: any;
-  let isLoading = false;
-
-  async function fetchUserData() {
-    isLoading = true;
-    fetchedData = allUsers;
-    isLoading = false;
-  }
-
-  async function fetchVehicleData() {
-    isLoading = true;
-    fetchedData = allVehicles;
-    isLoading = false;
-  }
-
-  async function fetchReservationData() {
-    isLoading = true;
-    fetchedData = allReservations;
-    console.log(fetchedData);
-    isLoading = false;
-  }
-
-  // TO-DO: MAKE USE OF THIS FUNCTION TO CREATE
-
-  // async function createEntity(entityName: string, formData: FormData) {
-  //   try {
-  //     const createResponse = await fetch(`/admin?/create${entityName}`, {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-
-  //     if (!createResponse.ok) {
-  //       throw new Error(`There was an error creating ${entityName}`);
-  //     }
-
-  //     const createData = await createResponse.json();
-
-  //     // Trigger success toast
-  //     toastStore.trigger({
-  //       message: `${entityName} has been successfully created`,
-  //       classes: "bg-success-500",
-  //     });
-
-  //     // Fetch all entities after creation
-  //     const blankFormData = new FormData();
-  //     blankFormData.append("message", `Fetching all ${entityName}s`);
-  //     const fetchResponse = await fetch(`?/getAll${entityName}s`, {
-  //       method: "POST",
-  //       body: blankFormData,
-  //     });
-
-  //     if (!fetchResponse.ok) {
-  //       throw new Error(`There was an error fetching ${entityName}s`);
-  //     }
-
-  //     const fetchData = await fetchResponse.json();
-
-  //     // Process fetched data
-  //     const jsonData = JSON.parse(fetchData.data);
-  //     const fetchedEntities = jsonData.map((item: string) => JSON.parse(item));
-  //     const flattenedEntities = fetchedEntities.reduce(
-  //       (acc: any[], current: any) => acc.concat(current),
-  //       [],
-  //     );
-
-  //     // Update state with fetched data
-  //     isLoading = true;
-  //     fetchedData = flattenedEntities;
-
-  //     // Introduce a slight delay before setting isLoading back to false
-  //     setTimeout(() => {
-  //       isLoading = false;
-  //     }, 100);
-
-  //     // Trigger success toast
-  //     toastStore.trigger({
-  //       message: `${entityName}s have been successfully fetched`,
-  //       classes: "bg-success-500",
-  //     });
-  //   } catch (error) {
-  //     // Trigger error toast
-  //     toastStore.trigger({
-  //       message: `There was an error: ${error.message}`,
-  //       classes: "bg-error-500",
-  //     });
-
-  //     console.error(error);
-  //   }
-  // }
-
-  async function updateEntity(entityName: string, finalizedForm: FormData) {
-    try {
-      const updateResponse = await fetch(`/admin?/update${entityName}`, {
-        method: "POST",
-        body: finalizedForm,
-      });
-
-      if (!updateResponse.ok) {
-        throw new Error("There was an error updating the entity");
-      }
-
-      await updateResponse.json();
-
-      // Trigger success toast
-      toastStore.trigger({
-        message: `${entityName} has been successfully updated`,
-        classes: "bg-success-500",
-      });
-
-      // Fetch all entities
-      const blankFormData = new FormData();
-      blankFormData.append("message", `Fetching all ${entityName}`);
-      const fetchResponse = await fetch(`?/getAll${entityName}s`, {
-        method: "POST",
-        body: blankFormData,
-      });
-
-      if (!fetchResponse.ok) {
-        throw new Error(`There was an error fetching ${entityName}`);
-      }
-
-      const fetchData = await fetchResponse.json();
-
-      // Process fetched data
-      const jsonData = JSON.parse(fetchData.data);
-      const fetchedEntities = jsonData.map((item: string) => JSON.parse(item));
-      const flattenedEntities = fetchedEntities.reduce(
-        (acc, current) => acc.concat(current),
-        [],
-      );
-
-      // Update state with fetched data
-      isLoading = true;
-      fetchedData = flattenedEntities;
-      setTimeout(() => {
-        isLoading = false;
-      }, 100);
-
-      // Trigger success toast
-      toastStore.trigger({
-        message: `${entityName}s has been successfully fetched`,
-        classes: "bg-success-500",
-      });
-    } catch (error) {
-      // Trigger error toast
-      toastStore.trigger({
-        message: `There was an error: ${error.message}`,
-        classes: "bg-error-500",
-      });
-
-      console.error(error);
-    }
-  }
 
   $: selectedKey = -1;
   $: isSelected = false;
@@ -280,28 +156,25 @@
       return formData;
     }
 
-    isLoading = true;
     try {
       if (selectedKey === 1) {
         let finalizedForm = convertToFormData(convertedData);
         finalizedForm.append("userId", selectedRowId.toString());
-        updateEntity("User", finalizedForm);
+        fetchedData = updateEntity("User", finalizedForm);
         restart();
       } else if (selectedKey === 2) {
         let finalizedForm = convertToFormData(convertedData);
         finalizedForm.append("carId", selectedRowId.toString());
         updateEntity("Car", finalizedForm);
-        //restart();
+        restart();
       } else if (selectedKey === 3) {
         let finalizedForm = convertToFormData(convertedData);
         finalizedForm.append("reservationId", selectedRowId.toString());
         updateEntity("Reservation", finalizedForm);
-        //restart();
+        restart();
       }
     } catch (error) {
       console.error("Error updating data:", error);
-    } finally {
-      isLoading = false;
     }
   }
 
@@ -320,7 +193,6 @@
       // };
 
       //returnedObject = await createUser(randomUserObject);
-      fetchUserData();
       restart();
     } else if (selectedKey === 2) {
       // const randomCarObject = {
@@ -338,7 +210,6 @@
       //   updatedAt: new Date(),
       // };
       //returnedObject = await createCar(randomCarObject);
-      fetchVehicleData();
       restart();
     } else if (selectedKey === 3) {
       // const reservation = {
@@ -365,7 +236,6 @@
       //   updatedAt: new Date(),
       // };
       //returnedObject = await createReservation(reservation);
-      fetchReservationData();
       restart();
     }
 
@@ -382,32 +252,28 @@
       <div class="container">
         {#if isSelected == true}
           {#key unique}
-            {#if isLoading}
-              <h1 class="h1">Loading...</h1>
-            {:else}
-              <div class="container">
-                <Datatable
-                  fetchCase={selectedKey}
-                  on:rowClick={handleRowClick}
-                  userData={fetchedData} />
-                <button
-                  on:click={() => {
-                    if (selectedKey === 1) {
-                      executeUserEditModal(-1, "create");
-                    } else if (selectedKey === 2) {
-                      executeCarEditModal(-1, "create");
-                    } else if (selectedKey === 3) {
-                      executeResEditModal(-1, "create");
-                    } else {
-                      console.log("Error: No key / button / type selected.");
-                    }
-                  }}
-                  type="button"
-                  class="variant-filled btn float-right font-bold">
-                  New Entry
-                </button>
-              </div>
-            {/if}
+            <div class="container">
+              <Datatable
+                fetchCase={selectedKey}
+                on:rowClick={handleRowClick}
+                userData={fetchedData} />
+              <button
+                on:click={() => {
+                  if (selectedKey === 1) {
+                    executeUserEditModal(-1, "create");
+                  } else if (selectedKey === 2) {
+                    executeCarEditModal(-1, "create");
+                  } else if (selectedKey === 3) {
+                    executeResEditModal(-1, "create");
+                  } else {
+                    console.log("Error: No key / button / type selected.");
+                  }
+                }}
+                type="button"
+                class="variant-filled btn float-right mt-4 font-bold">
+                New Entry
+              </button>
+            </div>
           {/key}
         {:else}
           <h3 class="h3 text-center font-bold">
@@ -421,36 +287,19 @@
             <button
               type="button"
               class="variant-filled btn"
-              on:click={() => {
-                fetchUserData();
-                restart();
-                selectedKey = 1;
-                isSelected = true;
-                selectedRowId = -1;
-              }}>Load all Users</button>
+              on:click={() => fetchDataAndHandle("User")}
+              >Load all Users</button>
           </div>
           <div>
             <button
               type="button"
-              on:click={() => {
-                fetchVehicleData();
-                restart();
-                selectedKey = 2;
-                isSelected = true;
-                selectedRowId = -1;
-              }}
-              class="variant-filled btn">Load all Vehicles</button>
+              on:click={() => fetchDataAndHandle("Car")}
+              class="variant-filled btn">Load all Cars</button>
           </div>
           <div>
             <button
               type="button"
-              on:click={() => {
-                fetchReservationData();
-                restart();
-                selectedKey = 3;
-                isSelected = true;
-                selectedRowId = -1;
-              }}
+              on:click={() => fetchDataAndHandle("Reservation")}
               class="variant-filled btn">Load all Reservations</button>
           </div>
         </div>

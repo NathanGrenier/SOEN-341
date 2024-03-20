@@ -52,11 +52,9 @@ export const actions = {
     const data = Object.fromEntries(form);
 
     const reservationData: Omit<Reservation, "id"> = {
-      carId: data.carId ? parseInt(data.carId.toString(), 10) : 0,
-      holderId: data.holderId ? parseInt(data.holderId.toString(), 10) : 0,
-      quotedPrice: data.quotedPrice
-        ? parseInt(data.quotedPrice.toString(), 10) * 100
-        : 0,
+      carId: data.carId ? Number(data.carId.toString()) : 0,
+      holderId: data.holderId ? Number(data.holderId.toString()) : 0,
+      quotedPrice: data.quotedPrice ? Number(data.quotedPrice.toString()) : 0,
       cancelled: data.cancelled === "true",
       plannedDepartureAt: data.plannedDepartureAt
         ? new Date(data.plannedDepartureAt.toString())
@@ -87,18 +85,16 @@ export const actions = {
     const data = Object.fromEntries(form);
 
     const carData: Omit<Car, "id"> = {
-      branchId: data.branchId ? parseInt(data.branchId.toString(), 10) : 0,
+      branchId: data.branchId ? Number(data.branchId.toString()) : 0,
       make: data.make.toString() || "",
       model: data.model.toString() || "",
-      year: data.year ? parseInt(data.year.toString(), 10) : 0,
+      year: data.year ? Number(data.year.toString()) : 0,
       colour:
         stringToEnum(data.colour.toString(), CarColour) || CarColour.BLACK,
-      seats: data.seats ? parseInt(data.seats.toString(), 10) : 0,
+      seats: data.seats ? Number(data.seats.toString()) : 0,
       description: data.description.toString() || "",
       photoUrl: data.photoUrl.toString() || null,
-      dailyPrice: data.dailyPrice
-        ? parseInt(data.dailyPrice.toString(), 10) * 100
-        : 0,
+      dailyPrice: data.dailyPrice ? Number(data.dailyPrice.toString()) : 0,
       bookingDisabled: data.bookingDisabled === "true",
       createdAt: data.createdAt
         ? new Date(data.createdAt.toString())
@@ -139,17 +135,17 @@ export const actions = {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
-    const reservationId = parseInt(data.reservationId.toString(), -1);
+    const reservationId = Number(data.reservationId.toString()) || -1;
+
+    console.log(reservationId);
 
     if (reservationId === -1) throw error(404, "Reservation does not exist");
 
     const reservationDataToUpdate: Partial<Omit<Reservation, "id">> = {
-      carId: data.carId ? parseInt(data.carId.toString(), 10) : undefined,
-      holderId: data.holderId
-        ? parseInt(data.holderId.toString(), 10)
-        : undefined,
+      carId: data.carId ? Number(data.carId.toString()) : undefined,
+      holderId: data.holderId ? Number(data.holderId.toString()) : undefined,
       quotedPrice: data.quotedPrice
-        ? parseInt(data.quotedPrice.toString(), 10) * 100
+        ? Number(data.quotedPrice.toString())
         : undefined,
       cancelled: data.cancelled === "true",
       plannedDepartureAt: data.plannedDepartureAt
@@ -178,23 +174,21 @@ export const actions = {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
-    const carId = parseInt(data.carId.toString(), 10);
+    const carId = Number(data.carId.toString());
 
     if (carId === 10) throw error(404, "Car not found");
 
     const carDataToUpdate: Partial<Omit<Car, "id">> = {
-      branchId: data.branchId
-        ? parseInt(data.branchId.toString(), 10)
-        : undefined,
+      branchId: data.branchId ? Number(data.branchId.toString()) : undefined,
       make: data.make.toString() || undefined,
       model: data.model.toString() || undefined,
-      year: data.year ? parseInt(data.year.toString(), 10) : undefined,
+      year: data.year ? Number(data.year.toString()) : undefined,
       colour: stringToEnum(data.colour.toString(), CarColour) || undefined,
-      seats: data.seats ? parseInt(data.seats.toString(), 10) : undefined,
+      seats: data.seats ? Number(data.seats.toString()) : undefined,
       description: data.description.toString() || undefined,
       photoUrl: data.photoUrl.toString() || undefined,
       dailyPrice: data.dailyPrice
-        ? parseInt(data.dailyPrice.toString(), 10) * 100
+        ? Number(data.dailyPrice.toString())
         : undefined,
       bookingDisabled: data.bookingDisabled === "true",
       updatedAt: new Date(),
@@ -213,7 +207,7 @@ export const actions = {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
-    const userId = parseInt(data.userId.toString(), 10);
+    const userId = Number(data.userId.toString());
 
     if (userId === 10) throw error(404, "User not found");
 
@@ -240,7 +234,7 @@ export const actions = {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
-    const reservationId = parseInt(data.reservationId.toString(), -1);
+    const reservationId = Number(data.reservationId.toString());
 
     if (reservationId === -1) throw error(404, "Reservation not found");
 
@@ -254,7 +248,7 @@ export const actions = {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
-    const carId = parseInt(data.carId.toString(), -1);
+    const carId = Number(data.carId.toString());
 
     if (carId === -1) throw error(404, "Car not found");
 
@@ -268,7 +262,7 @@ export const actions = {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
-    const userId = parseInt(data.userId.toString(), 10);
+    const userId = Number(data.userId.toString());
 
     if (userId === -1) throw error(404, "USer not found");
 
@@ -289,5 +283,41 @@ export const actions = {
   getAllUsers: async () => {
     const users = await prisma.user.findMany();
     return JSON.stringify(users);
+  },
+  getUserById: async ({ request }) => {
+    const form = await request.formData();
+    const data = Object.fromEntries(form);
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(data.userId),
+      },
+    });
+
+    return JSON.stringify(user);
+  },
+  getCarById: async ({ request }) => {
+    const form = await request.formData();
+    const data = Object.fromEntries(form);
+
+    const car = await prisma.car.findUnique({
+      where: {
+        id: Number(data.carId),
+      },
+    });
+
+    return JSON.stringify(car);
+  },
+  getReservationById: async ({ request }) => {
+    const form = await request.formData();
+    const data = Object.fromEntries(form);
+
+    const reservation = await prisma.reservation.findUnique({
+      where: {
+        id: Number(data.reservationId),
+      },
+    });
+
+    return JSON.stringify(reservation);
   },
 } satisfies Actions;

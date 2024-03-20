@@ -1,8 +1,13 @@
 <script lang="ts">
   import type { SvelteComponent } from "svelte";
-  import { getModalStore } from "@skeletonlabs/skeleton";
-  import { onMount } from "svelte";
+  import {
+    getModalStore,
+    getToastStore,
+    type ToastSettings,
+  } from "@skeletonlabs/skeleton";
   import ImageBlob from "../blob/blobCrud.svelte";
+  import { createEntity, fetchEntityById, updateEntity } from "$lib/utils";
+  import type { Car, Reservation, User } from "@prisma/client";
 
   const CarColour = {
     BLACK: "BLACK",
@@ -23,202 +28,243 @@
   export const parent: SvelteComponent | null = null;
   export let mode = "create";
   export let id = -1;
-  const modalStore = getModalStore();
 
-  export let data = {
-    make: "",
-    model: "",
-    year: new Date().getFullYear(),
-    colour: "BLACK",
-    seats: 4,
-    description: "",
-    photoUrl: "",
-    dailyPrice: 5000,
-    bookingDisabled: false,
-    branchId: 1,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+  const modalStore = getModalStore();
+  const toastStore = getToastStore();
+
+  let result: {
+    entity?: User | Reservation | Car;
+    message: string;
+    background: string;
   };
 
-  import {
-    createCar,
-    updateCar,
-    getCarById,
-  } from "$lib/controllers/carController"; // Adjust the path if needed
+  let carEntity: Car;
 
-  // Array to hold your branch data
-  //let branches = [1, 2, 3];
+  let newCarPhotoURL: string;
 
-  onMount(async () => {
-    // Fetch branch data (if needed)
-    // branches = await fetchBranches();
-
-    if (mode === "edit" && id !== -1) {
-      try {
-        const carInfoById = await getCarById(id);
-        data = {
-          make: carInfoById ? carInfoById.make : "",
-          model: carInfoById ? carInfoById.model : "",
-          year: carInfoById ? carInfoById.year : new Date().getFullYear(),
-          colour: carInfoById ? carInfoById.colour : "BLACK",
-          seats: carInfoById ? carInfoById.seats : 4,
-          description: carInfoById ? carInfoById.description : "",
-          photoUrl: carInfoById ? carInfoById.photoUrl ?? "" : "",
-          dailyPrice: carInfoById ? carInfoById.dailyPrice : 5000,
-          bookingDisabled: carInfoById ? carInfoById.bookingDisabled : false,
-          branchId: carInfoById ? carInfoById.branchId : 1,
-          createdAt: carInfoById ? carInfoById.createdAt : new Date(),
-          updatedAt: carInfoById ? carInfoById.updatedAt : new Date(),
-        };
-      } catch (error) {
-        console.error("Error loading car data:", error);
-      }
-    }
-  });
-
-  // @ts-expect-error to shut up the ts error
-  function handleEditSubmit(event) {
-    event.preventDefault();
-
-    if (!validateForm()) return;
-
-    let result = updateCar(id, {
-      make: event.target.make.value,
-      model: event.target.model.value,
-      year: event.target.year.value.parseFloat,
-      colour: event.target.colour.value,
-      seats: event.target.seats.value.parseFloat,
-      description: event.target.description.value,
-      photoUrl: event.target.photoUrl.value,
-      dailyPrice: Number(event.target.dailyPrice.value),
-      bookingDisabled: event.target.bookingDisabled.checked,
-      branchId: event.target.branchId.value.parseFloat,
-      updatedAt: new Date(),
+  if (id !== -1) {
+    fetchEntityById("Car", id).then((res) => {
+      result = res;
+      carEntity = result.entity as Car;
+      const t: ToastSettings = {
+        message: result.message,
+        background: result.background,
+      };
+      console.log(carEntity);
+      toastStore.trigger(t);
     });
-
-    if ($modalStore[0].response) $modalStore[0].response(result);
-    modalStore.close();
   }
-  // @ts-expect-error to shut up the ts error
-  function handleCreateSubmit(event) {
+
+  //@ts-expect-error to shut up the ts error
+  async function handleEditSubmit(event) {
     event.preventDefault();
 
-    if (!validateForm()) return;
+    const finalizedForm = new FormData();
 
-    let result = createCar({
-      make: event.target.make.value,
-      model: event.target.model.value,
-      year: event.target.year.value.parseFloat,
-      colour: event.target.colour.value,
-      seats: event.target.seats.value.parseFloat,
-      description: event.target.description.value,
-      photoUrl: event.target.photoUrl.value,
-      dailyPrice: event.target.dailyPrice.value.parseFloat,
-      bookingDisabled: event.target.bookingDisabled.checked,
-      branchId: event.target.branchId.value.parseFloat,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    finalizedForm.append("carId", carEntity.id.toString());
+    finalizedForm.append("branchId", event.target.branchId.value);
+    finalizedForm.append("make", event.target.make.value);
+    finalizedForm.append("model", event.target.model.value);
+    finalizedForm.append("year", event.target.year.value);
+    finalizedForm.append("colour", event.target.colour.value);
+    finalizedForm.append("seats", event.target.seats.value);
+    finalizedForm.append("description", event.target.description.value);
+    finalizedForm.append("photoUrl", event.target.photoUrl.value);
+    finalizedForm.append("dailyPrice", event.target.dailyPrice.value);
+    finalizedForm.append(
+      "bookingDisabled",
+      event.target.bookingDisabled.checked,
+    );
+    finalizedForm.append("createdAt", carEntity.createdAt.toString());
+    finalizedForm.append("updatedAt", new Date().toISOString());
+
+    const result = await updateEntity("Car", finalizedForm);
+
+    const t: ToastSettings = {
+      message: result.message,
+      background: result.background,
+    };
+
+    toastStore.trigger(t);
 
     if ($modalStore[0].response) $modalStore[0].response(result);
+
     modalStore.close();
   }
 
-  function validateForm() {
-    // Implement your validation logic here.
-    return true;
+  // @ts-expect-error to shut up the ts error
+  async function handleCreateSubmit(event) {
+    event.preventDefault();
+
+    const finalizedForm = new FormData();
+
+    finalizedForm.append("branchId", event.target.branchId.value);
+    finalizedForm.append("make", event.target.make.value);
+    finalizedForm.append("model", event.target.model.value);
+    finalizedForm.append("year", event.target.year.value);
+    finalizedForm.append("colour", event.target.colour.value);
+    finalizedForm.append("seats", event.target.seats.value);
+    finalizedForm.append("description", event.target.description.value);
+    finalizedForm.append("photoUrl", event.target.photoUrl.value);
+    finalizedForm.append("dailyPrice", event.target.dailyPrice.value);
+    finalizedForm.append(
+      "bookingDisabled",
+      event.target.bookingDisabled.checked,
+    );
+    finalizedForm.append("createdAt", new Date().toISOString());
+    finalizedForm.append("updatedAt", new Date().toISOString());
+
+    const result = await createEntity("User", finalizedForm);
+
+    const t: ToastSettings = {
+      message: result.message,
+      background: result.background,
+    };
+
+    toastStore.trigger(t);
+
+    if ($modalStore[0].response) $modalStore[0].response(result);
+
+    modalStore.close();
   }
 </script>
 
 {#if $modalStore[0]}
-  <p class="card p-4">
-    {#if (mode = "edit")}
-      <form on:submit={handleEditSubmit} class="space-y-1">
-        <label class="label" for="make">Make:</label>
-        <input
-          class="input"
-          type="text"
-          id="make"
-          name="make"
-          bind:value={data.make} />
+  <p class="card h-screen overflow-y-scroll p-4">
+    {#if mode === "edit"}
+      {#if result && carEntity}
+        <form on:submit={handleEditSubmit} class="space-y-1">
+          <label class="label" for="make">Make</label>
+          <input
+            class="input"
+            type="text"
+            id="make"
+            name="make"
+            bind:value={carEntity.make} />
 
-        <label class="label" for="model">Model:</label>
-        <input
-          class="input"
-          type="text"
-          id="model"
-          name="model"
-          bind:value={data.model} />
+          <label class="label" for="model">Model</label>
+          <input
+            class="input"
+            type="text"
+            id="model"
+            name="model"
+            bind:value={carEntity.model} />
 
-        <label class="label" for="year">Year:</label>
-        <input
-          class="input"
-          type="number"
-          id="year"
-          name="year"
-          bind:value={data.year} />
+          <label class="label" for="year">Year</label>
+          <input
+            class="input"
+            type="number"
+            id="year"
+            name="year"
+            bind:value={carEntity.year} />
 
-        <label class="label" for="colour">Colour:</label>
+          <label class="label" for="colour">Colour</label>
+          <select class="select" name="colour">
+            {#each Object.keys(CarColour) as color}
+              <option value={color} selected={color === carEntity.colour}
+                >{color}</option>
+            {/each}
+          </select>
+
+          <label class="label" for="seats">Seats</label>
+          <input
+            class="input"
+            type="number"
+            id="seats"
+            name="seats"
+            bind:value={carEntity.seats} />
+
+          <label class="label" for="description">Description</label>
+          <textarea
+            class="textarea"
+            id="description"
+            name="description"
+            bind:value={carEntity.description}></textarea>
+          <ImageBlob bind:imageBlobUrl={carEntity.photoUrl} />
+          <label class="label" for="photoUrl">Photo URL</label>
+          <input
+            class="input"
+            type="url"
+            id="photoUrl"
+            name="photoUrl"
+            bind:value={carEntity.photoUrl} />
+
+          <label class="label" for="dailyPrice">Daily Price (in cents)</label>
+          <input
+            class="input"
+            type="number"
+            id="dailyPrice"
+            name="dailyPrice"
+            bind:value={carEntity.dailyPrice} />
+
+          <div class="space-y-2">
+            <label class="flex items-center space-x-2">
+              <input
+                class="checkbox"
+                type="checkbox"
+                name="bookingDisabled"
+                bind:checked={carEntity.bookingDisabled} />
+              <p>Check to Disable Booking</p>
+            </label>
+          </div>
+
+          <label class="label" for="branchId">Branch ID</label>
+          <input
+            class="input"
+            type="number"
+            name="branchId"
+            bind:value={carEntity.branchId} />
+          <button class="variant-filled btn mx-auto block" type="submit"
+            >Save Changes</button>
+        </form>
+      {/if}
+    {:else}
+      <form on:submit={handleCreateSubmit} class="space-y-1">
+        <label class="label" for="make">Make</label>
+        <input class="input" type="text" id="make" name="make" />
+
+        <label class="label" for="model">Model</label>
+        <input class="input" type="text" id="model" name="model" />
+
+        <label class="label" for="year">Year</label>
+        <input class="input" type="number" id="year" name="year" />
+
+        <label class="label" for="colour">Colour</label>
         <select class="select" name="colour">
           {#each Object.keys(CarColour) as color}
-            <option value={color} selected={color === data.colour}
-              >{color}</option>
+            <option value={color}>{color}</option>
           {/each}
         </select>
 
-        <label class="label" for="seats">Seats:</label>
-        <input
-          class="input"
-          type="number"
-          id="seats"
-          name="seats"
-          bind:value={data.seats} />
+        <label class="label" for="seats">Seats</label>
+        <input class="input" type="number" id="seats" name="seats" />
 
-        <label class="label" for="description">Description:</label>
-        <textarea
-          class="textarea"
-          id="description"
-          name="description"
-          bind:value={data.description}></textarea>
-        <ImageBlob imageBlobUrl={data.photoUrl} bind:data={data.photoUrl} />
-        <label class="label" for="photoUrl">Photo URL:</label>
+        <label class="label" for="description">Description</label>
+        <textarea class="textarea" id="description" name="description"
+        ></textarea>
+        <ImageBlob imageBlobUrl={newCarPhotoURL} />
+        <label class="label" for="photoUrl">Photo URL</label>
         <input
           class="input"
           type="url"
           id="photoUrl"
           name="photoUrl"
-          bind:value={data.photoUrl} />
+          bind:value={newCarPhotoURL} />
 
-        <label class="label" for="dailyPrice">Daily Price (in cents):</label>
-        <input
-          class="input"
-          type="number"
-          id="dailyPrice"
-          name="dailyPrice"
-          bind:value={data.dailyPrice} />
+        <label class="label" for="dailyPrice">Daily Price (in cents)</label>
+        <input class="input" type="number" id="dailyPrice" name="dailyPrice" />
 
         <div class="space-y-2">
           <label class="flex items-center space-x-2">
-            <input
-              class="checkbox"
-              type="checkbox"
-              name="bookingDisabled"
-              bind:checked={data.bookingDisabled} />
-            <p>Check to Disable Booking</p>
+            <input class="checkbox" type="checkbox" name="bookingDisabled" />
+            <p>Disable Booking</p>
           </label>
         </div>
 
-        <label class="label" for="branchId">Branch Id:</label>
-        <input
-          class="input"
-          type="number"
-          name="branchId"
-          bind:value={data.branchId} />
-        <button class="variant-filled btn" type="submit">Save Changes</button>
-      </form>
-    {:else}
-      <form on:submit={handleCreateSubmit}>
-        <button class="button" type="submit">Create Car</button>
+        <label class="label" for="branchId">Branch ID</label>
+        <input class="input" type="number" name="branchId" />
+        <button class="variant-filled btn mx-auto block" type="submit"
+          >Create Car</button>
       </form>
     {/if}
   </p>
