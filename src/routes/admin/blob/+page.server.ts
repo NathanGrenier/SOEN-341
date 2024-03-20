@@ -1,3 +1,4 @@
+import { error } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "../$types";
 import type { Actions } from "./$types";
 import { put, list } from "@vercel/blob";
@@ -9,7 +10,6 @@ export const load: LayoutServerLoad = async () => {
 };
 
 export const actions = {
-  default: async () => {},
   upload: async ({ request }) => {
     const form = await request.formData();
     const file = form.get("file") as File;

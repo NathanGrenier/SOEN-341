@@ -90,7 +90,7 @@
       seats: event.target.seats.value.parseFloat,
       description: event.target.description.value,
       photoUrl: event.target.photoUrl.value,
-      dailyPrice: event.target.dailyPrice.value.parseFloat,
+      dailyPrice: Number(event.target.dailyPrice.value),
       bookingDisabled: event.target.bookingDisabled.checked,
       branchId: event.target.branchId.value.parseFloat,
       updatedAt: new Date(),
@@ -131,93 +131,95 @@
 </script>
 
 {#if $modalStore[0]}
-  {#if (mode = "edit")}
-    <form on:submit={handleEditSubmit}>
-      <label class="label" for="make">Make:</label>
-      <input
-        class="input"
-        type="text"
-        id="make"
-        name="make"
-        bind:value={data.make} />
+  <p class="card p-4">
+    {#if (mode = "edit")}
+      <form on:submit={handleEditSubmit} class="space-y-1">
+        <label class="label" for="make">Make:</label>
+        <input
+          class="input"
+          type="text"
+          id="make"
+          name="make"
+          bind:value={data.make} />
 
-      <label class="label" for="model">Model:</label>
-      <input
-        class="input"
-        type="text"
-        id="model"
-        name="model"
-        bind:value={data.model} />
+        <label class="label" for="model">Model:</label>
+        <input
+          class="input"
+          type="text"
+          id="model"
+          name="model"
+          bind:value={data.model} />
 
-      <label class="label" for="year">Year:</label>
-      <input
-        class="input"
-        type="number"
-        id="year"
-        name="year"
-        bind:value={data.year} />
+        <label class="label" for="year">Year:</label>
+        <input
+          class="input"
+          type="number"
+          id="year"
+          name="year"
+          bind:value={data.year} />
 
-      <label class="label" for="colour">Colour:</label>
-      <select class="select" name="colour">
-        {#each Object.keys(CarColour) as color}
-          <option value={color} selected={color === data.colour}
-            >{color}</option>
-        {/each}
-      </select>
+        <label class="label" for="colour">Colour:</label>
+        <select class="select" name="colour">
+          {#each Object.keys(CarColour) as color}
+            <option value={color} selected={color === data.colour}
+              >{color}</option>
+          {/each}
+        </select>
 
-      <label class="label" for="seats">Seats:</label>
-      <input
-        class="input"
-        type="number"
-        id="seats"
-        name="seats"
-        bind:value={data.seats} />
+        <label class="label" for="seats">Seats:</label>
+        <input
+          class="input"
+          type="number"
+          id="seats"
+          name="seats"
+          bind:value={data.seats} />
 
-      <label class="label" for="description">Description:</label>
-      <textarea
-        class="textarea"
-        id="description"
-        name="description"
-        bind:value={data.description}></textarea>
-      <ImageBlob imageBlobUrl={data.photoUrl} bind:data={data.photoUrl} />
-      <label class="label" for="photoUrl">Photo URL:</label>
-      <input
-        class="input"
-        type="url"
-        id="photoUrl"
-        name="photoUrl"
-        bind:value={data.photoUrl} />
+        <label class="label" for="description">Description:</label>
+        <textarea
+          class="textarea"
+          id="description"
+          name="description"
+          bind:value={data.description}></textarea>
+        <ImageBlob imageBlobUrl={data.photoUrl} bind:data={data.photoUrl} />
+        <label class="label" for="photoUrl">Photo URL:</label>
+        <input
+          class="input"
+          type="url"
+          id="photoUrl"
+          name="photoUrl"
+          bind:value={data.photoUrl} />
 
-      <label class="label" for="dailyPrice">Daily Price (in cents):</label>
-      <input
-        class="input"
-        type="number"
-        id="dailyPrice"
-        name="dailyPrice"
-        bind:value={data.dailyPrice} />
+        <label class="label" for="dailyPrice">Daily Price (in cents):</label>
+        <input
+          class="input"
+          type="number"
+          id="dailyPrice"
+          name="dailyPrice"
+          bind:value={data.dailyPrice} />
 
-      <div class="space-y-2">
-        <label class="flex items-center space-x-2">
-          <input
-            class="checkbox"
-            type="checkbox"
-            name="bookingDisabled"
-            bind:checked={data.bookingDisabled} />
-          <p>Check to Disable Booking</p>
-        </label>
-      </div>
+        <div class="space-y-2">
+          <label class="flex items-center space-x-2">
+            <input
+              class="checkbox"
+              type="checkbox"
+              name="bookingDisabled"
+              bind:checked={data.bookingDisabled} />
+            <p>Check to Disable Booking</p>
+          </label>
+        </div>
 
-      <label class="label" for="branchId">Branch Id:</label>
-      <input
-        class="input"
-        type="number"
-        name="branchId"
-        bind:value={data.branchId} />
-      <button class="variant-filled btn" type="submit">Save Changes</button>
-    </form>
-  {:else}
-    <form on:submit={handleCreateSubmit}>
-      <button class="button" type="submit">Create Car</button>
-    </form>
-  {/if}
+        <label class="label" for="branchId">Branch Id:</label>
+        <input
+          class="input"
+          type="number"
+          name="branchId"
+          bind:value={data.branchId} />
+        <button class="variant-filled btn" type="submit">Save Changes</button>
+      </form>
+    {:else}
+      <form on:submit={handleCreateSubmit}>
+        <button class="button" type="submit">Create Car</button>
+      </form>
+    {/if}
+  </p>
 {/if}

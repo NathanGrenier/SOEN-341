@@ -2,7 +2,15 @@
   import userModal from "./crud-forms/user-form.svelte";
   import carModal from "./crud-forms/car-form.svelte";
   import resModal from "./crud-forms/reservation-form.svelte";
+  import Datatable from "./Datatable.svelte";
+  import {
+    getModalStore,
+    type ModalComponent,
+    type ModalSettings,
+  } from "@skeletonlabs/skeleton";
+  import { getToastStore } from "@skeletonlabs/skeleton";
 
+  const toastStore = getToastStore();
   const modalStore = getModalStore();
 
   function executeUserEditModal(id: number, mode: string) {
@@ -44,28 +52,11 @@
     modalStore.trigger(resEditModal);
   }
 
-  import {
-    getAllUsers,
-    updateUser,
-    createUser,
-  } from "$lib/controllers/userController";
+  export let data;
 
-  import Datatable from "./Datatable.svelte";
-  import {
-    getAllReservations,
-    updateReservation,
-    createReservation,
-  } from "$lib/controllers/reservationController";
-  import {
-    getAllCars,
-    updateCar,
-    createCar,
-  } from "$lib/controllers/carController";
-  import {
-    getModalStore,
-    type ModalComponent,
-    type ModalSettings,
-  } from "@skeletonlabs/skeleton";
+  let allUsers = data.allUsers;
+  let allVehicles = data.allCars;
+  let allReservations = data.allReservations;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let fetchedData: any;
@@ -73,34 +64,152 @@
 
   async function fetchUserData() {
     isLoading = true;
-    try {
-      fetchedData = await getAllUsers();
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      isLoading = false;
-    }
+    fetchedData = allUsers;
+    isLoading = false;
   }
 
   async function fetchVehicleData() {
     isLoading = true;
-    try {
-      fetchedData = await getAllCars();
-    } catch (error) {
-      console.error("Error fetching vehicles:", error);
-    } finally {
-      isLoading = false;
-    }
+    fetchedData = allVehicles;
+    isLoading = false;
   }
 
   async function fetchReservationData() {
     isLoading = true;
+    fetchedData = allReservations;
+    console.log(fetchedData);
+    isLoading = false;
+  }
+
+  // TO-DO: MAKE USE OF THIS FUNCTION TO CREATE
+
+  // async function createEntity(entityName: string, formData: FormData) {
+  //   try {
+  //     const createResponse = await fetch(`/admin?/create${entityName}`, {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+
+  //     if (!createResponse.ok) {
+  //       throw new Error(`There was an error creating ${entityName}`);
+  //     }
+
+  //     const createData = await createResponse.json();
+
+  //     // Trigger success toast
+  //     toastStore.trigger({
+  //       message: `${entityName} has been successfully created`,
+  //       classes: "bg-success-500",
+  //     });
+
+  //     // Fetch all entities after creation
+  //     const blankFormData = new FormData();
+  //     blankFormData.append("message", `Fetching all ${entityName}s`);
+  //     const fetchResponse = await fetch(`?/getAll${entityName}s`, {
+  //       method: "POST",
+  //       body: blankFormData,
+  //     });
+
+  //     if (!fetchResponse.ok) {
+  //       throw new Error(`There was an error fetching ${entityName}s`);
+  //     }
+
+  //     const fetchData = await fetchResponse.json();
+
+  //     // Process fetched data
+  //     const jsonData = JSON.parse(fetchData.data);
+  //     const fetchedEntities = jsonData.map((item: string) => JSON.parse(item));
+  //     const flattenedEntities = fetchedEntities.reduce(
+  //       (acc: any[], current: any) => acc.concat(current),
+  //       [],
+  //     );
+
+  //     // Update state with fetched data
+  //     isLoading = true;
+  //     fetchedData = flattenedEntities;
+
+  //     // Introduce a slight delay before setting isLoading back to false
+  //     setTimeout(() => {
+  //       isLoading = false;
+  //     }, 100);
+
+  //     // Trigger success toast
+  //     toastStore.trigger({
+  //       message: `${entityName}s have been successfully fetched`,
+  //       classes: "bg-success-500",
+  //     });
+  //   } catch (error) {
+  //     // Trigger error toast
+  //     toastStore.trigger({
+  //       message: `There was an error: ${error.message}`,
+  //       classes: "bg-error-500",
+  //     });
+
+  //     console.error(error);
+  //   }
+  // }
+
+  async function updateEntity(entityName: string, finalizedForm: FormData) {
     try {
-      fetchedData = await getAllReservations();
+      const updateResponse = await fetch(`/admin?/update${entityName}`, {
+        method: "POST",
+        body: finalizedForm,
+      });
+
+      if (!updateResponse.ok) {
+        throw new Error("There was an error updating the entity");
+      }
+
+      await updateResponse.json();
+
+      // Trigger success toast
+      toastStore.trigger({
+        message: `${entityName} has been successfully updated`,
+        classes: "bg-success-500",
+      });
+
+      // Fetch all entities
+      const blankFormData = new FormData();
+      blankFormData.append("message", `Fetching all ${entityName}`);
+      const fetchResponse = await fetch(`?/getAll${entityName}s`, {
+        method: "POST",
+        body: blankFormData,
+      });
+
+      if (!fetchResponse.ok) {
+        throw new Error(`There was an error fetching ${entityName}`);
+      }
+
+      const fetchData = await fetchResponse.json();
+
+      // Process fetched data
+      const jsonData = JSON.parse(fetchData.data);
+      const fetchedEntities = jsonData.map((item: string) => JSON.parse(item));
+      const flattenedEntities = fetchedEntities.reduce(
+        (acc, current) => acc.concat(current),
+        [],
+      );
+
+      // Update state with fetched data
+      isLoading = true;
+      fetchedData = flattenedEntities;
+      setTimeout(() => {
+        isLoading = false;
+      }, 100);
+
+      // Trigger success toast
+      toastStore.trigger({
+        message: `${entityName}s has been successfully fetched`,
+        classes: "bg-success-500",
+      });
     } catch (error) {
-      console.error("Error fetching reservations:", error);
-    } finally {
-      isLoading = false;
+      // Trigger error toast
+      toastStore.trigger({
+        message: `There was an error: ${error.message}`,
+        classes: "bg-error-500",
+      });
+
+      console.error(error);
     }
   }
 
@@ -157,25 +266,37 @@
       return value;
     };
 
-    const convertedData = Object.fromEntries(
+    let convertedData = Object.fromEntries(
       Object.entries(data).map(([key, value]) => [key, convertValue(value)]),
     );
 
-    console.log(convertedData);
+    function convertToFormData(
+      data: ArrayLike<unknown> | { [s: string]: unknown },
+    ) {
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(data)) {
+        formData.append(key, value);
+      }
+      return formData;
+    }
+
     isLoading = true;
     try {
       if (selectedKey === 1) {
-        await updateUser(selectedRowId, convertedData);
-        fetchUserData();
+        let finalizedForm = convertToFormData(convertedData);
+        finalizedForm.append("userId", selectedRowId.toString());
+        updateEntity("User", finalizedForm);
         restart();
       } else if (selectedKey === 2) {
-        await updateCar(selectedRowId, convertedData);
-        fetchVehicleData();
-        restart();
+        let finalizedForm = convertToFormData(convertedData);
+        finalizedForm.append("carId", selectedRowId.toString());
+        updateEntity("Car", finalizedForm);
+        //restart();
       } else if (selectedKey === 3) {
-        await updateReservation(selectedRowId, convertedData);
-        fetchReservationData();
-        restart();
+        let finalizedForm = convertToFormData(convertedData);
+        finalizedForm.append("reservationId", selectedRowId.toString());
+        updateEntity("Reservation", finalizedForm);
+        //restart();
       }
     } catch (error) {
       console.error("Error updating data:", error);
@@ -187,63 +308,63 @@
   async function handleCreate() {
     let returnedObject;
     if (selectedKey === 1) {
-      const randomObject = {
-        email: "example@example.com", // Use a static value or a function to generate a fake email
-        name: "Demo User", // Use a static value or a function to generate a fake name
-        comment: Math.random() > 0.5 ? "This is a random comment." : null,
-        role: "CUSTOMER",
-        passwordHash: "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", // Use a static value or a function to generate a hash
-        disabled: Math.random() > 0.5,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      // const randomUserObject = {
+      //   email: "example@example.com", // Use a static value or a function to generate a fake email
+      //   name: "Demo User", // Use a static value or a function to generate a fake name
+      //   comment: Math.random() > 0.5 ? "This is a random comment." : null,
+      //   role: "CUSTOMER",
+      //   passwordHash: "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", // Use a static value or a function to generate a hash
+      //   disabled: Math.random() > 0.5,
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      // };
 
-      returnedObject = await createUser(randomObject);
+      //returnedObject = await createUser(randomUserObject);
       fetchUserData();
       restart();
     } else if (selectedKey === 2) {
-      const randomCarObject = {
-        branchId: 1,
-        make: "GenericMake",
-        model: "GenericModel",
-        year: Math.floor(Math.random() * (2023 - 1990 + 1)) + 1990,
-        colour: "GREEN",
-        seats: Math.floor(Math.random() * (8 - 2 + 1)) + 2,
-        description: "This is a generic car description.",
-        photoUrl: Math.random() > 0.5 ? "https://example.com/photo.jpg" : null,
-        dailyPrice: parseFloat((Math.random() * (500 - 50) + 50).toFixed(2)),
-        bookingDisabled: Math.random() > 0.5,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      returnedObject = await createCar(randomCarObject);
+      // const randomCarObject = {
+      //   branchId: 1,
+      //   make: "GenericMake",
+      //   model: "GenericModel",
+      //   year: Math.floor(Math.random() * (2023 - 1990 + 1)) + 1990,
+      //   colour: "GREEN",
+      //   seats: Math.floor(Math.random() * (8 - 2 + 1)) + 2,
+      //   description: "This is a generic car description.",
+      //   photoUrl: Math.random() > 0.5 ? "https://example.com/photo.jpg" : null,
+      //   dailyPrice: parseFloat((Math.random() * (500 - 50) + 50).toFixed(2)),
+      //   bookingDisabled: Math.random() > 0.5,
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      // };
+      //returnedObject = await createCar(randomCarObject);
       fetchVehicleData();
       restart();
     } else if (selectedKey === 3) {
-      const reservation = {
-        car: {
-          // Assuming a nested "Car" object structure with minimal properties
-        },
-        holder: {
-          // Assuming a nested "User" object structure with minimal properties
-        },
-        replaces: {},
-        replacedBy: {
-          // Nested "Reservation", null or with an ID property
-        },
-        quotedPrice: Math.floor(Math.random() * 500 + 100), // Random price between 100 and 500
-        cancelled: Math.random() < 0.5, // Randomly true or false
-        checkInNotes: "Checked in without issues.", // Randomly null or a string
-        checkInLicenseNumber: "A1234567", // Randomly null or a string
-        checkInLicenseIssuingJurisdiction: "CA", // Randomly null or a string
-        plannedDepartureAt: new Date(),
-        plannedReturnAt: new Date(),
-        pickedUpAt: new Date(),
-        returnedAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      returnedObject = await createReservation(reservation);
+      // const reservation = {
+      //   car: {
+      //     // Assuming a nested "Car" object structure with minimal properties
+      //   },
+      //   holder: {
+      //     // Assuming a nested "User" object structure with minimal properties
+      //   },
+      //   replaces: {},
+      //   replacedBy: {
+      //     // Nested "Reservation", null or with an ID property
+      //   },
+      //   quotedPrice: Math.floor(Math.random() * 500 + 100), // Random price between 100 and 500
+      //   cancelled: Math.random() < 0.5, // Randomly true or false
+      //   checkInNotes: "Checked in without issues.", // Randomly null or a string
+      //   checkInLicenseNumber: "A1234567", // Randomly null or a string
+      //   checkInLicenseIssuingJurisdiction: "CA", // Randomly null or a string
+      //   plannedDepartureAt: new Date(),
+      //   plannedReturnAt: new Date(),
+      //   pickedUpAt: new Date(),
+      //   returnedAt: new Date(),
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      // };
+      //returnedObject = await createReservation(reservation);
       fetchReservationData();
       restart();
     }
