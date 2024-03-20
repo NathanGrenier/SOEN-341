@@ -1,0 +1,18 @@
+@startuml
+start
+
+:Access reservation on the dashboard by reservation number;
+
+:Select check-out;
+
+if (Ask the customer whether paying by cash or card on file?) then (cash)
+  :Collect displayed final payment amount in cash;
+else (card)
+  :Charge final payment amount to the card;
+endif
+
+:Refund deposit to credit card;
+:Thank the customer;
+
+stop
+@enduml
