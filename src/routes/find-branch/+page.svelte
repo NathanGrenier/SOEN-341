@@ -61,9 +61,9 @@
   href="https://npmcdn.com/maplibre-gl/dist/maplibre-gl.css"
   id="maplibre-css" />
 
-<div class="grid grid-cols-4 gap-4 overflow-hidden">
-  <div class="col-span-3">
-    <div class="relative aspect-[16/11] h-full">
+<div class="grid w-11/12 grid-cols-1 gap-4 sm:grid-cols-4">
+  <div class="col-span-1 sm:col-span-3">
+    <div class="relative aspect-[9/20] h-full sm:aspect-[16/11]">
       <MapLibre
         {center}
         {zoom}
@@ -92,37 +92,37 @@
     </div>
   </div>
 
-  <div class="col-span-1">
+  <div class="col-span-1 w-auto sm:w-96">
     <div class="card relative h-full p-4">
       <div class="flex justify-center">
         <h2 class="h2 mb-4 text-lg font-semibold">Find a Branch</h2>
       </div>
       <div class="card my-2 p-2">
         {#each paginatedBranches as branch}
-          <div class="grid grid-cols-6 p-4">
-            <div class="col-span-1 my-auto justify-center">
-              <p>{branch.id}</p>
-            </div>
-            <div class="col-span-5">
+          <div class="p-4">
+            <div>
               <h2 class="text-xl font-semibold">{branch.name}</h2>
               <p class="my-2">{branch.streetAddress}</p>
               <p>
                 {branch.city}, {branch.region}, {branch.country}, {branch.postalCode}
               </p>
             </div>
-            <div class="col-span-6 flex justify-center space-x-2">
+            <div class="justify-center sm:flex sm:space-x-2">
               <button
-                class="btn mt-4 block bg-primary-500"
-                on:click={locateBranchOnMap(branch.longitude, branch.latitude)}
-                >Locate on Map</button>
+                class="btn mx-auto mt-4 block bg-primary-500"
+                on:click={locateBranchOnMap(branch.longitude, branch.latitude)}>
+                Locate on Map
+              </button>
               <button
-                class="btn mt-4 block bg-primary-500"
-                on:click={redirectWithBranch(branch.id)}>Select Branch</button>
+                class="btn mx-auto mt-4 block bg-primary-500"
+                on:click={redirectWithBranch(branch.id)}>
+                Select Branch
+              </button>
             </div>
           </div>
         {/each}
       </div>
-      <div class="absolute bottom-5">
+      <div class="bottom-5 ml-4 sm:absolute">
         <Paginator
           bind:settings={paginationSettings}
           showFirstLastButtons={false}

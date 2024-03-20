@@ -193,7 +193,7 @@
   href="https://npmcdn.com/flatpickr/dist/themes/{themeMode}.css"
   id="flatpickr-theme" />
 
-<div class="card my-2 space-y-2 p-4">
+<div class="card my-2 space-y-2 pb-2 pr-4">
   <TreeView>
     <TreeViewItem>
       <h6 class="h6 font-bold">Search Filters</h6>
@@ -235,7 +235,9 @@
           <div>
             <label class="label">
               <span>Start and End Dates</span>
-              <input class="input w-80" bind:this={ref} />
+              <input
+                class="center input mx-auto ml-4 mt-4 w-60 sm:w-80"
+                bind:this={ref} />
             </label>
           </div>
           <button

@@ -8,6 +8,8 @@
   export let car: Car & { reservations: Reservation[] };
 
   const modalStore = getModalStore();
+  const isMobileDevice = window.matchMedia("(max-width: 640px)").matches;
+  const inline = !isMobileDevice;
 
   let ref: Node;
   let startDate: Date;
@@ -29,7 +31,7 @@
       clickOpens: true,
       minDate: new Date(),
       mode: "range",
-      inline: true,
+      inline: inline,
       enableTime: true,
       disable: disable,
       onChange: (selectedDates) => {
@@ -50,12 +52,12 @@
 
 {#if $modalStore[0]}
   <div class="card flex flex-col justify-between p-4">
-    <div class="grid grid-cols-2 gap-x-4">
-      <div class="my-auto w-96 space-y-4">
+    <div class="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+      <div class="space-y-4 sm:w-96">
         <img
           alt="Car"
           src={car.photoUrl || "https://placehold.co/600x400"}
-          class="mx-auto block w-96 rounded" />
+          class="mx-auto block w-full rounded sm:w-96" />
         <div class="text-center">
           <h2 class="text-lg font-semibold">{car.make} {car.model}</h2>
         </div>
@@ -67,10 +69,10 @@
       </div>
       <div class="my-auto space-y-4 p-4">
         <div class="flex justify-center">
-          <h3 class="h3">Select a Date Range</h3>
+          <h3 class="h3 mx-auto block">Select a Date Range</h3>
         </div>
-        <div class="ml-7 space-y-4">
-          <input class="input block w-11/12" bind:this={ref} />
+        <div class="space-y-4 sm:ml-7">
+          <input class="input block sm:w-11/12" bind:this={ref} />
         </div>
         <button
           class="btn mx-auto mt-2 block rounded bg-primary-500 px-4 py-2"
