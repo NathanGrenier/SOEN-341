@@ -26,7 +26,6 @@
   import { centsToDollars } from "$lib/util";
 
   export let data;
-  export const now = new Date();
 
   function formatReservations(
     reservations: typeof data.userReserverations,
