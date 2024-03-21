@@ -1,9 +1,10 @@
 <script lang="ts" context="module">
-  import type { PageData } from "./$types";
+  import type { PageData as PageDataModule } from "./$types"; // Renamed to keep linter happy
 
-  export type PageDataReservation = PageData["reservation"];
+  export type PageDataReservation = PageDataModule["reservation"];
 
-  export type PageDataVehicleReservation = PageData["vehicleReservations"];
+  export type PageDataVehicleReservation =
+    PageDataModule["vehicleReservations"];
 </script>
 
 <script lang="ts">
@@ -23,18 +24,21 @@
     setFlatpickrTheme,
   } from "$lib/util";
 
+  import type { PageData } from "./$types";
+  import ReplacementNavigation from "./ReplacementNavigation.svelte";
+
   export let data: PageData;
 
-  const {
+  $: ({
     vehicleReservations,
     reservation,
     reservation: {
       car,
       car: { branch },
     },
-  } = data;
+  } = data);
 
-  const daysRented = getReservationDuration(
+  $: daysRented = getReservationDuration(
     reservation.plannedDepartureAt,
     reservation.plannedReturnAt,
   );
@@ -82,9 +86,14 @@
 <div class="flex flex-col gap-2">
   <div class="card">
     <header class="card-header">
-      <h2 class="text-lg font-bold">
-        {`${car.make} ${car.model} ${car.year}`}
-      </h2>
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold">
+          {`${car.make} ${car.model} ${car.year}`}
+        </h2>
+        <div>
+          <ReplacementNavigation {reservation} />
+        </div>
+      </div>
     </header>
     <section class="p-4">
       <div class="grid grid-cols-1 gap-x-10 gap-y-4 lg:grid-cols-2">
@@ -105,6 +114,9 @@
             </h2>
             <button
               class="variant-filled-primary btn w-fit self-end"
+              disabled={reservation.cancelled ||
+                Boolean(reservation.returnedAt) ||
+                Boolean(reservation.pickedUpAt)}
               on:click={handleEditReservation}
               ><EditIcon invertColor={true} constColor={true} /><span
                 >Modify</span
