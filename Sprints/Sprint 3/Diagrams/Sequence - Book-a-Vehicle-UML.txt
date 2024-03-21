@@ -1,0 +1,33 @@
+title Book a Vehicle - Main Process
+
+actor User
+participant DriveXperience
+database Database
+
+User -> DriveXperience: Sign In/Login
+DriveXperience -> Database: Validate Credentials
+Database --> DriveXperience: Credentials Validated
+
+alt Credentials Valid
+    User -> DriveXperience: Find a branch
+    DriveXperience -> Database: Search Branches
+    Database --> DriveXperience: List of Branches
+    User -> DriveXperience: Select Branch
+    DriveXperience -> Database: Search Available Cars
+    Database --> DriveXperience: List of Available Cars
+    User -> DriveXperience: Select Vehicle
+    DriveXperience -> Database: Get Car Details
+    Database --> DriveXperience: Car Details
+    User -> DriveXperience: Choose Rental Options
+    DriveXperience -> Database: Check Availability and Price
+    Database --> DriveXperience: Availability and Price
+    User -> DriveXperience: Confirm Booking
+    DriveXperience -> Database: Process Booking
+    Database --> DriveXperience: Booking Confirmed
+    User -> DriveXperience: Provide Payment Information
+    DriveXperience -> Database: Process Payment
+    Database --> DriveXperience: Payment Successful
+    DriveXperience --> User: Receive Confirmation
+else Credentials Invalid
+    DriveXperience --> User: Error Message
+end
