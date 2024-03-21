@@ -8,7 +8,7 @@
     type ModalComponent,
     type ModalSettings,
   } from "@skeletonlabs/skeleton";
-  import { fetchEntities, updateEntity } from "$lib/utils";
+  import { fetchEntities } from "$lib/utils";
 
   const modalStore = getModalStore();
 
@@ -119,128 +119,6 @@
   function restart() {
     unique = {};
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let formElement: any;
-
-  async function handleSubmit() {
-    let formData = new FormData(formElement);
-    let data = Object.fromEntries(formData.entries());
-
-    const convertValue = (value) => {
-      // Check if the value is an empty string and return it as is
-      if (value === "") return value;
-
-      // Attempt to convert to a Number
-      const numberValue = Number(value);
-      if (!isNaN(numberValue) && value !== "") return numberValue; // Return the number if it's a valid conversion
-
-      // Attempt to convert to a Boolean
-      if (value.toLowerCase() === "true") return true;
-      if (value.toLowerCase() === "false") return false;
-
-      // Default to string if no other conversions apply
-      return value;
-    };
-
-    let convertedData = Object.fromEntries(
-      Object.entries(data).map(([key, value]) => [key, convertValue(value)]),
-    );
-
-    function convertToFormData(
-      data: ArrayLike<unknown> | { [s: string]: unknown },
-    ) {
-      const formData = new FormData();
-      for (const [key, value] of Object.entries(data)) {
-        formData.append(key, value);
-      }
-      return formData;
-    }
-
-    try {
-      if (selectedKey === 1) {
-        let finalizedForm = convertToFormData(convertedData);
-        finalizedForm.append("userId", selectedRowId.toString());
-        fetchedData = updateEntity("User", finalizedForm);
-        restart();
-      } else if (selectedKey === 2) {
-        let finalizedForm = convertToFormData(convertedData);
-        finalizedForm.append("carId", selectedRowId.toString());
-        updateEntity("Car", finalizedForm);
-        restart();
-      } else if (selectedKey === 3) {
-        let finalizedForm = convertToFormData(convertedData);
-        finalizedForm.append("reservationId", selectedRowId.toString());
-        updateEntity("Reservation", finalizedForm);
-        restart();
-      }
-    } catch (error) {
-      console.error("Error updating data:", error);
-    }
-  }
-
-  async function handleCreate() {
-    let returnedObject;
-    if (selectedKey === 1) {
-      // const randomUserObject = {
-      //   email: "example@example.com", // Use a static value or a function to generate a fake email
-      //   name: "Demo User", // Use a static value or a function to generate a fake name
-      //   comment: Math.random() > 0.5 ? "This is a random comment." : null,
-      //   role: "CUSTOMER",
-      //   passwordHash: "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", // Use a static value or a function to generate a hash
-      //   disabled: Math.random() > 0.5,
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // };
-
-      //returnedObject = await createUser(randomUserObject);
-      restart();
-    } else if (selectedKey === 2) {
-      // const randomCarObject = {
-      //   branchId: 1,
-      //   make: "GenericMake",
-      //   model: "GenericModel",
-      //   year: Math.floor(Math.random() * (2023 - 1990 + 1)) + 1990,
-      //   colour: "GREEN",
-      //   seats: Math.floor(Math.random() * (8 - 2 + 1)) + 2,
-      //   description: "This is a generic car description.",
-      //   photoUrl: Math.random() > 0.5 ? "https://example.com/photo.jpg" : null,
-      //   dailyPrice: parseFloat((Math.random() * (500 - 50) + 50).toFixed(2)),
-      //   bookingDisabled: Math.random() > 0.5,
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // };
-      //returnedObject = await createCar(randomCarObject);
-      restart();
-    } else if (selectedKey === 3) {
-      // const reservation = {
-      //   car: {
-      //     // Assuming a nested "Car" object structure with minimal properties
-      //   },
-      //   holder: {
-      //     // Assuming a nested "User" object structure with minimal properties
-      //   },
-      //   replaces: {},
-      //   replacedBy: {
-      //     // Nested "Reservation", null or with an ID property
-      //   },
-      //   quotedPrice: Math.floor(Math.random() * 500 + 100), // Random price between 100 and 500
-      //   cancelled: Math.random() < 0.5, // Randomly true or false
-      //   checkInNotes: "Checked in without issues.", // Randomly null or a string
-      //   checkInLicenseNumber: "A1234567", // Randomly null or a string
-      //   checkInLicenseIssuingJurisdiction: "CA", // Randomly null or a string
-      //   plannedDepartureAt: new Date(),
-      //   plannedReturnAt: new Date(),
-      //   pickedUpAt: new Date(),
-      //   returnedAt: new Date(),
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // };
-      //returnedObject = await createReservation(reservation);
-      restart();
-    }
-
-    console.log(returnedObject); // Log the modified copy to the console
-  }
 </script>
 
 <div class="card">
@@ -303,61 +181,6 @@
               class="variant-filled btn">Load all Reservations</button>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="card flex justify-center text-center">
-      <div class="container p-5 font-bold">
-        {#if isSelected == false}
-          <h1>
-            You will be able to select an entry in the table, and modify any
-            attributes as needed.
-          </h1>
-        {:else if fetchedData && selectedRowId !== -1}
-          <div class="table-container">
-            <form bind:this={formElement}>
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    {#each Object.keys(selectedData) as key}
-                      <th>{key}</th>
-                    {/each}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    {#each Object.entries(selectedData) as [key, value]}
-                      <td>
-                        <input
-                          type="text"
-                          name={key}
-                          {value}
-                          class="input variant-form-material" />
-                      </td>
-                    {/each}
-                  </tr>
-                </tbody>
-              </table>
-              <div class="container p-3">
-                <button
-                  on:click={handleSubmit}
-                  type="button"
-                  class="variant-filled btn">
-                  Update Information
-                </button>
-              </div>
-            </form>
-          </div>
-          <div class="flex">
-            <div class="container p-3">
-              <button
-                type="button"
-                on:click={handleCreate}
-                class="variant-filled btn">
-                Generate an Entry.
-              </button>
-            </div>
-          </div>
-        {/if}
       </div>
     </div>
   </div>
