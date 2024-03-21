@@ -89,7 +89,7 @@
   ];
 </script>
 
-<Toast position="br" />
+<Toast position="br" zIndex="z-[1000]" />
 
 <Modal components={modalRegistry} />
 
