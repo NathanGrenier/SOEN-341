@@ -52,6 +52,7 @@
       clickOpens: true,
       enableTime: true,
       time_24hr: true,
+      minuteIncrement: 1,
       minDate: new Date(),
       mode: "range",
       inline: true,
