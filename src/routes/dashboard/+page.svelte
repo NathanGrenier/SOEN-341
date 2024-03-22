@@ -23,7 +23,7 @@
   import { page } from "$app/stores";
   import ReservationTable from "$lib/components/ReservationTable.svelte";
   import { replaceState } from "$app/navigation";
-  import { centsToDollars } from "$lib/util";
+  import { centsToDollars } from "$lib/utils";
 
   export let data;
 
