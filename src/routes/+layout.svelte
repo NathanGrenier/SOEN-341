@@ -120,15 +120,19 @@
       <svelte:fragment slot="trail">
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
-          <Avatar
-            {initials}
-            class="h-11 w-11 cursor-pointer border-4 border-surface-300 bg-tertiary-500 hover:border-primary-500" />
-        </div>
-        <ProfilePopup user={data.user} />
-      </svelte:fragment>
+          <div use:popup={profilePopup}>
+            <Avatar
+              {initials}
+              background="bg-tertiary-500"
+              width="w-12"
+              border="border-4 border-surface-300-600-token hover:!border-primary-500"
+              cursor="cursor-pointer" />
+          </div>
+          <ProfilePopup user={data.user} />
+        </div></svelte:fragment>
     </AppBar>
   </svelte:fragment>
-  <div class="container mx-auto">
+  <div class="container mx-auto p-10">
     <slot />
   </div>
   <svelte:fragment slot="pageFooter">
