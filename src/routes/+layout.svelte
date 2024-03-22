@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
   import type { PageData } from "./$types";
   import type { SvelteComponent } from "svelte";
+  import ViewCarModal from "$lib/components/modals/ViewCarModal.svelte";
 
   export type User = PageData["user"];
 
@@ -43,6 +44,7 @@
   import type { ModalComponent } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import MobileNavigation from "$lib/components/MobileNavigation.svelte";
+  import MagnifyingGlass from "$lib/icons/MagnifyingGlass.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
   import CarIcon from "$lib/icons/CarIcon.svelte";
   import HomeIcon from "$lib/icons/HomeIcon.svelte";
@@ -56,6 +58,7 @@
   export let data;
   const modalRegistry: Record<string, ModalComponent> = {
     modalComponentTest: { ref: ModalComponentTest },
+    viewCarModalComponent: { ref: ViewCarModal },
   };
 
   const drawerStore = getDrawerStore();
@@ -86,10 +89,15 @@
       href: "/browse-vehicles",
       icon: CarIcon as SvelteComponent,
     },
+    {
+      name: "Find a Branch",
+      href: "/find-branch",
+      icon: MagnifyingGlass as SvelteComponent,
+    },
   ];
 </script>
 
-<Toast position="br" />
+<Toast position="br" zIndex="z-[1000]" />
 
 <Modal components={modalRegistry} />
 

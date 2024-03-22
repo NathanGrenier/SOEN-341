@@ -1,5 +1,5 @@
 import { prisma } from "$lib/db/client";
-import { fail } from "@sveltejs/kit";
+import { fail, type Actions } from "@sveltejs/kit";
 import { z } from "zod";
 import { createResetToken } from "$lib/server/session";
 import { sendEmail } from "$lib/server/email/email";
@@ -52,4 +52,4 @@ export const actions = {
 
     return { success: true };
   },
-};
+} satisfies Actions;

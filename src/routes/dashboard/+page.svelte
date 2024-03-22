@@ -23,10 +23,9 @@
   import { page } from "$app/stores";
   import ReservationTable from "$lib/components/ReservationTable.svelte";
   import { replaceState } from "$app/navigation";
-  import { centsToDollars } from "$lib/util";
+  import { centsToDollars } from "$lib/utils";
 
   export let data;
-  export const now = new Date();
 
   function formatReservations(
     reservations: typeof data.userReserverations,
@@ -79,7 +78,7 @@
     name="expired"
     value="expired"
     on:click={() => updateURLState("expired")}>
-    <span class="font-bold">Expiered</span></Tab>
+    <span class="font-bold">Expired</span></Tab>
   <Tab
     bind:group={tabSet}
     name="cancelled"

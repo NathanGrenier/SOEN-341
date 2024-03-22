@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, type SvelteComponent } from "svelte";
-  import { getModalStore } from "@skeletonlabs/skeleton";
+  import { getModalStore, getToastStore } from "@skeletonlabs/skeleton";
   import EditIcon from "$lib/icons/EditIcon.svelte";
   import type {
     PageDataReservation,
@@ -10,11 +10,15 @@
     centsToDollars,
     getReservationDuration,
     setFlatpickrTheme,
-  } from "$lib/util";
+  } from "$lib/utils";
 
   import flatpickr from "flatpickr";
+  import { enhance } from "$app/forms";
+  import type { SubmitFunction } from "@sveltejs/kit";
+  import { newErrorToats, newSuccessToats } from "$lib/toast";
 
   const modalStore = getModalStore();
+  const toastStore = getToastStore();
 
   export let parent: SvelteComponent;
 
@@ -27,8 +31,6 @@
     plannedDeparture: currentReservation.plannedDepartureAt,
     plannedReturn: currentReservation.plannedReturnAt,
   };
-
-  let form: HTMLFormElement;
 
   let calendarRef: HTMLInputElement;
 
@@ -49,9 +51,11 @@
       allowInput: true,
       clickOpens: true,
       enableTime: true,
+      time_24hr: true,
+      minuteIncrement: 1,
+      minDate: new Date(),
       mode: "range",
       inline: true,
-      minDate: new Date(),
       disable: disabled,
       defaultDate: [formData.plannedDeparture, formData.plannedReturn],
       onChange: (selectedDates) => {
@@ -67,10 +71,43 @@
     formData.plannedReturn,
   );
 
-  function onFormSubmit(): void {
-    form.submit();
-    modalStore.close();
-  }
+  const submitModifyReservation: SubmitFunction = ({ formData, cancel }) => {
+    const { reservationDates } = Object.fromEntries(formData);
+
+    if (typeof reservationDates !== "string" || !reservationDates) {
+      toastStore.trigger(newErrorToats("Invalid reservation dates"));
+      cancel();
+      return;
+    }
+    const dates = reservationDates.split(" to ");
+    if (dates.length !== 2) {
+      toastStore.trigger(newErrorToats("Invalid number of reservation dates"));
+      cancel();
+      return;
+    }
+
+    const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+    formData.append("timezoneOffset", `${timezoneOffset}`);
+    formData.append("reservationId", `${currentReservation.id}`);
+
+    return async ({ result, update }) => {
+      switch (result.type) {
+        case "success":
+          modalStore.close();
+          toastStore.clear();
+          toastStore.trigger(newSuccessToats("Reservation updated"));
+          break;
+        case "error":
+          toastStore.trigger(
+            newErrorToats(
+              `Failed to update reservation: ${result.error?.message}`,
+            ),
+          );
+          break;
+      }
+      await update({ reset: result.type === "success" });
+    };
+  };
 </script>
 
 {#if $modalStore[0]}
@@ -81,12 +118,17 @@
     <article>
       <form
         class="space-y-4 border border-surface-500 p-4 rounded-container-token"
+        method="POST"
         action="?/modifyReservation"
-        bind:this={form}>
+        id="modifyReservationForm"
+        use:enhance={submitModifyReservation}>
         <label class="label">
           <span>New Reservation Dates</span>
           <div class="flex flex-col items-center gap-2">
-            <input class="input" bind:this={calendarRef} />
+            <input
+              class="input"
+              name="reservationDates"
+              bind:this={calendarRef} />
           </div>
         </label>
         <div class="flex items-baseline justify-between gap-2">
@@ -133,7 +175,8 @@
         on:click={parent.onClose}>{parent.buttonTextCancel}</button>
       <button
         class="variant-filled-primary btn {parent.buttonPositive}"
-        on:click={onFormSubmit}>Submit</button>
+        type="submit"
+        form="modifyReservationForm">Submit</button>
     </footer>
   </div>
 {/if}

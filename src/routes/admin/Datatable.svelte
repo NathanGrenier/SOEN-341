@@ -5,7 +5,7 @@
   import RowsPerPage from "$lib/components/DataTable/RowsPerPage.svelte";
   import RowCount from "$lib/components/DataTable/RowCount.svelte";
   import Pagination from "$lib/components/DataTable/Pagination.svelte";
-
+  import { DataHandler } from "@vincjo/datatables";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
@@ -20,9 +20,6 @@
     console.log("rowIDselectedInDatatable=" + rowId);
     dispatch("rowClick", rowId);
   }
-
-  //Import handler from SSD
-  import { DataHandler } from "@vincjo/datatables";
 
   //Init data handler - CLIENT
   const handler = new DataHandler(userData, { rowsPerPage: 5 });
