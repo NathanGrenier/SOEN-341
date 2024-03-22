@@ -1,57 +1,15 @@
 <script lang="ts">
+  import type { Car, Reservation, User } from "@prisma/client";
   import Datatable from "./Datatable.svelte";
-  import {
-    getAllUsers,
-    updateUser,
-    createUser,
-  } from "$lib/controllers/userController";
-  import {
-    getAllReservations,
-    updateReservation,
-    createReservation,
-  } from "$lib/controllers/reservationController";
-  import {
-    getAllCars,
-    updateCar,
-    createCar,
-  } from "$lib/controllers/carController";
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let fetchedData: any;
+  export let data;
+
+  let { users } = data;
+  let { reservations } = data;
+  let { cars } = data;
+
+  let fetchedData: Car[] | Reservation[] | User[];
   let isLoading = false;
-
-  async function fetchUserData() {
-    isLoading = true;
-    try {
-      fetchedData = await getAllUsers();
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      isLoading = false;
-    }
-  }
-
-  async function fetchVehicleData() {
-    isLoading = true;
-    try {
-      fetchedData = await getAllCars();
-    } catch (error) {
-      console.error("Error fetching vehicles:", error);
-    } finally {
-      isLoading = false;
-    }
-  }
-
-  async function fetchReservationData() {
-    isLoading = true;
-    try {
-      fetchedData = await getAllReservations();
-    } catch (error) {
-      console.error("Error fetching reservations:", error);
-    } finally {
-      isLoading = false;
-    }
-  }
 
   $: selectedKey = -1;
   $: isSelected = false;
@@ -61,11 +19,8 @@
   function handleRowClick(event: { detail: number }) {
     selectedRowId = event.detail;
     selectedData = fetchedData.find(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (item: { id: any }) => item.id === selectedRowId,
+      (item: { id: number }) => item.id === selectedRowId,
     );
-
-    console.log(selectedData);
   }
 
   let unique = {};
@@ -73,6 +28,7 @@
   function restart() {
     unique = {};
   }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let formElement: any;
 
@@ -80,7 +36,7 @@
     let formData = new FormData(formElement);
     let data = Object.fromEntries(formData.entries());
 
-    const convertValue = (value) => {
+    const convertValue = (value: string) => {
       // Check if the value is an empty string and return it as is
       if (value === "") return value;
 
@@ -96,24 +52,65 @@
       return value;
     };
 
-    const convertedData = Object.fromEntries(
-      Object.entries(data).map(([key, value]) => [key, convertValue(value)]),
+    let convertedData = Object.fromEntries(
+      Object.entries(data).map(([key, value]) => [
+        key,
+        convertValue(value.toString()),
+      ]),
     );
 
-    console.log(convertedData);
     isLoading = true;
     try {
       if (selectedKey === 1) {
-        await updateUser(selectedRowId, convertedData);
-        fetchUserData();
+        convertedData = { ...convertedData, id: selectedRowId };
+
+        fetch("?/updateUser", {
+          method: "POST",
+          body: JSON.stringify(convertedData),
+        })
+          .then((res) => {
+            if (res.ok) {
+              console.log("Succesfully updated user");
+            }
+          })
+          .catch((err) => {
+            console.error("There was an error updating user: " + err);
+          });
+
         restart();
       } else if (selectedKey === 2) {
-        await updateCar(selectedRowId, convertedData);
-        fetchVehicleData();
+        convertedData = { ...convertedData, id: selectedRowId };
+
+        fetch("?/updateCar", {
+          method: "POST",
+          body: JSON.stringify(convertedData),
+        })
+          .then((res) => {
+            if (res.ok) {
+              console.log("Succesfully updated car");
+            }
+          })
+          .catch((err) => {
+            console.error("There was an error updating user: " + err);
+          });
+
         restart();
       } else if (selectedKey === 3) {
-        await updateReservation(selectedRowId, convertedData);
-        fetchReservationData();
+        convertedData = { ...convertedData, id: selectedRowId };
+
+        fetch("?/updateReservation", {
+          method: "POST",
+          body: JSON.stringify(convertedData),
+        })
+          .then((res) => {
+            if (res.ok) {
+              console.log("Succesfully updated reservation");
+            }
+          })
+          .catch((err) => {
+            console.error("There was an error updating user: " + err);
+          });
+
         restart();
       }
     } catch (error) {
@@ -147,7 +144,6 @@
     // const convertedData = Object.fromEntries(
     //   Object.entries(dataCopy).map(([key, value]) => [key, convertValue(value)]),
     // );
-    let returnedObject;
     if (selectedKey === 1) {
       const randomObject = {
         email: "example@example.com", // Use a static value or a function to generate a fake email
@@ -160,9 +156,22 @@
         updatedAt: new Date(),
       };
 
-      returnedObject = await createUser(randomObject);
-      fetchUserData();
+      fetch("?/createUser", {
+        method: "POST",
+        body: JSON.stringify(randomObject),
+      })
+        .then((res) => {
+          if (res.ok) {
+            console.log("Succesfully created user");
+          }
+        })
+        .catch((err) => {
+          console.error("There was an error creating user: " + err);
+        });
+
       restart();
+
+      location.reload();
     } else if (selectedKey === 2) {
       const randomCarObject = {
         branchId: 1,
@@ -178,9 +187,22 @@
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      returnedObject = await createCar(randomCarObject);
-      fetchVehicleData();
+      fetch("?/createCar", {
+        method: "POST",
+        body: JSON.stringify(randomCarObject),
+      })
+        .then((res) => {
+          if (res.ok) {
+            console.log("Succesfully created car");
+          }
+        })
+        .catch((err) => {
+          console.error("There was an error creating car: " + err);
+        });
+
       restart();
+
+      location.reload();
     } else if (selectedKey === 3) {
       const reservation = {
         car: {
@@ -205,12 +227,23 @@
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      returnedObject = await createReservation(reservation);
-      fetchReservationData();
-      restart();
-    }
+      fetch("?/createReservation", {
+        method: "POST",
+        body: JSON.stringify(reservation),
+      })
+        .then((res) => {
+          if (res.ok) {
+            console.log("Succesfully created reservation");
+          }
+        })
+        .catch((err) => {
+          console.error("There was an error creating reservation: " + err);
+        });
 
-    console.log(returnedObject); // Log the modified copy to the console
+      restart();
+
+      location.reload();
+    }
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // function convertToType(
@@ -317,7 +350,7 @@
               type="button"
               class="variant-filled btn"
               on:click={() => {
-                fetchUserData();
+                fetchedData = users;
                 restart();
                 selectedKey = 1;
                 isSelected = true;
@@ -328,7 +361,7 @@
             <button
               type="button"
               on:click={() => {
-                fetchVehicleData();
+                fetchedData = cars;
                 restart();
                 selectedKey = 2;
                 isSelected = true;
@@ -340,7 +373,7 @@
             <button
               type="button"
               on:click={() => {
-                fetchReservationData();
+                fetchedData = reservations;
                 restart();
                 selectedKey = 3;
                 isSelected = true;

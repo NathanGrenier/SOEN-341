@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { prisma } from "$lib/db/client";
-import { fail, redirect } from "@sveltejs/kit";
+import { fail, redirect, type Actions } from "@sveltejs/kit";
 import { z } from "zod";
 import { validateResetToken, createSession } from "$lib/server/session";
 
@@ -86,4 +86,4 @@ export const actions = {
 
     return redirect(302, "/");
   },
-};
+} satisfies Actions;

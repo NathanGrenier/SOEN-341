@@ -1,61 +1,17 @@
 <script lang="ts">
-  import type { Branch } from "@prisma/client";
-  import type { Car } from "@prisma/client";
   import { getModalStore } from "@skeletonlabs/skeleton";
-  import type { ModalSettings } from "@skeletonlabs/skeleton";
-  import { createReservation } from "$lib/controllers/reservationController.js";
+  import type { ModalSettings, ToastSettings } from "@skeletonlabs/skeleton";
   import type { Reservation } from "@prisma/client";
-  import { onMount } from "svelte";
-  import {
-    getCarById,
-    getReservationsForCar,
-  } from "$lib/controllers/carController.js";
-  import { getBranchById } from "$lib/controllers/branchController.js";
+  import { getToastStore } from "@skeletonlabs/skeleton";
+  import { parseDate } from "$lib/utils.js";
 
   export let data;
-  let startDate: string = data.startDate;
-  let endDate: string = data.endDate;
-  let branch: Branch | null;
-  let currentCar: Car | null;
 
-  onMount(async () => {
-    currentCar = await getCarById(+data.params.carId);
-
-    if (!currentCar) {
-      window.location.href = "/browse-vehicles";
-    }
-
-    branch = await getBranchById(+data.params.location);
-
-    if (!branch) {
-      window.location.href = "/browse-vehicles";
-    }
-
-    const existingReservations = await getReservationsForCar(
-      +data.params.carId,
-    );
-
-    const conflictingReservation = existingReservations.find((reservation) => {
-      const plannedDepartureAt = new Date(
-        reservation.plannedDepartureAt,
-      ).getTime();
-      const plannedReturnAt = new Date(reservation.plannedReturnAt).getTime();
-      const startDateTimestamp = new Date(startDate).getTime();
-      const endDateTimestamp = new Date(endDate).getTime();
-
-      const isConflict =
-        (plannedDepartureAt <= endDateTimestamp &&
-          plannedReturnAt >= startDateTimestamp) ||
-        (plannedDepartureAt <= startDateTimestamp &&
-          plannedReturnAt >= endDateTimestamp);
-
-      return isConflict;
-    });
-
-    if (conflictingReservation) {
-      window.location.href = "/browse-vehicles";
-    }
-  });
+  const toastStore = getToastStore();
+  const { startDate } = data;
+  const { endDate } = data;
+  const { currentCar } = data;
+  const { currentBranch } = data;
 
   let firstName = data.user?.name.split(" ")[0];
   let middleName =
@@ -63,7 +19,6 @@
   let lastName = data.user?.name.split(" ").slice(-1);
 
   let extraEquipment: string[] = [];
-  let selectedBranchId: number = +data.params.location;
   let isOnline = false;
 
   const modalStore = getModalStore();
@@ -73,12 +28,24 @@
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, "0");
     const day = now.getDate().toString().padStart(2, "0");
-    const today = `${year}-${month}-${day}`;
+    const hour = now.getHours().toString().padStart(2, "0");
+    const minute = now.getMinutes().toString().padStart(2, "0");
+    const today = `${year}-${month}-${day} ${hour}:${minute}`;
     return today;
   }
 
   function handleCancel() {
     window.location.href = "/browse-vehicles";
+  }
+
+  function formatDatetoHuman(date: Date) {
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    });
   }
 
   function isStartDateBeforeEndDate(
@@ -91,17 +58,8 @@
     return startDateObj < endDateObj;
   }
 
-  function formatDate(dateString: string | number) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-
   function handleReserve() {
-    if (!branch) return;
+    if (!currentBranch) return;
 
     const fullName = `${firstName} ${middleName ? middleName + " " : ""}${lastName}`;
 
@@ -116,11 +74,11 @@
         </div>
         <div class="flex justify-between">
           <span>Start Date:</span>
-          <span>${formatDate(startDate)}</span>
+          <span>${formatDatetoHuman(new Date(startDate))}</span>
         </div>
         <div class="flex justify-between">
           <span>End Date:</span>
-          <span>${formatDate(endDate)}</span>
+          <span>${formatDatetoHuman(new Date(endDate))}</span>
         </div>
         <div class="flex justify-between">
           <span>Payment Method:</span>
@@ -144,27 +102,27 @@
           <div class="space-y-4">
             <div class="flex justify-between">
               <span>Name:</span>
-              <span>${branch?.name}</span>
+              <span>${currentBranch.name}</span>
             </div>
             <div class="flex justify-between">
               <span>Street Address:</span>
-              <span>${branch?.streetAddress}</span>
+              <span>${currentBranch.streetAddress}</span>
             </div>
             <div class="flex justify-between">
               <span>City:</span>
-              <span>${branch?.city}</span>
+              <span>${currentBranch.city}</span>
             </div>
             <div class="flex justify-between">
               <span>Region:</span>
-              <span>${branch?.region}</span>
+              <span>${currentBranch.region}</span>
             </div>
             <div class="flex justify-between">
               <span>Country:</span>
-              <span>${branch?.country}</span>
+              <span>${currentBranch.country}</span>
             </div>
             <div class="flex justify-between">
               <span>Postal Code:</span>
-              <span>${branch?.postalCode}</span>
+              <span>${currentBranch.postalCode}</span>
             </div>
           </div>
         `,
@@ -181,23 +139,23 @@
               <div class="space-y-4">
                 <div class="flex justify-between">
                   <span>Make:</span>
-                  <span>${currentCar?.make}</span>
+                  <span>${currentCar.make}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Model:</span>
-                  <span>${currentCar?.model}</span>
+                  <span>${currentCar.model}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Year:</span>
-                  <span>${currentCar?.year}</span>
+                  <span>${currentCar.year}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Colour:</span>
-                  <span>${currentCar?.colour}</span>
+                  <span>${currentCar.colour}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Seats:</span>
-                  <span>${currentCar?.seats}</span>
+                  <span>${currentCar.seats}</span>
                 </div>
                 <div class="flex justify-between">
                   <span>Daily Price:</span>
@@ -234,35 +192,86 @@
                 const numberOfDays = Math.ceil(
                   timeDifference / (1000 * 3600 * 24),
                 );
-                const quotedPrice = currentCar?.dailyPrice
-                  ? numberOfDays * currentCar?.dailyPrice
+                const quotedPrice = currentCar.dailyPrice
+                  ? (numberOfDays * currentCar.dailyPrice) / 100
                   : 0;
 
+                function convertDateToSpecificTimezone(
+                  userDate: Date,
+                  targetTimezone: string,
+                ): Date {
+                  const formatter = new Intl.DateTimeFormat("en-US", {
+                    timeZone: targetTimezone,
+                  });
+                  const targetDateString = formatter.format(userDate);
+
+                  const targetDate = new Date(targetDateString);
+
+                  return targetDate;
+                }
+
                 const reservationData: Omit<Reservation, "id"> = {
-                  carId: currentCar?.id || 0,
-                  holderId: data.user?.id || 0,
+                  carId: currentCar.id ?? 0,
+                  holderId: data.user?.id ?? 0,
                   replacesId: null,
-                  quotedPrice: quotedPrice || 0,
+                  quotedPrice: quotedPrice ?? 0,
                   cancelled: false,
                   checkInNotes: null,
                   checkInLicenseNumber: null,
                   checkInLicenseIssuingJurisdiction: null,
-                  plannedDepartureAt: new Date(startDate),
-                  plannedReturnAt: new Date(endDate),
+                  plannedDepartureAt: convertDateToSpecificTimezone(
+                    parseDate(startDate),
+                    currentBranch.timezone,
+                  ),
+                  plannedReturnAt: convertDateToSpecificTimezone(
+                    parseDate(endDate),
+                    currentBranch.timezone,
+                  ),
                   pickedUpAt: null,
                   returnedAt: null,
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
+                  createdAt: convertDateToSpecificTimezone(
+                    new Date(),
+                    currentBranch.timezone,
+                  ),
+                  updatedAt: convertDateToSpecificTimezone(
+                    new Date(),
+                    currentBranch.timezone,
+                  ),
                 };
 
-                // Call createReservation function
-                createReservation(reservationData)
-                  .then(() => {
-                    modalStore.close();
-                    window.location.href = "/";
+                const formData = new FormData();
+
+                Object.entries(reservationData).forEach(([key, value]) => {
+                  formData.append(key, value?.toString() ?? "");
+                });
+
+                fetch("", {
+                  method: "POST",
+                  body: formData,
+                })
+                  .then((res: Response) => {
+                    if (res.ok) {
+                      return res.json();
+                    } else {
+                      const cancelErrorToast: ToastSettings = {
+                        message: "There was an error filtering cars.",
+                        background: "variant-filled-error",
+                        autohide: false,
+                      };
+
+                      toastStore.trigger(cancelErrorToast);
+                    }
                   })
-                  .catch((error) => {
-                    console.error("Error creating reservation: " + error);
+                  .then(() => {
+                    window.location.href = "/dashboard";
+                  })
+                  .catch(() => {
+                    const failToast: ToastSettings = {
+                      message: "There was an error creating the reservation",
+                      background: "variant-filled-error",
+                      autohide: false,
+                    };
+                    toastStore.trigger(failToast);
                   });
               },
             };
@@ -272,7 +281,6 @@
         modalStore.trigger(branchDetailsModal);
       },
     };
-
     modalStore.trigger(userInfoModal);
   }
 
@@ -330,18 +338,18 @@
             <span>Start Date</span>
             <input
               class="input"
-              type="date"
-              bind:value={startDate}
-              min={getToday()} />
+              type="text"
+              value={`${formatDatetoHuman(new Date(startDate))}`}
+              readonly />
           </div>
 
           <div class="space-y-2">
             <span>End Date</span>
             <input
               class="input"
-              type="date"
-              bind:value={endDate}
-              min={getToday()} />
+              type="text"
+              value={`${formatDatetoHuman(new Date(endDate))}`}
+              readonly />
           </div>
         </div>
       </section>
@@ -438,21 +446,21 @@
             <div class="px-4 py-2">
               <div class="flex items-center">
                 <span class="mr-2 text-base font-bold">Branch Name:</span>
-                <span class="text-xl">{branch?.name}</span>
+                <span class="text-xl">{currentBranch.name}</span>
               </div>
             </div>
             <div class="px-4 py-2">
               <div class="flex items-center">
                 <span class="mr-2 text-base font-bold">Description:</span>
-                <span>{branch?.description}</span>
+                <span>{currentBranch.description}</span>
               </div>
             </div>
             <div class="px-4 py-2">
               <div class="flex items-center">
                 <span class="mr-2 text-base font-bold">Address:</span>
                 <span>
-                  {branch?.streetAddress}, {branch?.city}, {branch?.region},
-                  {branch?.country}, {branch?.postalCode}
+                  {currentBranch.streetAddress}, {currentBranch.city}, {currentBranch.region},
+                  {currentBranch.country}, {currentBranch.postalCode}
                 </span>
               </div>
             </div>
@@ -467,29 +475,29 @@
       <div class="space-y-8">
         <div class="mb-2 flex justify-center">
           <img
-            src={currentCar?.photoUrl}
+            src={currentCar.photoUrl}
             alt="Car"
             class="w-128 h-auto rounded-md" />
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Make:</span>
-          <span>{currentCar?.make}</span>
+          <span>{currentCar.make}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Model:</span>
-          <span>{currentCar?.model}</span>
+          <span>{currentCar.model}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Year:</span>
-          <span>{currentCar?.year}</span>
+          <span>{currentCar.year}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Colour:</span>
-          <span>{currentCar?.colour}</span>
+          <span>{currentCar.colour}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Seats:</span>
-          <span>{currentCar?.seats}</span>
+          <span>{currentCar.seats}</span>
         </div>
         <div class="mb-2 flex justify-between">
           <span class="font-semibold">Daily Price:</span>
@@ -535,7 +543,6 @@
         !isStartDateBeforeEndDate(startDate, endDate) ||
         startDate < getToday() ||
         endDate < getToday() ||
-        selectedBranchId === -1 ||
         !currentCar}>
       <span
         ><svg
