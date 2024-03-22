@@ -136,6 +136,7 @@ export async function fetchEntityById(
       background: "variant-filled-error",
     };
   }
+}
 
 export function parseDate(dateString: string): Date {
   const [yearStr, monthStr, dayStr] = dateString.split("-");
