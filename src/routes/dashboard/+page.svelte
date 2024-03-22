@@ -78,7 +78,7 @@
     name="expired"
     value="expired"
     on:click={() => updateURLState("expired")}>
-    <span class="font-bold">Expiered</span></Tab>
+    <span class="font-bold">Expired</span></Tab>
   <Tab
     bind:group={tabSet}
     name="cancelled"
