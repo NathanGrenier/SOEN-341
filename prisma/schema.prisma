@@ -116,17 +116,29 @@ model Reservation {
   replacedBy                        Reservation?                     @relation("ReservationHistory")
   // Price in cents
   quotedPrice                       Int
+  creditCardNumber                  String
+  creditCardExpiry                  String
+  creditCardCVV                     String
   cancelled                         Boolean                          @default(false)
   // The optional fields following won't be filled in until check-in
-  checkInNotes                      String?
+  checkInReportedDamages            String?
   checkInLicenseNumber              String?
   checkInLicenseIssuingJurisdiction String?
+  depositAmountTaken                Int?
+  depositAmountRefunded             Int?
+  amountPaid                        Int?
+  paymentMethod                     PaymentMethod?
   plannedDepartureAt                DateTime
   plannedReturnAt                   DateTime
-  pickedUpAt                        DateTime?
-  returnedAt                        DateTime?
+  pickedUpAt                        DateTime? // Rental agreement is deemed to be signed when this is set. Deposit is taken at this time.
+  returnedAt                        DateTime? // Deposit is refunded at this time. Amount is paid at this time.
   createdAt                         DateTime                         @default(now())
   updatedAt                         DateTime                         @updatedAt
+}
+
+enum PaymentMethod {
+  CARD_ON_FILE
+  CASH
 }
 
 model ReservationIncludedAccessories {
