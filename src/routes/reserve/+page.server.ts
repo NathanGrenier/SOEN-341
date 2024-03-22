@@ -143,7 +143,13 @@ export const actions = {
         ? new Date(data.updatedAt.toString())
         : new Date(),
       replacesId: null,
-      checkInNotes: null,
+      creditCardNumber: data.creditCardNumber
+        ? data.creditCardNumber.toString()
+        : "",
+      creditCardExpiry: data.creditCardExpiry
+        ? data.creditCardExpiry.toString()
+        : "",
+      creditCardCVV: data.creditCardCVV ? data.creditCardCVV.toString() : "",
       checkInLicenseNumber: null,
       checkInLicenseIssuingJurisdiction: null,
     };

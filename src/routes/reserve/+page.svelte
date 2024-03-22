@@ -12,6 +12,9 @@
   const { endDate } = data;
   const { currentCar } = data;
   const { currentBranch } = data;
+  let creditCardNumber: string;
+  let cvvNumber: string;
+  let expiryDate: string;
 
   let firstName = data.user?.name.split(" ")[0];
   let middleName =
@@ -19,7 +22,6 @@
   let lastName = data.user?.name.split(" ").slice(-1);
 
   let extraEquipment: string[] = [];
-  let isOnline = false;
 
   const modalStore = getModalStore();
 
@@ -82,7 +84,7 @@
         </div>
         <div class="flex justify-between">
           <span>Payment Method:</span>
-          <span>${isOnline ? "Online" : "In-Person"}</span>
+          <span>${creditCardNumber} : ${cvvNumber} : ${expiryDate}</span>
         </div>
         <div class="flex justify-between">
           <span>Extra Equipment:</span>
@@ -210,13 +212,12 @@
                   return targetDate;
                 }
 
-                const reservationData: Omit<Reservation, "id"> = {
+                const reservationData: Partial<Reservation> = {
                   carId: currentCar.id ?? 0,
                   holderId: data.user?.id ?? 0,
                   replacesId: null,
                   quotedPrice: quotedPrice ?? 0,
                   cancelled: false,
-                  checkInNotes: null,
                   checkInLicenseNumber: null,
                   checkInLicenseIssuingJurisdiction: null,
                   plannedDepartureAt: convertDateToSpecificTimezone(
@@ -237,6 +238,9 @@
                     new Date(),
                     currentBranch.timezone,
                   ),
+                  creditCardCVV: cvvNumber,
+                  creditCardNumber: creditCardNumber,
+                  creditCardExpiry: expiryDate,
                 };
 
                 const formData = new FormData();
@@ -282,11 +286,6 @@
       },
     };
     modalStore.trigger(userInfoModal);
-  }
-
-  function handlePaymentMethodChange(event: Event) {
-    const target = event.target as HTMLInputElement;
-    isOnline = target.value === "online";
   }
 
   function handleCheckboxChange(event: Event) {
@@ -414,27 +413,26 @@
         <h3 class="h3">Payment Method</h3>
 
         <div class="flex justify-center space-x-4">
-          <label class="flex items-center space-x-2">
-            <input
-              type="radio"
-              class="form-radio"
-              value="in-person"
-              name="paymentMethod"
-              on:change={handlePaymentMethodChange}
-              checked={!isOnline} />
-            <span>In-Person</span>
-          </label>
+          <label>
+            Credit Card Number <input
+              type="text"
+              class="input"
+              bind:value={creditCardNumber}
+              name="creditCardNumber" /></label>
 
-          <label class="flex items-center space-x-2">
-            <input
-              type="radio"
-              class="form-radio"
-              value="online"
-              name="paymentMethod"
-              on:change={handlePaymentMethodChange}
-              checked={isOnline} />
-            <span>Online</span>
-          </label>
+          <label
+            >Expiry Date <input
+              type="text"
+              class="input"
+              bind:value={expiryDate}
+              name="expiryDate" /></label>
+
+          <label
+            >CVV <input
+              type="text"
+              class="input"
+              bind:value={cvvNumber}
+              name="cvvNumber" /></label>
         </div>
       </section>
 
@@ -543,7 +541,10 @@
         !isStartDateBeforeEndDate(startDate, endDate) ||
         startDate < getToday() ||
         endDate < getToday() ||
-        !currentCar}>
+        !currentCar ||
+        !creditCardNumber ||
+        !cvvNumber ||
+        !expiryDate}>
       <span
         ><svg
           class="h-[28px] w-[28px] text-black dark:text-white"
