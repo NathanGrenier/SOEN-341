@@ -16,10 +16,14 @@
   import { flip } from "svelte/animate";
   import { onMount } from "svelte";
   import { tablePages } from "$lib/stores";
+  import { UserRole } from "@prisma/client";
+  import ClipboardListIcon from "$lib/icons/ClipboardListIcon.svelte";
+  import ClipboardCheckIcon from "$lib/icons/ClipboardCheckIcon.svelte";
 
   export let table: TableType;
   export let active = true;
   export let tabStatus: TabStatus;
+  export let role: UserRole = "CUSTOMER";
 
   onMount(async () => {
     // Load the current page from the store
@@ -79,14 +83,12 @@
       modalStore.trigger(cancelConfirmationModal);
     }).then((confirm: boolean) => {
       if (!confirm) return;
-
       const formData = new FormData();
       formData.append("id", id.toString());
       fetch("/dashboard?/cancelReservation", {
         method: "POST",
         body: formData,
       }).then((res: Response) => {
-        console.log(res);
         if (res.ok) {
           invalidateAll();
         } else {
@@ -123,8 +125,7 @@
   </div>
 {:else}
   <div class="flex flex-col gap-2">
-    <div class="table-container">
-      <!-- TODO: Add `table-interactive to the class` -->
+    <div class="table-interactive table-container">
       <table class="table">
         <thead>
           <tr>
@@ -141,14 +142,28 @@
           {#each paginatedBody as row (row.id)}
             <tr
               animate:flip={{ duration: 100, easing: cubicOut }}
-              on:click={() => goto(`/dashboard/${row.id}`)}>
+              on:click={() => goto(`/dashboard/reservation-${row.id}`)}>
               <td>{row.car.branch.name}</td>
               <td>{`${row.car.make} ${row.car.model} ${row.car.year}`}</td>
               <td>{row.plannedDepartureAt}</td>
               <td>{row.plannedReturnAt}</td>
               <td>{row.quotedPrice}</td>
               {#if active}
-                <td class="table-cell-fit">
+                <td class="table-cell-fit flex w-full flex-col gap-2">
+                  {#if role === "REP" && row.pickedUpAt}
+                    <a
+                      href="/check-out?res={row.id}"
+                      class="variant-filled-secondary btn"
+                      ><span>Check-out</span><ClipboardListIcon
+                        constColor={true} /></a>
+                  {:else if role === "REP"}
+                    <a
+                      href="/check-in?res={row.id}"
+                      class="variant-filled-success btn"
+                      ><span>Check-in</span><ClipboardCheckIcon
+                        constColor={true}
+                        invertColor={true} /></a>
+                  {/if}
                   <button
                     class="variant-filled-error btn"
                     on:click|stopPropagation={() => cancelReservation(row.id)}

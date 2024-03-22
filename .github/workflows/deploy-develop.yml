@@ -37,5 +37,5 @@ jobs:
 
       - name: Deploy Project Artifacts to Vercel
         run: |
-          url="$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --env DATABASE_URL=$DATABASE_URL --env DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL --env SESSION_SIGNING_KEY=$SESSION_SIGNING_KEY --env EXEC_ENV=$EXEC_ENV)"
+          url="$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --env DATABASE_URL=$DATABASE_URL --env DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL --env SESSION_SIGNING_KEY=$SESSION_SIGNING_KEY --env EXEC_ENV=$EXEC_ENV --env SMTP_HOST=${{secrets.SMTP_HOST}} --env SMTP_PORT=${{secrets.SMTP_PORT}} --env SMTP_USER=${{secrets.SMTP_USER}} --env SMTP_PASS=${{secrets.SMTP_PASS}})"
           vercel alias --token=${{ secrets.VERCEL_TOKEN }} set "$url" ${{vars.DEVELOP_DOMAIN}}
