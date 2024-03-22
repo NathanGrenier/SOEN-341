@@ -71,7 +71,6 @@
       case "Car":
         selectedKey = 2;
         break;
-
       case "Reservation":
         selectedKey = 3;
         break;
@@ -110,7 +109,6 @@
     } else {
       console.log("Error: No key / button / type selected.");
     }
-
     console.log(selectedData);
   }
 

@@ -3,6 +3,7 @@
   import CloseIcon from "$lib/icons/CloseIcon.svelte";
   import ExclamationCircleIcon from "$lib/icons/ExclamationCircleIcon.svelte";
   import { onMount } from "svelte";
+  import { enhance } from "$app/forms";
   import { fade } from "svelte/transition";
 
   let emailInput: HTMLInputElement;
@@ -12,6 +13,8 @@
   });
 
   export let form;
+
+  let loggingIn = false;
 
   // TODO: Implement disabling submit when submission is in progress
   let showErrors = form?.error != null;
@@ -52,7 +55,17 @@
           </div>
         </aside>
       {/if}
-      <form method="POST" class="flex flex-col gap-3">
+      <form
+        method="POST"
+        class="flex flex-col gap-3"
+        use:enhance={() => {
+          loggingIn = true;
+
+          return async ({ update }) => {
+            await update();
+            loggingIn = false;
+          };
+        }}>
         <label class="label">
           <span>Email</span>
           <input
@@ -74,8 +87,10 @@
             type="password"
             required />
         </label>
-        <button class="variant-filled-primary btn mt-4" type="submit"
-          >Log in</button>
+        <button
+          class="variant-filled-primary btn mt-4"
+          type="submit"
+          disabled={loggingIn}>Log in</button>
       </form>
     </section>
     <div class="card-footer mt-2 flex items-center justify-around">

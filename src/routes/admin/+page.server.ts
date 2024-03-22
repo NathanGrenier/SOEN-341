@@ -134,7 +134,6 @@ export const actions = {
   updateReservation: async ({ request }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
-
     const reservationId = Number(data.reservationId.toString()) || -1;
 
     console.log(reservationId);
@@ -317,7 +316,6 @@ export const actions = {
         id: Number(data.reservationId),
       },
     });
-
     return JSON.stringify(reservation);
   },
 } satisfies Actions;

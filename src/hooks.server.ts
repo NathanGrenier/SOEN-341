@@ -10,6 +10,7 @@ const openRoutes = [
   "/auth/request-reset",
   "/auth/reset",
   "/browse-vehicles",
+  "/find-branch"
 ]; // Routes that don't need the user to be logged in
 
 export const handle: Handle = async ({ event, resolve }) => {
