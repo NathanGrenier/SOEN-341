@@ -41,6 +41,7 @@
     storePopup,
     type PopupSettings,
   } from "@skeletonlabs/skeleton";
+  import type { ModalComponent } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import MobileNavigation from "$lib/components/MobileNavigation.svelte";
   import MagnifyingGlass from "$lib/icons/MagnifyingGlass.svelte";
@@ -55,7 +56,7 @@
   initializeStores();
 
   export let data;
-  const modalRegistry = {
+  const modalRegistry: Record<string, ModalComponent> = {
     modalComponentTest: { ref: ModalComponentTest },
     viewCarModalComponent: { ref: ViewCarModal },
   };
@@ -96,7 +97,7 @@
   ];
 </script>
 
-<Toast position="br" />
+<Toast position="br" zIndex="z-[1000]" />
 
 <Modal components={modalRegistry} />
 

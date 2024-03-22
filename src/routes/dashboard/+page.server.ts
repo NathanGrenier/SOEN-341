@@ -4,6 +4,7 @@ import type { Actions } from "./$types";
 
 import type { PageServerLoad } from "./$types";
 import { z } from "zod";
+import { UserRole } from "@prisma/client";
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {
@@ -11,9 +12,8 @@ export const load: PageServerLoad = async ({ locals }) => {
   }
 
   const userReserverations = await prisma.reservation.findMany({
-    where: {
-      holderId: locals.user.id,
-    },
+    where:
+      locals.user?.role === UserRole.REP ? {} : { holderId: locals.user?.id },
     select: {
       id: true,
       car: {
@@ -28,6 +28,11 @@ export const load: PageServerLoad = async ({ locals }) => {
           },
         },
       },
+      replacedBy: {
+        select: {
+          id: true,
+        },
+      },
       quotedPrice: true,
       cancelled: true,
       plannedDepartureAt: true,
@@ -38,7 +43,8 @@ export const load: PageServerLoad = async ({ locals }) => {
   });
 
   return {
-    userReserverations,
+    user: locals.user,
+    userReserverations: userReserverations,
   };
 };
 
