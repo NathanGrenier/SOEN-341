@@ -4,7 +4,11 @@
     getToastStore,
     type ToastSettings,
   } from "@skeletonlabs/skeleton";
-  import { createEntity, fetchEntityById, updateEntity } from "$lib/utils";
+  import {
+    createEntity,
+    fetchEntityById,
+    updateEntity,
+  } from "$lib/model/entityModal";
   import type { Car, Reservation, User } from "@prisma/client";
 
   const modalStore = getModalStore();
