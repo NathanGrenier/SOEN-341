@@ -114,7 +114,7 @@
     finalizedForm.append("createdAt", new Date().toISOString());
     finalizedForm.append("updatedAt", new Date().toISOString());
 
-    const result = await createEntity("User", finalizedForm);
+    const result = await createEntity("Car", finalizedForm);
 
     const t: ToastSettings = {
       message: result.message,
@@ -242,7 +242,7 @@
         <label class="label" for="description">Description</label>
         <textarea class="textarea" id="description" name="description"
         ></textarea>
-        <ImageBlob imageBlobUrl={newCarPhotoURL} />
+        <ImageBlob bind:imageBlobUrl={newCarPhotoURL} />
         <label class="label" for="photoUrl">Photo URL</label>
         <input
           class="input"

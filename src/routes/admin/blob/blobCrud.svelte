@@ -40,8 +40,18 @@
       .then((data) => {
         const parsedResponse = JSON.parse(data.data);
 
+        console.log(parsedResponse);
+
         parsedResponse.forEach((item: string) => {
-          if (typeof item === "string" && item.endsWith(".JPG")) {
+          if (
+            typeof item === "string" &&
+            (item.endsWith(".JPG") ||
+              item.endsWith(".JPEG") ||
+              item.endsWith(".PNG") ||
+              item.endsWith(".jpg") ||
+              item.endsWith(".jpeg") ||
+              item.endsWith(".png"))
+          ) {
             imageBlobUrl = item;
           }
         });

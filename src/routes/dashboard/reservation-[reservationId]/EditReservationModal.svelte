@@ -10,7 +10,7 @@
     centsToDollars,
     getReservationDuration,
     setFlatpickrTheme,
-  } from "$lib/util";
+  } from "$lib/utils";
 
   import flatpickr from "flatpickr";
   import { enhance } from "$app/forms";

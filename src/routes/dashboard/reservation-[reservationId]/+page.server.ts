@@ -4,7 +4,7 @@ import type { Actions } from "./$types";
 import { z } from "zod";
 
 import type { PageServerLoad } from "./$types";
-import { getReservationDuration } from "$lib/util";
+import { getReservationDuration } from "$lib/utils";
 
 export const load: PageServerLoad = async ({ locals, params }) => {
   if (!locals.user) {

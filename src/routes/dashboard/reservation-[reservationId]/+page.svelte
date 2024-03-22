@@ -22,7 +22,7 @@
     centsToDollars,
     getReservationDuration,
     setFlatpickrTheme,
-  } from "$lib/util";
+  } from "$lib/utils";
 
   import type { PageData } from "./$types";
   import ReplacementNavigation from "./ReplacementNavigation.svelte";
