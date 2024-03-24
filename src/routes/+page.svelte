@@ -1,48 +1,80 @@
-<!-- Full Bleed Video Setup -->
-<div class="video-container">
-  <div class="welcome-text">Welcome to DriveXperience</div>
-  <video
-    src="HomePageVid.mp4"
-    autoplay
-    muted
-    playsinline
-    class="full-bleed-video">
-    Your browser does not support the video tag.
-  </video>
-</div>
+<script lang="ts">
+  import { modeCurrent } from "@skeletonlabs/skeleton";
+  import { onMount } from "svelte";
 
-<!-- Adjusted Content Area under the video -->
-<div class="content-area">
-  <div class="find-branch mb-20" style="color: var(--color-tertiary-900);">
-    <h2>Find a DriveExperience Branch Near You</h2>
-    <input
-      type="text"
-      placeholder="Enter your postal code"
-      class="input-field" />
+  let currentMode: boolean;
+
+  $: currentMode = $modeCurrent;
+
+  let videoReady = false;
+
+  onMount(() => {
+    currentMode = $modeCurrent;
+    videoReady = true;
+  });
+</script>
+
+<div class="content-container">
+  <div class="video-container">
+    {#if videoReady}
+      <video
+        src="HomePageVid.mp4"
+        autoplay
+        muted
+        playsinline
+        class="full-bleed-video video {!currentMode ? 'z-low' : 'z-high'}">
+        Your browser does not support the video tag.
+      </video>
+      <video
+        src="DarkModeVideo.mp4"
+        autoplay
+        muted
+        playsinline
+        class="full-bleed-video video {currentMode ? 'z-low' : 'z-high'}">
+        Your browser does not support the video tag.
+      </video>
+      <div class="overlay-text welcome-text z-10">
+        Welcome to DriveXperience
+      </div>
+    {/if}
   </div>
-
-  <!-- Feature Buttons -->
-  <div class="features-grid">
-    <a
-      href="/browse-vehicles"
-      class="feature-box bg-tertiary-900 text-tertiary-100 hover:bg-tertiary-600">
-      <h3>Explore our Vehicles</h3>
-      <p>Text</p>
-    </a>
-
-    <a
-      href="/browse-vehicles"
-      class="feature-box bg-tertiary-900 text-tertiary-100 hover:bg-tertiary-600">
-      <h3>Explore our Vehicles</h3>
-      <p>Text</p>
-    </a>
-
-    <a
-      href="/browse-vehicles"
-      class="feature-box bg-tertiary-900 text-tertiary-100 hover:bg-tertiary-600">
-      <h3>Explore our Vehicles</h3>
-      <p>Text</p>
-    </a>
+  <div class="box-overlay">
+    <div class="container mx-auto py-10">
+      <div class="info-boxes">
+        <div class="info-box smokewhite">
+          <div class="box-content">
+            <h2 class="mb-4 text-2xl font-bold">
+              View our catalog of vehicles
+            </h2>
+            <p class="mt-4 text-lg">
+              Explore our wide range of available vehicles for rental. From
+              compact cars to luxury SUVs, we have something for everyone.
+            </p>
+          </div>
+          <img src="car3hp.jpg" alt="Vehicle Catalog" class="box-image" />
+        </div>
+        <div class="info-box smokewhite">
+          <div class="box-content">
+            <h2 class="mb-4 text-2xl font-bold">View our Payment Plans</h2>
+            <p class="mt-4 text-lg">
+              Discover our flexible payment plans tailored to your budget and
+              needs. Renting a car has never been easier!
+            </p>
+          </div>
+          <img src="car2hp.jpg" alt="Payment Plans" class="box-image" />
+        </div>
+        <div class="info-box smokewhite">
+          <div class="box-content">
+            <h2 class="mb-4 text-2xl font-bold">Find a Branch Near You</h2>
+            <p class="mt-4 text-lg">
+              Locate our branches conveniently located across the city. We're
+              always nearby to provide you with the best car rental experience.
+            </p>
+          </div>
+          <img src="car1hp.jpg" alt="Branch Locator" class="box-image" />
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -76,39 +108,34 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: -1; /* Video behind text */
+    z-index: -1;
   }
 
-  .content-area {
-    padding: 20px 0;
-  }
-
-  .find-branch {
-    margin-top: 2rem;
-    text-align: center;
-    color: var(--color-secondary-500);
-  }
-
-  .features-grid {
+  .info-box {
     display: flex;
-    justify-content: space-around; /* Space around feature boxes */
-    flex-wrap: wrap;
-    gap: 20px; /* Gap between boxes */
-    margin: auto;
-    max-width: 1200px;
+    justify-content: space-between;
+    width: 80%;
+    padding: 20px;
+    border-radius: 8px;
+    color: "bg-tertiary-500";
+    margin-bottom: 20px;
+    border: 2px solid white;
   }
 
-  .feature-box {
-    width: 300px; /* Box width */
-    padding: 20px; /* Padding inside boxes */
-    border-radius: 5px; /* Rounded corners */
-    margin: 0 auto; /* Centers the boxes */
-    text-align: center; /* Centers the text horizontally */
-    background-color: var(--color-tertiary-900); /* Background color */
-    color: var(--color-tertiary-100); /* Text color */
-    display: flex; /* Enables flexbox layout */
-    flex-direction: column; /* Stacks items vertically */
-    justify-content: center; /* Centers items vertically */
-    height: 100%; /* Ensures the box takes full available height */
+  .box-content {
+    max-width: 50%;
+  }
+
+  .box-image {
+    max-width: 26%;
+    border-radius: 8px;
+  }
+
+  .z-low {
+    z-index: 1;
+  }
+
+  .z-high {
+    z-index: 2;
   }
 </style>
