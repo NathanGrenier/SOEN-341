@@ -38,6 +38,7 @@
       </div>
     {/if}
   </div>
+
   <div class="box-overlay">
     <div class="container mx-auto py-10">
       <div class="info-boxes">
@@ -82,33 +83,40 @@
   .video-container {
     position: relative;
     width: 100%;
-    height: 90vh;
-    display: flex;
-    align-items: center; /* Vertically centers content */
-    justify-content: flex-start; /* Aligns content to the left */
-    margin-top: -165px; /* Adjust as needed */
-    z-index: 1; /* Ensures stacking context */
+    height: 100vh;
+    overflow: hidden;
   }
 
-  .welcome-text {
-    position: absolute;
-    left: 38px;
-    color: var(--color-tertiary-900);
-    font-size: 2rem;
-    font-weight: bold;
-    z-index: 2;
-    top: 27%; /* Adjust for vertical positioning */
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-  }
-
-  .full-bleed-video {
+  .video-container video {
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
+  }
+
+  .overlay-text {
+    position: absolute;
+    top: 70px;
+    left: 60px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+  }
+
+  .box-overlay {
+    position: relative;
+    min-height: 90vh;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    margin: auto;
+  }
+
+  .info-boxes {
+    display: flex;
+    flex-direction: column;
+    margin-top: -140px;
   }
 
   .info-box {
@@ -129,13 +137,5 @@
   .box-image {
     max-width: 26%;
     border-radius: 8px;
-  }
-
-  .z-low {
-    z-index: 1;
-  }
-
-  .z-high {
-    z-index: 2;
   }
 </style>
