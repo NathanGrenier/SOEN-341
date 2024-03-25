@@ -1,0 +1,10 @@
+@startuml
+participant "SysAdmin or CSR"
+participant Application
+participant Database
+
+"SysAdmin or CSR" -> Application: Select CRUD operation on reservations
+Application -> Database: Perform CRUD operation on reservations
+Database --> Application: Confirmation of CRUD operation
+Application --> "SysAdmin or CSR": Confirmation of CRUD operation
+@enduml

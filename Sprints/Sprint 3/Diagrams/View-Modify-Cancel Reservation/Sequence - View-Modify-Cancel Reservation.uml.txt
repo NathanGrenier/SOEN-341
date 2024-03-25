@@ -1,0 +1,32 @@
+@startuml
+participant Customer
+participant Application
+participant Database
+participant CSR
+
+Customer -> Application: Request to view reservation
+Application -> Database: Retrieve reservation details
+Database --> Application: Return reservation details
+Application -> Customer: Display reservation details
+Customer -> Application: Request to modify reservation
+Application -> Database: Retrieve reservation details
+Database --> Application: Return reservation details
+Application -> Customer: Display reservation details for modification
+Customer -> Application: Submit modified reservation details
+Application -> Database: Update reservation
+Database --> Application: Confirmation of update
+Application -> Customer: Confirmation of modification
+
+Customer -> Application: Request to cancel reservation
+Application -> Database: Retrieve reservation details
+Database --> Application: Return reservation details
+Application -> Customer: Display reservation details for cancellation
+Customer -> Application: Confirm cancellation
+Application -> Database: Cancel reservation
+Database --> Application: Confirmation of cancellation
+Application -> Customer: Confirmation of cancellation
+CSR -> Application: Request to view reservation
+Application -> Database: Retrieve reservation details
+Database --> Application: Return reservation details
+Application -> CSR: Display reservation details
+@enduml

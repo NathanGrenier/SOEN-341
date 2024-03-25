@@ -1,0 +1,26 @@
+@startuml
+start
+:Customer requests to browse vehicles;
+:Retrieve available vehicles;
+if (Filter by color, price range, or branch location?) then (yes)
+  :Apply filters;
+  if (Any vehicles matching criteria?) then (yes)
+    :Display filtered list of available vehicles;
+  else (no)
+    :Display message: No vehicles found matching criteria;
+  endif
+else (no)
+  :Display list of available vehicles;
+endif
+if (Start and end date availability check required?) then (yes)
+  :Check availability of vehicles for start and end dates;
+  if (Any vehicles available for specified dates?) then (yes)
+    :Display list of available vehicles for specified dates;
+  else (no)
+    :Display message: No vehicles available for specified dates;
+  endif
+else (no)
+  :End;
+endif
+stop
+@enduml

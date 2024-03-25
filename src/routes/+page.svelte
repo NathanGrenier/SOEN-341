@@ -18,7 +18,7 @@
   <div class="video-container">
     {#if videoReady}
       <video
-        src="HomePageVid.mp4"
+        src="LightHomePageVid.mp4"
         autoplay
         muted
         playsinline
@@ -26,7 +26,7 @@
         Your browser does not support the video tag.
       </video>
       <video
-        src="DarkModeVideo.mp4"
+        src="DarkHomePageVid.mp4"
         autoplay
         muted
         playsinline
@@ -137,5 +137,20 @@
   .box-image {
     max-width: 26%;
     border-radius: 8px;
+  }
+
+  .z-low,
+  .z-high {
+    transition: opacity 0.3s ease;
+  }
+
+  .z-low {
+    z-index: 1;
+    opacity: 0;
+  }
+
+  .z-high {
+    z-index: 2;
+    opacity: 1;
   }
 </style>

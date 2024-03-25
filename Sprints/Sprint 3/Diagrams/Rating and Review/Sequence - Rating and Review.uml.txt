@@ -1,0 +1,11 @@
+@startuml
+start
+:Customer requests to rate and review a vehicle;
+:Retrieve vehicle information;
+:Display vehicle details for rating and review;
+:Customer provides rating and review;
+:Update rating and review for the vehicle;
+:Confirmation of update;
+:Confirmation of rating and review submission;
+stop
+@enduml
