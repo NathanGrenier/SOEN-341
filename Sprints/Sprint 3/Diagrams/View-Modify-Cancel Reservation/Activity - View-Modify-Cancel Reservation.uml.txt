@@ -1,0 +1,23 @@
+@startuml
+start
+:Customer requests to view reservation;
+if (Reservation exists?) then (yes)
+  :Retrieve reservation details;
+  :Display reservation details;
+  if (Customer wants to modify?) then (yes)
+    :Customer modifies reservation details;
+    :Update reservation;
+    :Confirmation of modification;
+  else (no)
+    if (Customer wants to cancel?) then (yes)
+      :Cancel reservation;
+      :Confirmation of cancellation;
+    else (no)
+      :End;
+    endif
+  endif
+else (no)
+  :Display error message;
+endif
+stop
+@enduml

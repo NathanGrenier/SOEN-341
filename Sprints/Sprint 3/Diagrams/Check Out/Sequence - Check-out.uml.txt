@@ -1,0 +1,25 @@
+title Checking out to return the car
+
+Customer -> Rep: Provides the reservation number and car key
+
+Rep -> DriveXperience: Finds the reservation in the dashboard
+
+DriveXperience -> Rep: Shows the reservation details and the check-out button
+
+Rep ->DriveXperience: Chooses to check-out
+
+DriveXperience -> Rep: Asks the rep to confirm whether the final payment is to be made in cash or by card on file
+
+Rep -> Customer: Asks payment preference
+
+Customer -> Rep: Confirms payment preference and provides cash, if desired
+
+Rep ->DriveXperience: Enters payment preference
+
+DriveXperience -> Bank: Requests refund of the deposit transaction
+
+DriveXperience --> Bank: Requests charge for final fee, if paying by card on file
+
+DriveXperience -> Rep: Check-out finished message appears
+
+Rep -> Customer: Thanks customer

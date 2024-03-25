@@ -1,0 +1,24 @@
+@startuml
+start
+:User selects CRUD operation (Create, Read, Update, Delete);
+if (Create Reservation?) then (yes)
+  :Collect reservation details;
+  :Add reservation to database;
+  :Confirmation of reservation creation;
+else if (Read Reservation?) then (yes)
+  :Retrieve reservation details;
+  :Display reservation details;
+else if (Update Reservation?) then (yes)
+  :Retrieve reservation details;
+  :Modify reservation details;
+  :Update reservation in database;
+  :Confirmation of reservation update;
+else if (Delete Reservation?) then (yes)
+  :Retrieve reservation details;
+  :Delete reservation from database;
+  :Confirmation of reservation deletion;
+else (Invalid operation)
+  :Display error message;
+endif
+stop
+@enduml
