@@ -1,0 +1,43 @@
+title Checking in to pick up the car
+
+Customer->Rep: The customer asks the representative to check them in and provides their reservation number
+
+Rep->DriveXperience:The representative logs on to the app, and accesses the dashboard
+
+DriveXperience->Rep: Reservations are retrieved and shown to the rep
+
+Rep->DriveXperience: The representative chooses the reservation number stated by the customer
+
+DriveXperience->Rep: Details on the reservation are shown, including date, time, customer name, price and car
+
+Rep ->DriveXperience: The representative clicks 'check-in'
+
+DriveXperience -> Rep: DriveXperience asks the representative to enter the driver's licence information
+
+Rep -> Customer: Rep requests driver's licence
+
+Customer -> Rep: Customer produces driver's licence
+
+Rep ->DriveXperience: Rep visually verifies identity and enters the licence number and jurisdiction
+
+DriveXperience ->Rep: DriveXperience asks the rep to sight the credit card used and get consent for the deposit
+
+Rep ->Customer: Rep asks customer for the credit card and consent for deposit
+
+Customer -> Rep: Customer produces the credit card and consents to the deposit
+
+Rep -> Customer: Rep returns all of the customer's documents
+
+Rep ->DriveXperience: Rep confirms credit card and selects to take the deposit
+
+DriveXperience -> Bank: Deposit payment taken from the customer's credit card
+
+DriveXperience -> Rep: Rental agreement shown on screen
+
+Rep -> Customer: Shows the rental agreement and asks the customer to touch 'Accept'
+
+Customer -> Rep: Accepts the rental agreement and returns the device
+
+DriveXperience -> Rep: Prompts the rep to hand keys to the customer
+
+Rep -> Customer: Hands the keys to the customer

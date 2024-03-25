@@ -1,12 +1,42 @@
-<script>
+<script lang="ts">
+  import { modeCurrent } from "@skeletonlabs/skeleton";
+  import { onMount } from "svelte";
+
+  let currentMode: boolean;
+
+  $: currentMode = $modeCurrent;
+
+  let videoReady = false;
+
+  onMount(() => {
+    currentMode = $modeCurrent;
+    videoReady = true;
+  });
 </script>
 
 <div class="content-container">
   <div class="video-container">
-    <video src="HomePageVid.mp4" autoplay muted playsinline class="video">
-      Your browser does not support the video tag.
-    </video>
-    <div class="overlay-text">Welcome to DriveXperience</div>
+    {#if videoReady}
+      <video
+        src="LightHomePageVid.mp4"
+        autoplay
+        muted
+        playsinline
+        class="full-bleed-video video {!currentMode ? 'z-low' : 'z-high'}">
+        Your browser does not support the video tag.
+      </video>
+      <video
+        src="DarkHomePageVid.mp4"
+        autoplay
+        muted
+        playsinline
+        class="full-bleed-video video {currentMode ? 'z-low' : 'z-high'}">
+        Your browser does not support the video tag.
+      </video>
+      <div class="overlay-text welcome-text z-10">
+        Welcome to DriveXperience
+      </div>
+    {/if}
   </div>
 
   <div class="box-overlay">
@@ -107,5 +137,20 @@
   .box-image {
     max-width: 26%;
     border-radius: 8px;
+  }
+
+  .z-low,
+  .z-high {
+    transition: opacity 0.3s ease;
+  }
+
+  .z-low {
+    z-index: 1;
+    opacity: 0;
+  }
+
+  .z-high {
+    z-index: 2;
+    opacity: 1;
   }
 </style>

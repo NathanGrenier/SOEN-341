@@ -1,0 +1,10 @@
+@startuml
+participant Customer
+participant Application
+participant Database
+
+Customer -> Application: Request to browse vehicles
+Application -> Database: Retrieve available vehicles
+Database --> Application: Return list of vehicles
+Application -> Customer: Display list of available vehicles
+@enduml

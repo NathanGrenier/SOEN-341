@@ -8,7 +8,7 @@
     type ModalComponent,
     type ModalSettings,
   } from "@skeletonlabs/skeleton";
-  import { fetchEntities } from "$lib/utils";
+  import { fetchEntities } from "$lib/model/entityModal";
 
   const modalStore = getModalStore();
 
@@ -158,11 +158,12 @@
         {/if}
       </div>
       <div class="container">
-        <div class="container flex flex-row justify-center space-x-2 font-bold">
+        <div
+          class="container justify-center space-x-2 space-y-4 font-bold sm:flex sm:flex-row">
           <div>
             <button
               type="button"
-              class="variant-filled btn"
+              class="variant-filled btn mx-auto mt-4 block"
               on:click={() => fetchDataAndHandle("User")}
               >Load all Users</button>
           </div>
@@ -170,13 +171,15 @@
             <button
               type="button"
               on:click={() => fetchDataAndHandle("Car")}
-              class="variant-filled btn">Load all Cars</button>
+              class="variant-filled btn mx-auto my-auto block"
+              >Load all Cars</button>
           </div>
           <div>
             <button
               type="button"
               on:click={() => fetchDataAndHandle("Reservation")}
-              class="variant-filled btn">Load all Reservations</button>
+              class="variant-filled btn mx-auto my-auto block"
+              >Load all Reservations</button>
           </div>
         </div>
       </div>

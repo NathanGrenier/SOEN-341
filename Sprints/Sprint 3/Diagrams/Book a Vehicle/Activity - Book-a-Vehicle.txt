@@ -1,0 +1,25 @@
+@startuml
+title Booking a Vehicle
+
+(*) --> "Sign In/Login"
+
+if "Valid Credentials?" then
+  --> "Find a Branch"
+  "Find a Branch" --> "Branch Found?"
+  "Branch Found?" --> "Search for Cars"
+  "Search for Cars" --> "Cars Found?"
+  "Cars Found?" --> "Select Vehicle"
+  "Select Vehicle" --> "Check Date Availability"
+  "Check Date Availability" --> "Date Available?"
+  "Date Available?" --> [Yes] "View Car Details"
+  "View Car Details" --> "Choose Rental Options"
+  "Choose Rental Options" --> "Check Availability and Price"
+  "Check Availability and Price" --> "Confirm Booking"
+  "Confirm Booking" --> "Provide Payment Information"
+  "Provide Payment Information" --> "Receive Confirmation"
+  "Receive Confirmation" --> (*)
+  "Date Available?" --> [No] "Search for Cars"
+else
+  --> "Sign In/Login"
+endif
+@enduml

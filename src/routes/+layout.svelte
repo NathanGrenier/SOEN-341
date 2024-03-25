@@ -40,6 +40,7 @@
     popup,
     storePopup,
     type PopupSettings,
+    modeCurrent,
   } from "@skeletonlabs/skeleton";
   import type { ModalComponent } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
@@ -113,7 +114,10 @@
           <HamburgerMenuIcon />
         </button>
         <a href="/" class="h-10">
-          <img src="/SiteLogoFor.png" alt="DriveXperience" class="h-full" />
+          <img
+            src={$modeCurrent ? "SiteLogoForDark.png" : "SiteLogoForLight.png"}
+            alt="DriveXperience"
+            class="h-full" />
         </a>
       </svelte:fragment>
       <NavBar {links} />
@@ -137,13 +141,13 @@
   </div>
   <svelte:fragment slot="pageFooter">
     <footer
-      class="py-20 text-center text-white"
+      class="py-20 text-center"
       style="background-color: var(--color-surface-800);">
       <div class="footer-links">
-        <a href="/contactUs" class="p-2">Contact Us</a>
-        <a href="/ourPolicies" class="p-2">Our Policies</a>
+        <a href="/contact-us" class="p-2">Contact Us</a>
+        <a href="/our-policies" class="p-2">Our Policies</a>
       </div>
-      <div class="copyright">© 2024 DriveXperience. All rights reserved.</div>
+      <div>© 2024 DriveXperience. All rights reserved.</div>
     </footer>
   </svelte:fragment>
 </AppShell>

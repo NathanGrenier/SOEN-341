@@ -1,11 +1,10 @@
 import type { LayoutServerLoad } from "../$types";
 import type { Actions } from "./$types";
-import { list } from "@vercel/blob";
+//import { list } from "@vercel/blob";
 
 export const load: LayoutServerLoad = async () => {
-  const { blobs } = await list();
-
-  return { blobs };
+  // const { blobs } = await list();
+  // return { blobs };
 };
 
 export const actions = {
