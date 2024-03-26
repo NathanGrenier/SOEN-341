@@ -14,10 +14,7 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export let userData: any;
 
-  console.log("buttoncase=" + fetchCase);
-
   function handleClick(rowId: number) {
-    console.log("rowIDselectedInDatatable=" + rowId);
     dispatch("rowClick", rowId);
   }
 

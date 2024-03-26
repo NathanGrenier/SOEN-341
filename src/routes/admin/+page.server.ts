@@ -1,15 +1,18 @@
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import type { Actions } from "./$types";
-//import { put } from "@vercel/blob";
 import { prisma } from "$lib/db/client";
+import { z } from "zod";
+import type { Car, Reservation, User } from "@prisma/client";
+import { CarColour, UserRole } from "@prisma/client";
 import {
-  CarColour,
-  type Car,
-  type Reservation,
-  type User,
-  UserRole,
-} from "@prisma/client";
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  deleteObject,
+} from "firebase/storage";
+import { getFirebaseApp } from "$lib/db/firestore";
 
 function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   for (const key in enumObj) {
@@ -180,33 +183,145 @@ export const actions = {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
-    const carId = Number(data.carId.toString());
+    const updateCarSchema = z.object({
+      carId: z
+        .string()
+        .refine((value) => !Number.isNaN(value), {
+          message: "reservationDates must be a valid datetime string",
+        })
+        .transform(Number),
+      make: z.string(),
+      model: z.string(),
+      year: z
+        .string()
+        .refine((value) => !Number.isNaN(value), {
+          message: "year must be a number",
+        })
+        .transform(Number),
+      colour: z
+        .string()
+        .refine((value) => CarColour[value as CarColour] !== undefined, {
+          message: "Invalid car colour",
+        })
+        .transform((value) => value as CarColour),
+      seats: z
+        .string()
+        .refine((value) => !Number.isNaN(value), {
+          message: "seats must be a number",
+        })
+        .transform(Number),
+      description: z.string(),
+      photo: z
+        .any()
+        .optional()
+        .refine((value) => value instanceof File, {
+          message: "Must be a file",
+        })
+        .transform((value) =>
+          value.size === 0 ? (value = undefined) : (value as File),
+        ),
+      photoUrl: z.string().optional(),
+      dailyPrice: z
+        .string()
+        .refine((value) => !Number.isNaN(value), {
+          message: "dailyPrice must be a number",
+        })
+        .transform(Number),
+      bookingDisabled: z
+        .string()
+        .refine((value) => value === "true" || value === "false", {
+          message:
+            "bookingDisabled must be a boolean (either 'true' or 'false')",
+        })
+        .transform((value) => value === "true"),
+      branchId: z
+        .string()
+        .refine((value) => !Number.isNaN(value), {
+          message: "branchId must be a number",
+        })
+        .transform(Number),
+    });
 
-    if (carId === 10) throw error(404, "Car not found");
+    const result = updateCarSchema.safeParse(data);
 
-    const carDataToUpdate: Partial<Omit<Car, "id">> = {
-      branchId: data.branchId ? Number(data.branchId.toString()) : undefined,
-      make: data.make.toString() || undefined,
-      model: data.model.toString() || undefined,
-      year: data.year ? Number(data.year.toString()) : undefined,
-      colour: stringToEnum(data.colour.toString(), CarColour) || undefined,
-      seats: data.seats ? Number(data.seats.toString()) : undefined,
-      description: data.description.toString() || undefined,
-      photoUrl: data.photoUrl.toString() || undefined,
-      dailyPrice: data.dailyPrice
-        ? Number(data.dailyPrice.toString())
-        : undefined,
-      bookingDisabled: data.bookingDisabled === "true",
-      updatedAt: new Date(),
-    };
+    if (!result.success) {
+      console.log(result.error);
+      return error(400, {
+        message: result.error.errors[0].message,
+      });
+    }
 
-    const filteredCarData = Object.fromEntries(
-      Object.entries(carDataToUpdate).filter(([, v]) => v !== undefined),
-    ) as Partial<Omit<Car, "id">>;
+    const { carId, photo, photoUrl: oldPhotoUrl, ...car } = result.data; // Don't include the carId in the car object
+
+    // Handle photo upload
+    let photoUrl: string | undefined = undefined;
+
+    const app = await getFirebaseApp();
+    const storage = getStorage(app);
+
+    if (photo) {
+      const carImageRef = ref(storage, `images/car/${photo.name}`);
+
+      const uploadTask = uploadBytesResumable(carImageRef, photo);
+
+      photoUrl = await new Promise((resolve, reject) => {
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+            switch (snapshot.state) {
+              case "paused":
+                console.log("Upload is paused");
+                break;
+              case "running":
+                console.log("Upload is running");
+                break;
+            }
+          },
+          (err) => {
+            switch (err.code) {
+              case "storage/unauthorized":
+                reject("User doesn't have permission to access the object");
+                break;
+              case "storage/canceled":
+                reject("User canceled the upload");
+                break;
+              case "storage/unknown":
+                reject("Unknown storage error occurred");
+                break;
+            }
+          },
+          async () => {
+            // Get the download URL
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            console.log(`downloadURL: ${downloadURL}`);
+            resolve(downloadURL);
+          },
+        );
+      });
+    }
+
+    if (photoUrl) {
+      // Delete the old car photo
+      if (oldPhotoUrl) {
+        const oldPhotoRef = ref(storage, oldPhotoUrl);
+        // Delete the file
+        try {
+          await deleteObject(oldPhotoRef);
+          console.log(`Deleted photo with URL: ${oldPhotoUrl}`);
+        } catch (error) {
+          console.log(error);
+          throw error;
+        }
+      }
+    }
 
     return await prisma.car.update({
       where: { id: carId },
-      data: filteredCarData,
+      data: { ...car, photoUrl },
     });
   },
   updateUser: async ({ request }) => {

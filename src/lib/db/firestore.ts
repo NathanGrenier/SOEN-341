@@ -1,6 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { Analytics } from "firebase/analytics";
+import { getApps, initializeApp, type FirebaseApp, getApp } from "firebase/app";
 // Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -16,5 +15,13 @@ const firebaseConfig = {
   measurementId: "G-CF1B5VEEGX",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export async function getFirebaseApp(): Promise<FirebaseApp> {
+  const apps = getApps();
+  if (!apps.length) {
+    // Initialize Firebase app if there are no apps
+    return initializeApp(firebaseConfig);
+  } else {
+    // Otherwise, return the first app
+    return getApp();
+  }
+}

@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
   import type { PageData } from "./$types";
-  import type { SvelteComponent } from "svelte";
+  import { type SvelteComponent } from "svelte";
   import ViewCarModal from "$lib/components/modals/ViewCarModal.svelte";
 
   export type User = PageData["user"];
@@ -141,9 +141,8 @@
   </div>
   <svelte:fragment slot="pageFooter">
     <footer
-      class="py-20 text-center"
-      style="background-color: var(--color-surface-800);">
-      <div class="footer-links">
+      class="flex flex-col items-center justify-center gap-1 bg-surface-800 py-8 text-sm text-surface-100">
+      <div class="gap-2">
         <a href="/contact-us" class="p-2">Contact Us</a>
         <a href="/our-policies" class="p-2">Our Policies</a>
       </div>

@@ -92,14 +92,9 @@
   $: isSelected = false;
 
   let selectedRowId: number = -1;
-  let selectedData: ArrayLike<unknown> | { [s: string]: unknown };
 
   function handleRowClick(event: { detail: number }) {
     selectedRowId = event.detail;
-    selectedData = fetchedData.find(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (item: { id: any }) => item.id === selectedRowId,
-    );
     if (selectedKey === 1) {
       executeUserEditModal(selectedRowId, "edit");
     } else if (selectedKey === 2) {
@@ -109,7 +104,6 @@
     } else {
       console.log("Error: No key / button / type selected.");
     }
-    console.log(selectedData);
   }
 
   let unique = {};
