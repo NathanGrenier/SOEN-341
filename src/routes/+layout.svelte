@@ -1,6 +1,7 @@
 <script lang="ts" context="module">
   import type { PageData } from "./$types";
   import type { SvelteComponent } from "svelte";
+  import ViewCarModal from "$lib/components/modals/ViewCarModal.svelte";
 
   export type User = PageData["user"];
 
@@ -39,9 +40,12 @@
     popup,
     storePopup,
     type PopupSettings,
+    modeCurrent,
   } from "@skeletonlabs/skeleton";
+  import type { ModalComponent } from "@skeletonlabs/skeleton";
   import ModalComponentTest from "$lib/components/modals/ModalComponentTest.svelte";
   import MobileNavigation from "$lib/components/MobileNavigation.svelte";
+  import MagnifyingGlass from "$lib/icons/MagnifyingGlass.svelte";
   import HamburgerMenuIcon from "$lib/icons/HamburgerMenuIcon.svelte";
   import CarIcon from "$lib/icons/CarIcon.svelte";
   import HomeIcon from "$lib/icons/HomeIcon.svelte";
@@ -53,8 +57,9 @@
   initializeStores();
 
   export let data;
-  const modalRegistry = {
+  const modalRegistry: Record<string, ModalComponent> = {
     modalComponentTest: { ref: ModalComponentTest },
+    viewCarModalComponent: { ref: ViewCarModal },
   };
 
   const drawerStore = getDrawerStore();
@@ -85,10 +90,15 @@
       href: "/browse-vehicles",
       icon: CarIcon as SvelteComponent,
     },
+    {
+      name: "Find a Branch",
+      href: "/find-branch",
+      icon: MagnifyingGlass as SvelteComponent,
+    },
   ];
 </script>
 
-<Toast position="br" />
+<Toast position="br" zIndex="z-[1000]" />
 
 <Modal components={modalRegistry} />
 
@@ -103,37 +113,41 @@
         <button class="btn btn-sm mr-4 md:hidden" on:click={drawerOpen}>
           <HamburgerMenuIcon />
         </button>
-        <a href="/" style="height: 68px">
-          <img src="/SiteLogoFor.png" alt="DriveXperience" class="h-full" />
+        <a href="/" class="h-10">
+          <img
+            src={$modeCurrent ? "SiteLogoForDark.png" : "SiteLogoForLight.png"}
+            alt="DriveXperience"
+            class="h-full" />
         </a>
       </svelte:fragment>
       <NavBar {links} />
       <svelte:fragment slot="trail">
         <LightSwitch class="mr-2" />
         <div use:popup={profilePopup}>
-          <Avatar
-            {initials}
-            background="bg-tertiary-500"
-            width="w-12"
-            border="border-4 border-surface-300-600-token hover:!border-primary-500"
-            cursor="cursor-pointer" />
-        </div>
-        <ProfilePopup user={data.user} />
-      </svelte:fragment>
+          <div use:popup={profilePopup}>
+            <Avatar
+              {initials}
+              background="bg-tertiary-500"
+              width="w-12"
+              border="border-4 border-surface-300-600-token hover:!border-primary-500"
+              cursor="cursor-pointer" />
+          </div>
+          <ProfilePopup user={data.user} />
+        </div></svelte:fragment>
     </AppBar>
   </svelte:fragment>
   <div class="container mx-auto p-10">
     <slot />
   </div>
-
   <svelte:fragment slot="pageFooter">
-    <!-- <footer
-      class="text-white p-4 text-center"
+    <footer
+      class="py-20 text-center"
       style="background-color: var(--color-surface-800);">
-      <a href="/contact" class="p-2">Contact Us</a>
-      <a href="/account" class="p-2">My Account</a>
-      <a href="/help" class="p-2">Help</a>
-      <a href="/policies" class="p-2">Our Policies</a>
-    </footer> -->
+      <div class="footer-links">
+        <a href="/contact-us" class="p-2">Contact Us</a>
+        <a href="/our-policies" class="p-2">Our Policies</a>
+      </div>
+      <div>© 2024 DriveXperience. All rights reserved.</div>
+    </footer>
   </svelte:fragment>
 </AppShell>

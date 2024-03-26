@@ -1,0 +1,24 @@
+@startuml
+start
+:User selects CRUD operation (Create, Read, Update, Delete);
+if (Create User?) then (yes)
+  :Collect user details;
+  :Add user to database;
+  :Confirmation of user creation;
+else if (Read User?) then (yes)
+  :Retrieve user details;
+  :Display user details;
+else if (Update User?) then (yes)
+  :Retrieve user details;
+  :Modify user details;
+  :Update user in database;
+  :Confirmation of user update;
+else if (Delete User?) then (yes)
+  :Retrieve user details;
+  :Delete user from database;
+  :Confirmation of user deletion;
+else (Invalid operation)
+  :Display error message;
+endif
+stop
+@enduml

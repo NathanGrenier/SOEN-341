@@ -1,0 +1,14 @@
+@startuml
+participant Customer
+participant Application
+participant Database
+
+Customer -> Application: Request to rate and review a vehicle
+Application -> Database: Retrieve vehicle information
+Database --> Application: Return vehicle details
+Application -> Customer: Display vehicle details for rating and review
+Customer -> Application: Provide rating and review
+Application -> Database: Update rating and review for the vehicle
+Database --> Application: Confirmation of update
+Application --> Customer: Confirmation of rating and review submission
+@enduml

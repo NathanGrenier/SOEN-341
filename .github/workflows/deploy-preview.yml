@@ -34,19 +34,19 @@ jobs:
         run: |
           npm run build
 
-      - name: Get PR sha
-        id: get_pull_request_sha
+      - name: Get PR Branch Name
+        id: get_pull_request_branch_name
         run: |
-          pull_request_sha=$(jq --raw-output .pull_request.base.sha "$GITHUB_EVENT_PATH" | cut -c1-8)
-          echo "pull_request_sha=${pull_request_sha}" >> $GITHUB_OUTPUT
-          echo $pull_request_sha
+          branch_name=${{ github.event.pull_request.head.ref }}
+          echo "branch_name=${branch_name}" >> $GITHUB_OUTPUT
+          echo $branch_name
 
       - name: Neon Database Create Branch Action
         uses: neondatabase/create-branch-action@v3
         id: create_branch
         with:
           project_id: ${{ secrets.NEON_PROJECT_ID }}
-          branch_name: ${{steps.get_pull_request_sha.outputs.pull_request_sha}}
+          branch_name: ${{steps.get_pull_request_branch_name.outputs.branch_name}}
           api_key: ${{ secrets.NEON_API_KEY }}
           username: ${{ secrets.PG_USERNAME }}
           password: ${{ secrets.PG_PASSWORD }}
@@ -115,7 +115,7 @@ jobs:
           vercel --version
           vercel pull --yes --environment=preview --git-branch=${{github.head_ref}} --token=$VERCEL_TOKEN
           vercel build --token=$VERCEL_TOKEN
-          vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} --env DATABASE_URL=$DATABASE_URL --env DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL --env SESSION_SIGNING_KEY=$SESSION_SIGNING_KEY --env EXEC_ENV=$EXEC_ENV
+          vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} --env DATABASE_URL=$DATABASE_URL --env DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL --env SESSION_SIGNING_KEY=$SESSION_SIGNING_KEY --env EXEC_ENV=$EXEC_ENV --env SMTP_HOST=${{secrets.SMTP_HOST}} --env SMTP_PORT=${{secrets.SMTP_PORT}} --env SMTP_USER=${{secrets.SMTP_USER}} --env SMTP_PASS=${{secrets.SMTP_PASS}}
 
           vercel ls --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} &> vercel-output
           url=$(cat vercel-output | grep http | awk '{print $2}')

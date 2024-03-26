@@ -1,0 +1,32 @@
+@startuml
+start
+
+:Access reservation on the dashboard by reservation number;
+
+:Select 'check-in' and request customer's driver's licence;
+
+if (Customer name matches reservation and photo matches the customer?) then (yes)
+  :Enter driver's licence information;
+  :Customer credit card displayed;
+  :Ask customer for credit card on reservation;
+  :Customer provides credit card;
+  if (Credit card matches reservation?) then (yes)
+    :Confirm deposit amount;
+    :Return documents to customer;
+    :Present rental agreement to customer;
+    if (Customer consents to agreement?) then (yes)
+      :Provide keys to customer;
+    else (no)
+      :Ask customer to leave;
+      stop
+    endif
+  else (no)
+    :Ask customer to leave;
+    stop
+  endif
+else (no)
+  :Ask customer to leave;
+  stop
+endif
+stop
+@enduml

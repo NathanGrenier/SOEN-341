@@ -1,0 +1,24 @@
+@startuml
+start
+:User selects CRUD operation (Create, Read, Update, Delete);
+if (Create Vehicle?) then (yes)
+  :Collect vehicle details;
+  :Add vehicle to database;
+  :Confirmation of vehicle creation;
+else if (Read Vehicle?) then (yes)
+  :Retrieve vehicle details;
+  :Display vehicle details;
+else if (Update Vehicle?) then (yes)
+  :Retrieve vehicle details;
+  :Modify vehicle details;
+  :Update vehicle in database;
+  :Confirmation of vehicle update;
+else if (Delete Vehicle?) then (yes)
+  :Retrieve vehicle details;
+  :Delete vehicle from database;
+  :Confirmation of vehicle deletion;
+else (Invalid operation)
+  :Display error message;
+endif
+stop
+@enduml
