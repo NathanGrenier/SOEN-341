@@ -74,7 +74,7 @@
     placement: "bottom",
   };
 
-  const initials =
+  $: initials =
     data?.user?.name
       .match(/(\b\S)?/g)
       ?.join("")
