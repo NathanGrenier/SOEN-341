@@ -2,7 +2,7 @@
   import userModal from "./crud-forms/user-form.svelte";
   import carModal from "./crud-forms/car-form.svelte";
   import resModal from "./crud-forms/reservation-form.svelte";
-  import Datatable from "./Datatable.svelte";
+  import AdminDatatable from "./AdminDatatable.svelte";
   import {
     getModalStore,
     type ModalComponent,
@@ -123,7 +123,7 @@
         {#if isSelected == true}
           {#key unique}
             <div class="container">
-              <Datatable
+              <AdminDatatable
                 fetchCase={selectedKey}
                 on:rowClick={handleRowClick}
                 userData={fetchedData} />
