@@ -5,7 +5,7 @@
     getToastStore,
     type ToastSettings,
   } from "@skeletonlabs/skeleton";
-  //import ImageBlob from "../blob/blobCrud.svelte";
+  import ImageBlob from "../blob/blobCrud.svelte";
   import {
     createEntity,
     fetchEntityById,
@@ -184,7 +184,7 @@
             id="description"
             name="description"
             bind:value={carEntity.description}></textarea>
-          <!--<ImageBlob bind:imageBlobUrl={carEntity.photoUrl} />-->
+          <ImageBlob bind:imageBlobUrl={carEntity.photoUrl} />
           <label class="label" for="photoUrl">Photo URL</label>
           <input
             class="input"
@@ -246,7 +246,7 @@
         <label class="label" for="description">Description</label>
         <textarea class="textarea" id="description" name="description"
         ></textarea>
-        <!--<ImageBlob bind:imageBlobUrl={newCarPhotoURL} />-->
+        <ImageBlob bind:imageBlobUrl={newCarPhotoURL} />
         <label class="label" for="photoUrl">Photo URL</label>
         <input
           class="input"
