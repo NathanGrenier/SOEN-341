@@ -2,7 +2,7 @@ import { prisma } from "$lib/db/client";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import type { Actions } from "./$types";
-import { CarColour, type Prisma } from "@prisma/client";
+import { CarColour, CarType, type Prisma } from "@prisma/client";
 
 function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   for (const key in enumObj) {
@@ -76,6 +76,14 @@ export const actions = {
     } else if (data.maxPrice !== undefined) {
       whereClause.dailyPrice = {
         lte: +data.maxPrice * 100,
+      };
+    }
+
+    if (!data.carsize || data.carsize === "No Specific Size") {
+      delete whereClause.carsize;
+    } else {
+      whereClause.carsize = {
+        equals: stringToEnum(data.carsize.toString(), CarType),
       };
     }
 

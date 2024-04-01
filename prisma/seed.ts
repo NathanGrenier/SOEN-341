@@ -1,4 +1,4 @@
-import { UserRole, CarColour } from "@prisma/client";
+import { UserRole, CarColour, CarType } from "@prisma/client";
 import { prisma } from "../src/lib/db/client.ts";
 
 async function firstSeed() {
@@ -71,6 +71,7 @@ async function firstSeed() {
       photoUrl:
         "https://linglaotgbph7idj.public.blob.vercel-storage.com/2021_Ferrari_F8_Tributo-Z9uuYxEmCx1XcxpYH52nI0oHiLbqJZ.jpg?download=1",
       make: "Ferrari",
+      carsize: CarType.Supercar,
       model: "F8 Tributo",
       year: 2020,
       colour: CarColour.RED,
@@ -87,6 +88,7 @@ async function firstSeed() {
     create: {
       branchId: yulAirport.id,
       make: "Toyota",
+      carsize: CarType.SUV,
       model: "Highlander",
       year: 2021,
       photoUrl:

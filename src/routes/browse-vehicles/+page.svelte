@@ -33,6 +33,7 @@
   let values = [minimumPrice, maximumPrice];
   let { branches } = data;
   let selectedCarColour = "No Specific Color";
+  let selectedCarType = "No Specific Type";
   let selectedBranch = Number(data.branchId) || -1;
   let isLoading = false;
 
@@ -52,7 +53,7 @@
       link.href = `https://npmcdn.com/flatpickr/dist/themes/${themeMode}.css`;
     });
   }
-
+  const uniqueType = [...new Set(cars.map((car) => car.carsize))];
   const uniqueColors = [...new Set(cars.map((car) => car.colour))];
 
   onMount(() => {
@@ -134,6 +135,9 @@
     isLoading = true;
     const formData = new FormData();
 
+    if (selectedCarType !== "No Specific Car Type")
+      formData.append("carsize", selectedCarType);
+
     if (selectedCarColour !== "No Specific Colour")
       formData.append("colour", selectedCarColour);
 
@@ -199,6 +203,15 @@
       <h6 class="h6 font-bold">Search Filters</h6>
       <svelte:fragment slot="children">
         <div class="space-y-4">
+          <label class="label mt-2">
+            <span>Car Type</span>
+            <select class="select" bind:value={selectedCarType}>
+              <option value={"No Specific Type"}>No Specific Type</option>
+              {#each uniqueType as carsize}
+                <option value={carsize}>{toTitleCase(carsize)}</option>
+              {/each}
+            </select>
+          </label>
           <label class="label mt-2">
             <span>Car Color</span>
             <select class="select" bind:value={selectedCarColour}>
