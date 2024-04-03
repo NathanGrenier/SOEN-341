@@ -58,7 +58,9 @@ export const put = async (
   });
 
   await client.send(command);
-  //const url = `https://${process.env.BLOB_S3_BUCKET}.s3.${process.env.BLOB_S3_REGION}.amazonaws.com/${encodeURIComponent(filename)}`;
+  // non-CloudFront URL would be
+  // `https://${process.env.BLOB_S3_BUCKET}.s3.${process.env.BLOB_S3_REGION}.amazonaws.com/${encodeURIComponent(filename)}`;
+  // but that isn't really needed
   const downloadUrl =
     process.env.BLOB_CLOUDFRONT_DIST + encodeURIComponent(filename);
 
