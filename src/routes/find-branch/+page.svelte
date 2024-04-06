@@ -97,9 +97,9 @@
       <div class="flex justify-center">
         <h2 class="h2 mb-4 text-lg font-semibold">Find a Branch</h2>
       </div>
-      <div class="card my-2 p-2">
+      <div class="my-2 space-y-10 p-2">
         {#each paginatedBranches as branch}
-          <div class="p-4">
+          <div class="card p-4">
             <div>
               <h2 class="text-xl font-semibold">{branch.name}</h2>
               <p class="my-2">{branch.streetAddress}</p>
