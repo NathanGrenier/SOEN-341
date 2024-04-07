@@ -1,17 +1,30 @@
 <script lang="ts">
   import { modeCurrent } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
+  import { Drawer, Button, CloseButton } from "flowbite-svelte";
+  import { InfoCircleSolid, ArrowRightOutline } from "flowbite-svelte-icons";
+  import { sineIn } from "svelte/easing";
 
   let currentMode: boolean;
-
   $: currentMode = $modeCurrent;
-
   let videoReady = false;
 
   onMount(() => {
     currentMode = $modeCurrent;
     videoReady = true;
   });
+
+  let transitionParams = {
+    x: -320,
+    duration: 200,
+    easing: sineIn,
+  };
+
+  let isDrawerOpen = false;
+
+  function toggleDrawer() {
+    isDrawerOpen = !isDrawerOpen;
+  }
 </script>
 
 <div class="content-container">
@@ -39,44 +52,40 @@
     {/if}
   </div>
 
-  <div class="box-overlay">
-    <div class="container mx-auto py-10">
-      <div class="info-boxes">
-        <div class="info-box smokewhite">
-          <div class="box-content">
-            <h2 class="mb-4 text-2xl font-bold">
-              View our catalog of vehicles
-            </h2>
-            <p class="mt-4 text-lg">
-              Explore our wide range of available vehicles for rental. From
-              compact cars to luxury SUVs, we have something for everyone.
-            </p>
-          </div>
-          <img src="car3hp.jpg" alt="Vehicle Catalog" class="box-image" />
-        </div>
-        <div class="info-box smokewhite">
-          <div class="box-content">
-            <h2 class="mb-4 text-2xl font-bold">View our Payment Plans</h2>
-            <p class="mt-4 text-lg">
-              Discover our flexible payment plans tailored to your budget and
-              needs. Renting a car has never been easier!
-            </p>
-          </div>
-          <img src="car2hp.jpg" alt="Payment Plans" class="box-image" />
-        </div>
-        <div class="info-box smokewhite">
-          <div class="box-content">
-            <h2 class="mb-4 text-2xl font-bold">Find a Branch Near You</h2>
-            <p class="mt-4 text-lg">
-              Locate our branches conveniently located across the city. We're
-              always nearby to provide you with the best car rental experience.
-            </p>
-          </div>
-          <img src="car1hp.jpg" alt="Branch Locator" class="box-image" />
-        </div>
-      </div>
-    </div>
+  <div class="mt-4 text-center">
+    <Button on:click={toggleDrawer}>Spin the Wheel!</Button>
   </div>
+
+  <Drawer
+    transitionType="fly"
+    {transitionParams}
+    bind:hidden={isDrawerOpen}
+    id="sidebar1">
+    <div class="flex items-center">
+      <h5
+        id="drawer-label"
+        class="mb-4 inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400">
+        <InfoCircleSolid class="me-2.5 h-4 w-4" />Info
+      </h5>
+      <CloseButton
+        on:click={() => (isDrawerOpen = false)}
+        class="mb-4 dark:text-white" />
+    </div>
+    <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
+      Supercharge your hiring by taking advantage of our <a
+        href="/"
+        class="text-primary-600 underline hover:no-underline dark:text-primary-500">
+        limited-time sale
+      </a>
+      for Flowbite Docs + Job Board. Unlimited access to over 190K top-ranked candidates
+      and the #1 design job board.
+    </p>
+    <div class="grid grid-cols-2 gap-4">
+      <Button color="light" href="/">Learn more</Button>
+      <Button href="/" class="px-4"
+        >Get access <ArrowRightOutline class="ms-2 h-3.5 w-3.5" /></Button>
+    </div>
+  </Drawer>
 </div>
 
 <style>
@@ -103,40 +112,6 @@
     color: white;
     font-size: 40px;
     font-weight: bold;
-  }
-
-  .box-overlay {
-    position: relative;
-    min-height: 90vh;
-    padding: 0 1rem;
-    box-sizing: border-box;
-    margin: auto;
-  }
-
-  .info-boxes {
-    display: flex;
-    flex-direction: column;
-    margin-top: -140px;
-  }
-
-  .info-box {
-    display: flex;
-    justify-content: space-between;
-    width: 80%;
-    padding: 20px;
-    border-radius: 8px;
-    color: "bg-tertiary-500";
-    margin-bottom: 20px;
-    border: 2px solid white;
-  }
-
-  .box-content {
-    max-width: 50%;
-  }
-
-  .box-image {
-    max-width: 26%;
-    border-radius: 8px;
   }
 
   .z-low,
