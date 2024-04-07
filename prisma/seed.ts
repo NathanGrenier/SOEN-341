@@ -210,6 +210,33 @@ async function firstSeed() {
     update: {},
   });
 
+  await prisma.coupon.upsert({
+    where: { couponCode: "SAVENOW10" },
+    update: {},
+    create: {
+      couponCode: "SAVENOW10",
+      discountBasisPoints: 1000, // 10% discount
+    },
+  });
+
+  await prisma.coupon.upsert({
+    where: { couponCode: "HALFOFF" },
+    update: {},
+    create: {
+      couponCode: "HALFOFF",
+      discountBasisPoints: 5000, // 50% discount
+    },
+  });
+
+  await prisma.coupon.upsert({
+    where: { couponCode: "THIRTYOFF" },
+    update: {},
+    create: {
+      couponCode: "THIRTYOFF",
+      discountBasisPoints: 3000, // 30% discount
+    },
+  });
+
   // No seeds for reservations with accessories yet because that's not a sprint 1 feature.
 }
 

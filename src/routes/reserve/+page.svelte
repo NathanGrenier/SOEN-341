@@ -225,8 +225,6 @@
 
                 const quotedPrice = $totalPrice;
 
-                console.log(quotedPrice);
-
                 function convertDateToSpecificTimezone(
                   userDate: Date,
                   targetTimezone: string,
@@ -360,7 +358,7 @@
         let previousPrice = $totalPrice;
         if (coupon.discountBasisPoints != null) {
           const basisPointsDiscount =
-            (previousPrice * coupon.discountBasisPoints) / 100;
+            (previousPrice * coupon.discountBasisPoints) / 10000;
           discount = Math.min(basisPointsDiscount, previousPrice);
         } else if (coupon.discountAmount != null) {
           discount = Math.min(coupon.discountAmount, previousPrice);

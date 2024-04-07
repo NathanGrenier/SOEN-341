@@ -132,7 +132,7 @@ export const actions = {
       carId: data.carId ? parseInt(data.carId.toString(), 10) : 0,
       holderId: data.holderId ? parseInt(data.holderId.toString(), 10) : 0,
       quotedPrice: data.quotedPrice
-        ? parseInt(data.quotedPrice.toString(), 10) * 100
+        ? Number(data.quotedPrice.toString()) * 100
         : 0,
       cancelled: data.cancelled === "true",
       plannedDepartureAt: data.plannedDepartureAt
