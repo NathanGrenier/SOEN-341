@@ -1,9 +1,7 @@
 <script lang="ts">
   import { modeCurrent } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
-  import { Drawer, Button, CloseButton } from "flowbite-svelte";
-  import { InfoCircleSolid, ArrowRightOutline } from "flowbite-svelte-icons";
-  import { sineIn } from "svelte/easing";
+  import { goto } from "$app/navigation";
 
   let currentMode: boolean;
   $: currentMode = $modeCurrent;
@@ -14,17 +12,7 @@
     videoReady = true;
   });
 
-  let transitionParams = {
-    x: -320,
-    duration: 200,
-    easing: sineIn,
-  };
-
-  let isDrawerOpen = false;
-
-  function toggleDrawer() {
-    isDrawerOpen = !isDrawerOpen;
-  }
+  let promoHover = false; // State to handle hover style for promo button
 </script>
 
 <div class="content-container">
@@ -51,41 +39,39 @@
       </div>
     {/if}
   </div>
-
-  <div class="mt-4 text-center">
-    <Button on:click={toggleDrawer}>Spin the Wheel!</Button>
+  <!-- Company Information Section -->
+  <div
+    class="company-info"
+    style="padding: 80px; text-align: center; margin-top: -160px;">
+    <h2 style="font-size: 2.5em; margin-bottom: 0.75em; line-height: 1.2;">
+      DriveXperience offers premium driving experiences across the country.
+    </h2>
+    <h2 style="font-size: 2em; margin-bottom: 0.75em; line-height: 1.2;">
+      From luxury cars to everyday commuter cars, we have something for
+      everyone.
+    </h2>
+    <h2 style="font-size: 2em; margin-bottom: 0.75em; line-height: 1.2;">
+      Discover our available models today!
+    </h2>
   </div>
 
-  <Drawer
-    transitionType="fly"
-    {transitionParams}
-    bind:hidden={isDrawerOpen}
-    id="sidebar1">
-    <div class="flex items-center">
-      <h5
-        id="drawer-label"
-        class="mb-4 inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400">
-        <InfoCircleSolid class="me-2.5 h-4 w-4" />Info
-      </h5>
-      <CloseButton
-        on:click={() => (isDrawerOpen = false)}
-        class="mb-4 dark:text-white" />
-    </div>
-    <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
-      Supercharge your hiring by taking advantage of our <a
-        href="/"
-        class="text-primary-600 underline hover:no-underline dark:text-primary-500">
-        limited-time sale
-      </a>
-      for Flowbite Docs + Job Board. Unlimited access to over 190K top-ranked candidates
-      and the #1 design job board.
-    </p>
-    <div class="grid grid-cols-2 gap-4">
-      <Button color="light" href="/">Learn more</Button>
-      <Button href="/" class="px-4"
-        >Get access <ArrowRightOutline class="ms-2 h-3.5 w-3.5" /></Button>
-    </div>
-  </Drawer>
+  <div
+    class="promotions-section"
+    style="padding: 80px; text-align: center; margin-top: -30px;">
+    <h2 style="font-size: 2em; margin-bottom: 0.75em; line-height: 1.2;">
+      Explore Exclusive Offers at DriveXperience
+    </h2>
+    <button
+      class="promo-button"
+      on:click={() => goto("/our-promotions")}
+      on:mouseenter={() => (promoHover = true)}
+      on:mouseleave={() => (promoHover = false)}
+      style="background-color: {promoHover
+        ? '#ffdd22'
+        : '#f5f5f5'}; color: #333; padding: 10px 20px; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; margin-top: 20px;">
+      View Promotions
+    </button>
+  </div>
 </div>
 
 <style>

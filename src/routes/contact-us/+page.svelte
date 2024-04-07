@@ -5,34 +5,31 @@
   <h1 class="mb-6 text-3xl font-bold">Contact Us</h1>
 
   <section>
-    <h2 class="mb-4 text-2xl font-bold">Company Name</h2>
+    <h2 class="mb-4 text-2xl font-bold">DriveXperience Head Office</h2>
     <p class="mb-4 text-lg">
-      Address: 123 Main Street, City, Country
+      Address: 1455 De Maisonneuve Blvd. W. Montreal, QC H3G 1M8, Canada
       <br />
-      Phone: +123-456-7890
+      Phone: 438 873 2668
       <br />
-      Email: info@example.com
+      Email: info@drivexperience.com
     </p>
-    <!-- contact details -->
   </section>
 
   <section>
     <h2 class="mb-4 text-2xl font-bold">Customer Support</h2>
     <p class="mb-4 text-lg">
-      Phone: +123-456-7890
+      Phone: +438 874 2668
       <br />
-      Email: support@example.com
+      Email: support@drivexperience.com
     </p>
-    <!-- customer support details -->
   </section>
 
   <section>
     <h2 class="mb-4 text-2xl font-bold">Business Hours</h2>
     <p class="mb-4 text-lg">
-      Monday - Friday: 9:00 AM to 5:00 PM
+      Monday - Saturday: 9:00 AM to 5:00 PM
       <br />
-      Saturday - Sunday: Closed
+      Sunday: Closed
     </p>
-    <!-- business hours details -->
   </section>
 </div>
