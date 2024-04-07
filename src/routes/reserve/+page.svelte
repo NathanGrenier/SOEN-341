@@ -22,11 +22,13 @@
   let creditCardNumber: string;
   let cvvNumber: string;
   let expiryDate: string;
+  let couponAlreadyApplied = false;
 
   const totalPrice = tweened(0, {
     easing: quadInOut,
     duration: 500,
   });
+  let prevPrice = $totalPrice;
 
   const timeDifference =
     new Date(endDate).getTime() - new Date(startDate).getTime();
@@ -221,7 +223,7 @@
                 };
                 modalStore.trigger(loadingModal);
 
-                const quotedPrice = $totalPrice * 100;
+                const quotedPrice = $totalPrice;
 
                 console.log(quotedPrice);
 
@@ -355,17 +357,22 @@
           autohide: true,
         };
         let discount = 0;
-        let prevPrice = $totalPrice;
+        let previousPrice = $totalPrice;
         if (coupon.discountBasisPoints != null) {
           const basisPointsDiscount =
-            (prevPrice * coupon.discountBasisPoints) / 10000;
-          discount = Math.min(basisPointsDiscount, prevPrice);
+            (previousPrice * coupon.discountBasisPoints) / 100;
+          discount = Math.min(basisPointsDiscount, previousPrice);
         } else if (coupon.discountAmount != null) {
-          discount = Math.min(coupon.discountAmount, prevPrice);
+          discount = Math.min(coupon.discountAmount, previousPrice);
         }
-        totalPrice.update(() => {
-          return prevPrice - discount;
-        });
+        prevPrice = $totalPrice;
+        totalPrice
+          .update(() => {
+            return previousPrice - discount;
+          })
+          .then(() => {
+            couponAlreadyApplied = true;
+          });
         toastStore.trigger(successfulCoupon);
         return true;
       }
@@ -457,18 +464,31 @@
         <h3 class="h3">Redeem a Coupon</h3>
 
         <div class="flex justify-center space-x-4">
-          <label class="flex items-center space-x-2">
+          <label class="flex items-center">
             <input
               type="input"
               class="input p-2"
               bind:value={currentCouponId} />
           </label>
           <button
-            disabled={!currentCouponId}
+            disabled={!currentCouponId || couponAlreadyApplied}
             class="variant-filled btn"
             on:click={() => {
               if (!verifyCoupon(currentCouponId)) currentCouponId = "";
             }}>Redeem</button>
+          <button
+            disabled={!currentCouponId || !couponAlreadyApplied}
+            class="variant-filled btn"
+            on:click={() => {
+              console.log(prevPrice);
+              totalPrice
+                .update(() => {
+                  return prevPrice;
+                })
+                .then(() => {
+                  couponAlreadyApplied = false;
+                });
+            }}>Remove</button>
         </div>
       </section>
 
@@ -566,8 +586,14 @@
         </div>
         <div class="flex justify-between">
           <span class="font-semibold">Total Price:</span>
-          <span>${$totalPrice.toFixed(2)} $</span>
+          <span>{$totalPrice.toFixed(2)} $</span>
         </div>
+        {#if couponAlreadyApplied}
+          <div class="flex justify-between">
+            <span>Coupon Applied:</span>
+            <span>{currentCouponId}</span>
+          </div>
+        {/if}
       </div>
     </div>
   </div>
