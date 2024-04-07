@@ -13,6 +13,7 @@ function isValidDate(dateString: string | undefined) {
 
 export const load: PageServerLoad = async ({ locals, url }) => {
   if (!locals.user) {
+    console.log(`/auth/login?destination=${url.pathname}/${url.search}`);
     return redirect(
       300,
       `/auth/login?destination=${url.pathname}/${url.search}`,
@@ -104,15 +105,21 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     },
   );
 
+  const allCoupons = await prisma.coupon.findMany();
+
+  const allAccessories = await prisma.accessory.findMany();
+
   if (conflictingReservation) {
     redirect(302, "/browse-vehicles");
   }
 
   return {
-    startDate: startDate,
-    endDate: endDate,
+    startDate,
+    endDate,
     currentCar: car,
     currentBranch: branch,
+    allCoupons,
+    allAccessories,
   };
 };
 
@@ -152,6 +159,12 @@ export const actions = {
       creditCardCVV: data.creditCardCVV ? data.creditCardCVV.toString() : "",
       checkInLicenseNumber: null,
       checkInLicenseIssuingJurisdiction: null,
+      checkInReportedDamages: null,
+      depositAmountTaken: null,
+      depositAmountRefunded: null,
+      amountPaid: null,
+      paymentMethod: null,
+      couponId: Number(data.couponId),
     };
 
     return await prisma.reservation.create({
