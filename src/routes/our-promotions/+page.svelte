@@ -18,22 +18,16 @@
       Introducing our Spin-the-Wheel feature! A fun and engaging way for you to
       win amazing prizes and discounts.
       <br />
-      With every spin, you stand a chance to unlock exclusive offers, including:
+      With every spin, you stand a chance to unlock exclusive offers!
       <br />
       <br />
-      - Hefty discounts on our premium driving experiences
+      How to play:
       <br />
-      - Complimentary upgrades on rentals
+      Click on "Spin the Wheel! And then choose 1 icon to spin the wheel."
       <br />
-      - Special giveaways and much more!
+      If the wheel lands on the matching icon that you selected, then you win a discount
+      code! Simply enter the code at checkout to apply your discount!
       <br />
-      <br />
-      All you need to do is click on the "Spin the Wheel" button to reveal our interactive
-      wheel within the drawer.
-      <br />
-      Take a spin and let fortune decide the special offer you'll receive. It's our
-      way of saying thank you for choosing DriveXperience, where every journey is
-      an adventure.
     </p>
     <div class="button-wrapper">
       <Button on:click={toggleDrawer}>Spin the Wheel!</Button>
@@ -47,7 +41,7 @@
       <h5 class="text-base font-semibold">Spin the Wheel!</h5>
       <CloseButton
         on:click={() => (hidden1 = true)}
-        class="ml-auto dark:text-white" />
+        class="ml-auto dark:text-tertiary-500" />
     </div>
     <Wheel />
   </Drawer>
@@ -58,34 +52,37 @@
     display: flex;
     align-items: center;
     justify-content: start;
-    padding: 1rem; /* Adjust based on your design */
+    padding: 1rem;
   }
 
   .drawer-container {
-    position: fixed; /* or absolute, depending on your layout */
+    position: fixed;
     left: 50%;
-    top: 20%;
+    top: 50%;
     transform: translate(-50%, -50%);
-    width: 100%; /* This controls the width, ensuring padding on the sides */
-    max-width: 1200px; /* Adjust max-width as necessary */
-    height: auto; /* Adjust based on content or set a specific height */
-    z-index: 1000; /* Ensure it's above other content */
+    width: 90%;
+    max-width: 800px;
+    height: auto;
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: flex;
   }
 
   .button-wrapper {
     display: flex;
-    justify-content: center;
-    padding: 2rem 0; /* Adjust spacing above and below the button */
+    justify-content: left;
+    padding: 2rem 0;
   }
 
   :global(.button-wrapper button) {
-    background-color: #ffdd22; /* Yellow background */
-    color: #333; /* Dark text color */
+    background-color: #ffdd22;
+    color: #333;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 18px;
-    /* Add more styling as needed */
   }
 </style>
