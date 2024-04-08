@@ -3,13 +3,15 @@
   import type { ModalSettings, ToastSettings } from "@skeletonlabs/skeleton";
   import type { Reservation } from "@prisma/client";
   import { getToastStore } from "@skeletonlabs/skeleton";
-  import { parseDate } from "$lib/utils.js";
+  import { formatDateToYYYYMMDD, parseDate } from "$lib/utils.js";
   import Reserve from "$lib/icons/Reserve.svelte";
   import CancelIcon from "$lib/icons/CancelIcon.svelte";
   import { tweened } from "svelte/motion";
   import { quadInOut } from "svelte/easing";
 
   export let data;
+
+  const userEmail = data.user?.email;
 
   const toastStore = getToastStore();
   const { startDate } = data;
@@ -276,7 +278,7 @@
                   formData.append(key, value?.toString() ?? "");
                 });
 
-                fetch("", {
+                fetch("?/createReservation", {
                   method: "POST",
                   body: formData,
                 })
@@ -297,6 +299,58 @@
                     const dataArray = JSON.parse(data.data);
                     const id = dataArray[1];
                     window.location.href = `/dashboard/reservation-${id}`;
+
+                    const formData = new FormData();
+                    const formattedStartDate = formatDateToYYYYMMDD(
+                      new Date(startDate),
+                    );
+                    const formattedEndDate = formatDateToYYYYMMDD(
+                      new Date(endDate),
+                    );
+                    formData.append("plannedDeparture", formattedStartDate);
+                    formData.append("plannedReturn", formattedEndDate);
+                    formData.append("daysRented", numberOfDays.toString());
+                    formData.append("quotedPrice", quotedPrice.toString());
+                    formData.append(
+                      "carName",
+                      currentCar.make +
+                        " " +
+                        currentCar.model +
+                        " " +
+                        currentCar.year.toString(),
+                    );
+                    if (currentCar.photoUrl)
+                      formData.append("carImageURL", currentCar.photoUrl);
+                    formData.append("branchName", currentBranch.name);
+                    formData.append(
+                      "branchAddress",
+                      currentBranch.streetAddress,
+                    );
+                    formData.append("branchCity", currentBranch.city);
+                    formData.append("branchRegion", currentBranch.region);
+                    formData.append(
+                      "branchPostalCode",
+                      currentBranch.postalCode,
+                    );
+                    if (userEmail) formData.append("email", userEmail);
+
+                    fetch("?/confirmation", {
+                      method: "POST",
+                      body: formData,
+                    }).then((res: Response) => {
+                      if (res.ok) {
+                        return res.json();
+                      } else {
+                        const cancelErrorToast: ToastSettings = {
+                          message:
+                            "There was an error sending a confirmation email.",
+                          background: "variant-filled-error",
+                          autohide: true,
+                        };
+
+                        toastStore.trigger(cancelErrorToast);
+                      }
+                    });
                   })
                   .catch(() => {
                     const failToast: ToastSettings = {

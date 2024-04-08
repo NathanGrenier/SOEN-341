@@ -2,6 +2,7 @@ import type { Branch, Car, Reservation } from "@prisma/client";
 import type { PageServerLoad } from "./$types";
 import { error, redirect, type Actions } from "@sveltejs/kit";
 import { prisma } from "$lib/db/client";
+import { sendEmail } from "$lib/server/email/email";
 
 function isValidDate(dateString: string | undefined) {
   if (!dateString) return false;
@@ -124,7 +125,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 };
 
 export const actions = {
-  default: async ({ request }) => {
+  createReservation: async ({ request }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
@@ -170,5 +171,44 @@ export const actions = {
     return await prisma.reservation.create({
       data: reservationData,
     });
+  },
+  confirmation: async ({ request }) => {
+    const form = await request.formData();
+    const data = Object.fromEntries(form);
+
+    const user = await prisma.user.findUnique({
+      where: { email: data.email.toString() },
+    });
+
+    if (!user || user.disabled) {
+      return { success: true };
+    }
+
+    await sendEmail({
+      recipientName: user.name,
+      recipientEmail: user.email,
+      subject: "Reservation Confirmation",
+      template: "reservation-confirmation",
+      vars: {
+        "%name%": user.name,
+        "%plannedDeparture%": data.plannedDeparture.toString(),
+        "%plannedReturn%": data.plannedReturn.toString(),
+        "%daysRented%": data.daysRented.toString(),
+        "%quotedPrice%": data.quotedPrice.toString(),
+        "%carName%": data.carName.toString(),
+        "%carImageURL%": data.carImageURL.toString(),
+        "%branchName%": data.branchName.toString(),
+        "%branchAddress%": data.branchAddress.toString(),
+        "%branchCity%": data.branchCity.toString(),
+        "%branchRegion%": data.branchRegion.toString(),
+        "%branchPostalCode%": data.branchPostalCode.toString(),
+      },
+    });
+
+    if (process.env.EXEC_ENV === "development") {
+      console.log("Confirmation Sent");
+    }
+
+    return { success: true };
   },
 } satisfies Actions;
