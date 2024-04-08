@@ -1,13 +1,8 @@
 <script lang="ts">
   import { Drawer, Button, CloseButton } from "flowbite-svelte";
-  import { sineIn } from "svelte/easing";
+  import Wheel from "./Wheel-of-Fortune.svelte";
 
   let hidden1 = true;
-  let transitionParams = {
-    x: -320,
-    duration: 200,
-    easing: sineIn,
-  };
 
   function toggleDrawer() {
     hidden1 = !hidden1;
@@ -40,24 +35,21 @@
       way of saying thank you for choosing DriveXperience, where every journey is
       an adventure.
     </p>
-    <Button on:click={toggleDrawer} class="spin-button">Spin the Wheel!</Button>
+    <div class="button-wrapper">
+      <Button on:click={toggleDrawer}>Spin the Wheel!</Button>
+    </div>
   </section>
 </div>
 
 <div class="drawer-container">
-  <Drawer
-    transitionType="fly"
-    {transitionParams}
-    bind:hidden={hidden1}
-    id="sidebar1">
+  <Drawer transitionType="fly" bind:hidden={hidden1} id="sidebar1">
     <div class="drawer-header">
-      <h5 class="text-base font-semibold text-gray-500 dark:text-gray-400">
-        Spin the Wheel!
-      </h5>
+      <h5 class="text-base font-semibold">Spin the Wheel!</h5>
       <CloseButton
         on:click={() => (hidden1 = true)}
         class="ml-auto dark:text-white" />
     </div>
+    <Wheel />
   </Drawer>
 </div>
 
@@ -72,11 +64,28 @@
   .drawer-container {
     position: fixed; /* or absolute, depending on your layout */
     left: 50%;
-    top: 25%;
+    top: 20%;
     transform: translate(-50%, -50%);
-    width: 90%; /* This controls the width, ensuring padding on the sides */
-    max-width: 940px; /* Adjust max-width as necessary */
+    width: 100%; /* This controls the width, ensuring padding on the sides */
+    max-width: 1200px; /* Adjust max-width as necessary */
     height: auto; /* Adjust based on content or set a specific height */
     z-index: 1000; /* Ensure it's above other content */
+  }
+
+  .button-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0; /* Adjust spacing above and below the button */
+  }
+
+  :global(.button-wrapper button) {
+    background-color: #ffdd22; /* Yellow background */
+    color: #333; /* Dark text color */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    /* Add more styling as needed */
   }
 </style>
