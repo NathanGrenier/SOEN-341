@@ -69,7 +69,7 @@ async function firstSeed() {
     create: {
       branchId: yulAirport.id,
       photoUrl:
-        "https://linglaotgbph7idj.public.blob.vercel-storage.com/2021_Ferrari_F8_Tributo-Z9uuYxEmCx1XcxpYH52nI0oHiLbqJZ.jpg?download=1",
+        "https://upload.wikimedia.org/wikipedia/commons/0/00/2021_Ferrari_F8_Tributo.jpg",
       make: "Ferrari",
       model: "F8 Tributo",
       year: 2020,
@@ -90,7 +90,7 @@ async function firstSeed() {
       model: "Highlander",
       year: 2021,
       photoUrl:
-        "https://linglaotgbph7idj.public.blob.vercel-storage.com/Highlander_XSE-uAtUggxqVniafxdL72PWRnipeHSy9B.jpg?download=1",
+        "https://toyotacanada.scene7.com/is/image/toyotacanada/Highlander_XSE?ts=1688689328971&$Media-Large$&dpr=off",
       colour: CarColour.BLACK,
       seats: 7,
       description:
