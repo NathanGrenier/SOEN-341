@@ -8,8 +8,8 @@
   import { inSphere } from "maath/random";
   import type { TypedArray } from "three";
   import { tweened } from "svelte/motion";
-  import { linear } from "svelte/easing";
-  import { fade } from "svelte/transition";
+  import { linear, quintOut } from "svelte/easing";
+  import { fade, slide } from "svelte/transition";
   import { useLoader } from "@threlte/core";
   import {
     GLTFLoader,
@@ -31,21 +31,6 @@
     easing: linear,
   });
 
-  // Create a tweened store for scroll position
-  const scrollPosition = tweened(0, {
-    duration: 500,
-    easing: linear,
-  });
-
-  // Function to set window scroll position
-  function setWindowScrollPosition(value: number) {
-    if (typeof window !== "undefined") {
-      const scrollTop = value;
-      document.documentElement.scrollTop = scrollTop;
-      document.body.scrollTop = scrollTop;
-    }
-  }
-
   // Store for camera position
   const cameraPosition = writable<[number, number, number]>([
     get(tweenedXPosition),
@@ -66,13 +51,8 @@
     ]);
   }
 
-  $: {
-    $scrollPosition;
-    setWindowScrollPosition($scrollPosition);
-  }
-
   let sphere: TypedArray;
-  let scrollAmount = 0;
+  let scrollPosition = writable(0);
   let videoReady = false;
   let mouseMove = false;
   let videoEnded = false;
@@ -81,6 +61,13 @@
   let gltf: AsyncWritable<GLTF>;
 
   onMount(() => {
+    const handleScroll = () => {
+      scrollPosition.set(window.scrollY);
+      console.log("yes");
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
     sphere = inSphere(new Float32Array(5000), { radius: 1.2 });
 
     function animate() {
@@ -100,7 +87,6 @@
     let previousTime = Date.now();
     animate();
 
-    window.addEventListener("wheel", handleWheel);
     window.addEventListener("mousemove", handleMouseMove);
 
     videoReady = true;
@@ -112,8 +98,8 @@
     gltf = useLoader(GLTFLoader).load("./free_car_001.gltf");
 
     return () => {
-      window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
     };
   });
 
@@ -143,6 +129,10 @@
 
     if (targetDiv) {
       targetDiv.scrollIntoView({ behavior: "smooth" });
+
+      setTimeout(() => {
+        tweenCameraPosition("add");
+      }, 200);
     }
   }
 
@@ -158,25 +148,13 @@
       });
   }
 
-  function handleWheel(event: { deltaY: number }) {
-    if (event.deltaY < 0) {
-      if (scrollAmount % 100 == 0 && scrollAmount !== 0)
-        tweenCameraPosition("remove");
-      scrollAmount--;
-    } else {
-      if (scrollAmount % 100 == 0) tweenCameraPosition("add");
-      scrollAmount++;
-    }
-
-    if (scrollAmount < 0) scrollAmount = 0;
-  }
-
   function handleVideoEnded() {
     videoEnded = true;
+    videoReady = false;
   }
 </script>
 
-<div class="{currentMode ? 'sceneLight' : 'sceneDark'} z-0">
+<div class="{currentMode ? 'sceneLight' : 'sceneDark'} absolute z-0">
   <Canvas>
     <!-- Camera -->
     <T.PerspectiveCamera position={[0, 0.6, 0]} fov={50} makeDefault>
@@ -218,18 +196,20 @@
   </Canvas>
 </div>
 
-<div class="{!isMobile ? 'video-container' : ''} left-0 top-12 z-10 w-full">
+<div class="h-screen">
   {#if videoReady}
-    <div transition:fade={{ delay: 250, duration: 300 }}>
+    <div
+      transition:fade={{ delay: 250, duration: 300 }}
+      class="relative mx-auto w-full rounded-md">
       <video
         src="LightHomePageVid.mp4"
         muted
         autoplay
         playsinline
         on:ended={handleVideoEnded}
-        class="{isMobile ? 'hidden' : ''} video {!currentMode
+        class="{isMobile ? 'hidden' : ''} {!currentMode
           ? 'z-low'
-          : 'z-high'}">
+          : 'z-high'} absolute">
         Your browser does not support the video tag.
       </video>
       <video
@@ -237,36 +217,113 @@
         muted
         autoplay
         playsinline
-        class="{isMobile ? 'hidden' : ''} video {currentMode
-          ? 'z-low'
-          : 'z-high'}">
+        class="{isMobile ? 'hidden' : ''} {!currentMode
+          ? 'z-high'
+          : 'z-low'} absolute">
         Your browser does not support the video tag.
       </video>
     </div>
-    <div class="absolute z-20 space-y-4 md:pl-32 md:pt-20">
-      {#if videoEnded}
-        <div
-          transition:fade={{ delay: 250, duration: 300 }}
-          class="justify-center pt-20 text-2xl font-extrabold">
-          Welcome to DriveXperience
-        </div>
-        <button
-          on:click={() => {
-            scrollToDiv("sectionOne");
-          }}
-          transition:fade={{ delay: 250, duration: 300 }}
-          class="variant-filled-primary btn mx-auto block">Begin</button>
-      {/if}
-    </div>
   {/if}
+  <div
+    class="relative flex h-5/6 flex-col items-center justify-center space-y-6">
+    {#if videoEnded}
+      <div
+        transition:fade={{ delay: 250, duration: 300 }}
+        class="text-center text-7xl font-extrabold">
+        Welcome to DriveXperience
+      </div>
+      <button
+        on:click={() => {
+          scrollToDiv("sectionOne");
+        }}
+        transition:fade={{ delay: 250, duration: 300 }}
+        class="variant-filled-primary btn mx-auto block">Begin</button>
+    {/if}
+  </div>
 </div>
 
 <div class="card fixed left-0 top-0 z-30 p-4">{$scrollPosition}</div>
 
-<div class="relative space-y-4 p-4">
-  <div id="sectionOne" class="h-screen w-auto p-4">Section One</div>
-  <div id="sectionTwo" class="h-screen w-auto p-4">Section Two</div>
-  <div id="sectionThree" class="h-screen w-auto p-4">Section Three</div>
+<div class="card relative my-4 space-y-4 p-4">
+  <div id="sectionOne" class="card p-4">
+    <div
+      class="relative my-4 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40"
+      transition:slide={{
+        delay: 250,
+        duration: 300,
+        easing: quintOut,
+        axis: "x",
+      }}>
+      <div class="card col-span-1">
+        <a href="/browse-vehicles">
+          <img class="rounded-t-lg" src="/car1hp.jpg" alt="" />
+        </a>
+        <header class="card-header">
+          <p class="h2">View our catalog of vehicles</p>
+        </header>
+        <section class="p-4">
+          Explore our wide range of available vehicles for rental. From compact
+          cars to luxury SUVs, we have something for everyone.
+        </section>
+        <footer class="card-footer">
+          <button
+            class="btn mx-auto block bg-primary-500"
+            on:click={() => {
+              window.location.href = "/browse-vehicles";
+            }}>Browse Vehicles</button>
+        </footer>
+      </div>
+      <div class="card col-span-1 p-4">Test</div>
+    </div>
+  </div>
+  <div id="sectionTwo" class="card p-4">
+    <div
+      class="relative my-4 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40"
+      transition:slide={{
+        delay: 250,
+        duration: 300,
+        easing: quintOut,
+        axis: "x",
+      }}>
+      <div class="card col-span-1 p-4">Test</div>
+      <div class="card col-span-1">
+        <a href="/browse-vehicles">
+          <img class="rounded-t-lg" src="/car1hp.jpg" alt="" />
+        </a>
+        <header class="card-header">
+          <p class="h2">View our catalog of vehicles</p>
+        </header>
+        <section class="p-4">
+          Explore our wide range of available vehicles for rental. From compact
+          cars to luxury SUVs, we have something for everyone.
+        </section>
+      </div>
+    </div>
+  </div>
+  <div id="sectionThree" class="card p-4">
+    <div
+      class="relative my-4 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40"
+      transition:slide={{
+        delay: 250,
+        duration: 300,
+        easing: quintOut,
+        axis: "x",
+      }}>
+      <div class="card col-span-1">
+        <a href="/browse-vehicles">
+          <img class="rounded-t-lg" src="/car1hp.jpg" alt="" />
+        </a>
+        <header class="card-header">
+          <p class="h2">View our catalog of vehicles</p>
+        </header>
+        <section class="p-4">
+          Explore our wide range of available vehicles for rental. From compact
+          cars to luxury SUVs, we have something for everyone.
+        </section>
+      </div>
+      <div class="card col-span-1 p-4">Test</div>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -295,22 +352,5 @@
   .z-low,
   .z-high {
     transition: opacity 0.3s ease;
-  }
-
-  .video-container {
-    position: relative;
-    width: 100vw;
-    height: 93vh;
-    top: -2.5rem;
-    left: -14.5rem;
-    overflow: hidden;
-  }
-
-  .video-container video {
-    width: 100%;
-    height: auto;
-    position: absolute;
-    top: -5rem;
-    left: 0;
   }
 </style>
