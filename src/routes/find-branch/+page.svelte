@@ -305,54 +305,62 @@
             : " - Displaying All Branches"}
         </h2>
       </div>
-      <form on:submit={handleSubmit}>
-        <div class="flex justify-between space-x-2">
-          <input
-            type="text"
-            name="address"
-            placeholder="Enter address"
-            class="input"
-            bind:value={currentAddressInput} />
-          <button type="submit" class="btn bg-primary-500">Submit</button>
-        </div>
-      </form>
-      <div class="my-2 space-y-10 p-2">
-        {#each paginatedBranches as branch}
-          <div class="card p-4">
-            <div>
-              <h2 class="text-xl font-semibold">{branch.name}</h2>
-              <p class="my-2">{branch.streetAddress}</p>
-              <p>
-                {branch.city}, {branch.region}, {branch.country}, {branch.postalCode}
-              </p>
-            </div>
-            <div class="justify-center sm:flex sm:space-x-2">
-              <button
-                class="btn mx-auto mt-4 block bg-primary-500"
-                on:click={locateBranchOnMap(branch.longitude, branch.latitude)}>
-                Locate on Map
-              </button>
-              <button
-                class="btn mx-auto mt-4 block bg-primary-500"
-                on:click={redirectWithBranch(branch.id)}>
-                Select Branch
-              </button>
-            </div>
+      <div class="card my-2 p-2">
+        <form on:submit={handleSubmit}>
+          <div class="flex justify-between space-x-2">
+            <input
+              type="text"
+              name="address"
+              placeholder="Enter address"
+              class="input"
+              bind:value={currentAddressInput} />
+            <button type="submit" class="btn bg-primary-500">Submit</button>
           </div>
-        {/each}
-      </div>
-      {#if displayClosestBranch}
-        <button
-          on:click={displayAllBranches}
-          class="btn mx-auto block bg-primary-500"
-          ><p>Display All Branches?</p></button>
-      {/if}
-      <div class="bottom-5 ml-4 sm:absolute">
-        <Paginator
-          bind:settings={paginationSettings}
-          showFirstLastButtons={false}
-          showPreviousNextButtons={true}
-          amountText="Branches" />
+        </form>
+        {#if branches.length === 0}
+          <div class="p-4 text-center">No Branches Found</div>
+        {/if}
+        <div class="my-2 space-y-10 p-2">
+          {#each paginatedBranches as branch}
+            <div class="card p-4">
+              <div>
+                <h2 class="text-xl font-semibold">{branch.name}</h2>
+                <p class="my-2">{branch.streetAddress}</p>
+                <p>
+                  {branch.city}, {branch.region}, {branch.country}, {branch.postalCode}
+                </p>
+              </div>
+              <div class="justify-center sm:flex sm:space-x-2">
+                <button
+                  class="btn mx-auto mt-4 block bg-primary-500"
+                  on:click={locateBranchOnMap(
+                    branch.longitude,
+                    branch.latitude,
+                  )}>
+                  Locate on Map
+                </button>
+                <button
+                  class="btn mx-auto mt-4 block bg-primary-500"
+                  on:click={redirectWithBranch(branch.id)}>
+                  Select Branch
+                </button>
+              </div>
+            </div>
+          {/each}
+        </div>
+        {#if displayClosestBranch}
+          <button
+            on:click={displayAllBranches}
+            class="btn mx-auto block bg-primary-500"
+            ><p>Display All Branches?</p></button>
+        {/if}
+        <div class="bottom-5 ml-4 sm:absolute">
+          <Paginator
+            bind:settings={paginationSettings}
+            showFirstLastButtons={false}
+            showPreviousNextButtons={true}
+            amountText="Branches" />
+        </div>
       </div>
     </div>
   </div>

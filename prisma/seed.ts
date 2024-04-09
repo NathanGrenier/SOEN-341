@@ -1,4 +1,4 @@
-import { UserRole, CarColour } from "@prisma/client";
+import { UserRole, CarColour, CarType } from "@prisma/client";
 import { prisma } from "../src/lib/db/client.ts";
 
 async function firstSeed() {
@@ -71,6 +71,7 @@ async function firstSeed() {
       photoUrl:
         "https://upload.wikimedia.org/wikipedia/commons/0/00/2021_Ferrari_F8_Tributo.jpg",
       make: "Ferrari",
+      carsize: CarType.Supercar,
       model: "F8 Tributo",
       year: 2020,
       colour: CarColour.RED,
@@ -87,6 +88,7 @@ async function firstSeed() {
     create: {
       branchId: yulAirport.id,
       make: "Toyota",
+      carsize: CarType.SUV,
       model: "Highlander",
       year: 2021,
       photoUrl:
@@ -96,6 +98,15 @@ async function firstSeed() {
       description:
         "Perfect for road trips with the whole family, this SUV seats 7 passengers and has all-wheel drive.",
       dailyPrice: 8900,
+    },
+  });
+
+  await prisma.like.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      userId: 1,
+      carId: 1,
     },
   });
 

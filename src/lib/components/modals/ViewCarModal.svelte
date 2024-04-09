@@ -61,6 +61,7 @@
         <div class="text-center">
           <h2 class="text-lg font-semibold">{car.make} {car.model}</h2>
         </div>
+        <p><strong>Type:</strong> {car.carsize}</p>
         <p><strong>Year:</strong> {car.year}</p>
         <p><strong>Colour:</strong> {car.colour}</p>
         <p><strong>Seats:</strong> {car.seats}</p>

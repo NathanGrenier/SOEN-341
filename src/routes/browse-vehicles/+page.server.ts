@@ -1,8 +1,7 @@
 import { prisma } from "$lib/db/client";
-import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import type { Actions } from "./$types";
-import { CarColour, type Prisma } from "@prisma/client";
+import { CarColour, CarType, type Prisma } from "@prisma/client";
 
 function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   for (const key in enumObj) {
@@ -16,7 +15,7 @@ function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   return undefined;
 }
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
   const branchId = url.searchParams.get("branchId");
 
   let cars;
@@ -25,38 +24,43 @@ export const load: PageServerLoad = async ({ url }) => {
     cars = await prisma.car.findMany({
       where: {
         branchId: parseInt(branchId),
+        bookingDisabled: false,
       },
       include: { reservations: true },
     });
   } else {
     cars = await prisma.car.findMany({
+      where: {
+        bookingDisabled: false,
+      },
       include: { reservations: true },
     });
   }
 
-  if (!cars || cars.length === 0) {
-    error(404, "No cars found matching query");
-  }
+  const branches = await prisma.branch.findMany({ where: { disabled: false } });
 
-  const branches = await prisma.branch.findMany();
+  const likedVehicles = await prisma.like.findMany({
+    where: { userId: locals.user?.id },
+  });
 
-  if (!branches || branches.length === 0) {
-    error(404, "No branches found");
-  }
+  const likedVehiclesIDs: number[] = likedVehicles.map((obj) => obj.carId);
 
   return {
     cars,
     branches,
     branchId,
+    likedVehiclesIDs,
   };
 };
 
 export const actions = {
-  default: async ({ request }) => {
+  searchCars: async ({ locals, request }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
     const whereClause: Prisma.CarWhereInput = {};
+
+    whereClause.bookingDisabled = false;
 
     if (data.branchId !== undefined && +data.branchId.toString() !== -1) {
       whereClause.branchId = { equals: +data.branchId };
@@ -79,6 +83,14 @@ export const actions = {
       };
     }
 
+    if (!data.carsize || data.carsize === "No Specific Size") {
+      delete whereClause.carsize;
+    } else {
+      whereClause.carsize = {
+        equals: stringToEnum(data.carsize.toString(), CarType),
+      };
+    }
+
     if (!data.colour || data.colour === "No Specific Color") {
       delete whereClause.colour;
     } else {
@@ -87,7 +99,7 @@ export const actions = {
       };
     }
 
-    const cars = await prisma.car.findMany({
+    let cars = await prisma.car.findMany({
       where: whereClause,
       include: { reservations: true },
     });
@@ -121,9 +133,46 @@ export const actions = {
         return !conflict;
       });
 
-      return JSON.stringify(filteredCars);
+      cars = filteredCars;
+    }
+
+    if (data.filterFavorite && data.filterFavorite.toString() === "true") {
+      const likedCars = await prisma.like.findMany({
+        where: {
+          userId: locals.user?.id,
+        },
+      });
+
+      const likedCarIds = likedCars.map((likedCar) => likedCar.carId);
+
+      cars = cars.filter((car) => likedCarIds.includes(car.id));
     }
 
     return JSON.stringify(cars);
+  },
+  setLikeStatus: async ({ request }) => {
+    const form = await request.formData();
+    const data = Object.fromEntries(form);
+
+    if (data.status === "Favorite") {
+      await prisma.like.create({
+        data: {
+          userId: Number(data.userId),
+          carId: Number(data.carId),
+        },
+      });
+    } else {
+      const likeToDelete = await prisma.like.findFirst({
+        where: { userId: Number(data.userId), carId: Number(data.carId) },
+      });
+
+      if (!likeToDelete) return "Could not unfavorite";
+
+      await prisma.like.delete({
+        where: { id: likeToDelete.id },
+      });
+    }
+
+    return "Success";
   },
 } satisfies Actions;

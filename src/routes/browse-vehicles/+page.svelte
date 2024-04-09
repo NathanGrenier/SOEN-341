@@ -12,7 +12,7 @@
   } from "@skeletonlabs/skeleton";
   import { TreeView, TreeViewItem } from "@skeletonlabs/skeleton";
   import { getToastStore } from "@skeletonlabs/skeleton";
-  import type { Car } from "@prisma/client";
+  import type { $Enums, Car } from "@prisma/client";
   import { ProgressRadial } from "@skeletonlabs/skeleton";
   import ViewCarModal from "$lib/components/modals/ViewCarModal.svelte";
   import RangeSlider from "svelte-range-slider-pips";
@@ -28,18 +28,29 @@
   const toastStore = getToastStore();
 
   let { cars } = data;
-  const maximumPrice = Math.max(...cars.map((car) => car.dailyPrice)) / 100;
-  const minimumPrice = Math.min(...cars.map((car) => car.dailyPrice)) / 100;
+  let maximumPrice = 3000;
+  let minimumPrice = 0;
+  if (cars.length > 0)
+    maximumPrice = Math.max(...cars.map((car) => car.dailyPrice)) / 100;
+  if (cars.length > 0)
+    minimumPrice = Math.min(...cars.map((car) => car.dailyPrice)) / 100;
   let values = [minimumPrice, maximumPrice];
   let { branches } = data;
+  let { likedVehiclesIDs } = data;
+
   let selectedCarColour = "No Specific Color";
+  let selectedCarType = "No Specific Type";
   let selectedBranch = Number(data.branchId) || -1;
+  let filterByFavorites = false;
   let isLoading = false;
+  let particularIndex = -1;
 
   let startDate: Date;
   let endDate: Date;
   let ref: Node;
   let disableFilterButton = false;
+
+  $: likedVehiclesIDs;
 
   let themeMode = getModeUserPrefers() ? "material_blue" : "dark";
 
@@ -52,8 +63,11 @@
       link.href = `https://npmcdn.com/flatpickr/dist/themes/${themeMode}.css`;
     });
   }
+  let uniqueType: $Enums.CarType[];
+  let uniqueColors: $Enums.CarColour[];
 
-  const uniqueColors = [...new Set(cars.map((car) => car.colour))];
+  if (cars) uniqueType = [...new Set(cars.map((car) => car.carsize))];
+  if (cars) uniqueColors = [...new Set(cars.map((car) => car.colour))];
 
   onMount(() => {
     if ($page.url.searchParams.get("carId")) {
@@ -134,6 +148,9 @@
     isLoading = true;
     const formData = new FormData();
 
+    if (selectedCarType !== "No Specific Car Type")
+      formData.append("carsize", selectedCarType);
+
     if (selectedCarColour !== "No Specific Colour")
       formData.append("colour", selectedCarColour);
 
@@ -145,7 +162,9 @@
       formData.append("endDate", endDate.toISOString());
     }
 
-    fetch("", {
+    if (filterByFavorites) formData.append("filterFavorite", "true");
+
+    fetch("?/searchCars", {
       method: "POST",
       body: formData,
     })
@@ -185,6 +204,62 @@
         console.error("There was a problem with the fetch operation:", error);
       });
   }
+
+  function changeLikeStatus(carId: number, cardIndex: number) {
+    particularIndex = cardIndex;
+
+    const formData = new FormData();
+
+    if (!data.user) return;
+
+    formData.append("userId", data.user.id.toString());
+    formData.append("carId", carId.toString());
+    formData.append(
+      "status",
+      likedVehiclesIDs.includes(carId) ? "Unfavorite" : "Favorite",
+    );
+
+    fetch("?/setLikeStatus", {
+      method: "POST",
+      body: formData,
+    })
+      .then(() => {
+        const successFavoriteToast: ToastSettings = {
+          message:
+            "Vehicle was " +
+            (likedVehiclesIDs.includes(carId) ? "unfavorited" : "favorited") +
+            " successfully.",
+          background: "variant-filled-success",
+        };
+
+        toastStore.trigger(successFavoriteToast);
+
+        if (!likedVehiclesIDs.includes(carId)) {
+          likedVehiclesIDs.push(carId);
+        } else {
+          likedVehiclesIDs = likedVehiclesIDs.filter(
+            (id: number) => id !== carId,
+          );
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        const errorFavoriteToast: ToastSettings = {
+          message:
+            "Could not " +
+            (likedVehiclesIDs.includes(carId) ? "unfavorite" : "favorite") +
+            " vehicle.",
+          background: "variant-filled-error",
+        };
+        toastStore.trigger(errorFavoriteToast);
+      });
+
+    setTimeout(() => {
+      particularIndex = -1;
+    }, 100); // Adjust the timeout duration as needed (in milliseconds)
+
+    return null;
+  }
 </script>
 
 <link
@@ -199,6 +274,15 @@
       <h6 class="h6 font-bold">Search Filters</h6>
       <svelte:fragment slot="children">
         <div class="space-y-4">
+          <label class="label mt-2">
+            <span>Car Type</span>
+            <select class="select" bind:value={selectedCarType}>
+              <option value={"No Specific Type"}>No Specific Type</option>
+              {#each uniqueType as carsize}
+                <option value={carsize}>{toTitleCase(carsize)}</option>
+              {/each}
+            </select>
+          </label>
           <label class="label mt-2">
             <span>Car Color</span>
             <select class="select" bind:value={selectedCarColour}>
@@ -232,14 +316,22 @@
               suffix="$"
               last="label" />
           </div>
-          <div>
+          <div class="space-y-4">
             <label class="label">
               <span>Start and End Dates</span>
               <input
                 class="center input mx-auto ml-4 mt-4 w-60 sm:w-80"
                 bind:this={ref} />
             </label>
+            <label class="label">
+              <input
+                class="checkbox"
+                type="checkbox"
+                bind:checked={filterByFavorites} />
+              <span>Filter by Favorites</span>
+            </label>
           </div>
+
           <button
             class="btn mx-auto block w-20 bg-primary-500"
             on:click={handleFilter}
@@ -264,7 +356,7 @@
 {/if}
 
 <div class="my-2 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-  {#each paginatedCars as car}
+  {#each paginatedCars as car, idx}
     <div class="card p-4">
       <img
         src={car.photoUrl || "https://placehold.co/600x400"}
@@ -272,11 +364,25 @@
         class="mx-auto mb-4 h-auto w-full rounded" />
       <h2 class="mb-2 text-lg font-semibold">{car.model}</h2>
       <p>{car.description}</p>
-      <button
-        on:click={showPopup(car)}
-        class="btn mx-auto mt-2 block bg-primary-500">
-        Show Details
-      </button>
+      <div class="mt-4 flex">
+        {#if data.user && particularIndex !== idx}
+          <button
+            on:click={() => changeLikeStatus(car.id, idx)}
+            class="btn mx-auto mt-2 block {likedVehiclesIDs.includes(car.id)
+              ? 'bg-tertiary-500'
+              : 'bg-primary-500'}"
+            disabled={particularIndex === idx}>
+            {likedVehiclesIDs.includes(car.id) ? "Unfavorite" : "Favorite"}
+          </button>
+        {:else}
+          <button class="btn mx-auto mt-2 block bg-surface-500">Loading</button>
+        {/if}
+        <button
+          on:click={showPopup(car)}
+          class="btn mx-auto mt-2 block bg-primary-500">
+          Show Details
+        </button>
+      </div>
     </div>
   {/each}
 </div>
