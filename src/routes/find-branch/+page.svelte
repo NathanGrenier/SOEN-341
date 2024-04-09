@@ -98,6 +98,9 @@
         <h2 class="h2 mb-4 text-lg font-semibold">Find a Branch</h2>
       </div>
       <div class="card my-2 p-2">
+        {#if branches.length === 0}
+          <div class="p-4 text-center">No Branches Found</div>
+        {/if}
         {#each paginatedBranches as branch}
           <div class="p-4">
             <div>

@@ -24,6 +24,7 @@ model User {
   disabled     Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  Like         Like[]
 }
 
 enum UserRole {
@@ -70,6 +71,7 @@ model Car {
   bookingDisabled Boolean       @default(false)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  Like            Like[]
 }
 
 enum CarColour {
@@ -159,4 +161,13 @@ model ReservationIncludedAccessories {
   accessoryId   Int
 
   @@unique([reservationId, accessoryId])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  carId     Int
+  user      User     @relation(fields: [userId], references: [id])
+  car       Car      @relation(fields: [carId], references: [id])
+  createdAt DateTime @default(now())
 }

@@ -101,6 +101,15 @@ async function firstSeed() {
     },
   });
 
+  await prisma.like.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      userId: 1,
+      carId: 1,
+    },
+  });
+
   // Prepaid gas accessory
   await prisma.accessory.upsert({
     where: { id: 1 },
