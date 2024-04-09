@@ -82,6 +82,7 @@
     "d3-scale": "^4.0.2",
     "dotenv": "^16.3.1",
     "flatpickr": "^4.6.13",
+    "flowbite-svelte": "^0.44.24",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.12",
     "svelte-maplibre": "^0.8.2",
