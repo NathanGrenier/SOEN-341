@@ -131,8 +131,7 @@ The following variables can be configured:
 | SESSION_SIGNING_KEY | 32 random bytes in hex format, used to sign sessions | `480c67189f5ddb38a2b9993724e0327da90467de5628cd3897e579af71d6e7d8`                      |
 | SMTP_HOST           | Hostname of the SMTP server                          | `smtp.ethereal.email` is a good test service                                            |
 | SMTP_PORT           | Port used to connect to the SMTP server              | `587`                                                                                   |
-| SMTP_USER           | Username to authenticate to the SMTP server          |
-| `my@account.email`  |
+| SMTP_USER           | Username to authenticate to the SMTP server          | `my@account.email`                                                                      |
 | SMTP_PASS           | Password to authenticate to the SMTP server          | `password`                                                                              |
 
 ### Starting the Dev Environment

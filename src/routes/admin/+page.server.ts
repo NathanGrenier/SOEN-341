@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import type { Actions } from "./$types";
-//import { put } from "@vercel/blob";
+import { put } from "$lib/server/blob";
 import { prisma } from "$lib/db/client";
 import {
   CarColour,
@@ -34,19 +34,19 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions = {
-  // upload: async ({ request }) => {
-  //   const form = await request.formData();
-  //   const file = form.get("file") as File;
+  upload: async ({ request }) => {
+    const form = await request.formData();
+    const file = form.get("file") as File;
 
-  //   if (!file) {
-  //     throw error(400, { message: "No file to upload." });
-  //   }
+    if (!file) {
+      throw error(400, { message: "No file to upload." });
+    }
 
-  //   const { url, downloadUrl } = await put(file.name, file, {
-  //     access: "public",
-  //   });
-  //   return { uploaded: { url, downloadUrl } }; // You would add the download url to the car object in the postgress database
-  // },
+    const { url, downloadUrl } = await put(file.name, file, {
+      access: "public",
+    });
+    return { uploaded: { url, downloadUrl } }; // You would add the download url to the car object in the postgress database
+  },
   createReservation: async ({ request }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
