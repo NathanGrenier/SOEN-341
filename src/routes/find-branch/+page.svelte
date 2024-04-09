@@ -305,7 +305,7 @@
             : " - Displaying All Branches"}
         </h2>
       </div>
-      <div class="card my-2 p-2">
+      <div class="my-2 p-2">
         <form on:submit={handleSubmit}>
           <div class="flex justify-between space-x-2">
             <input
@@ -313,6 +313,7 @@
               name="address"
               placeholder="Enter address"
               class="input"
+              disabled={branches.length === 0}
               bind:value={currentAddressInput} />
             <button type="submit" class="btn bg-primary-500">Submit</button>
           </div>

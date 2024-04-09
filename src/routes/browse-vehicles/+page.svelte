@@ -241,6 +241,10 @@
             (id: number) => id !== carId,
           );
         }
+
+        setTimeout(() => {
+          particularIndex = -1;
+        }, 100);
       })
       .catch((err) => {
         console.log(err);
@@ -252,11 +256,11 @@
           background: "variant-filled-error",
         };
         toastStore.trigger(errorFavoriteToast);
-      });
 
-    setTimeout(() => {
-      particularIndex = -1;
-    }, 100); // Adjust the timeout duration as needed (in milliseconds)
+        setTimeout(() => {
+          particularIndex = -1;
+        }, 100);
+      });
 
     return null;
   }
@@ -273,7 +277,7 @@
     <TreeViewItem>
       <h6 class="h6 font-bold">Search Filters</h6>
       <svelte:fragment slot="children">
-        <div class="space-y-4">
+        <div class="space-y-4 p-4">
           <label class="label mt-2">
             <span>Car Type</span>
             <select class="select" bind:value={selectedCarType}>
@@ -323,15 +327,16 @@
                 class="center input mx-auto ml-4 mt-4 w-60 sm:w-80"
                 bind:this={ref} />
             </label>
-            <label class="label">
-              <input
-                class="checkbox"
-                type="checkbox"
-                bind:checked={filterByFavorites} />
-              <span>Filter by Favorites</span>
-            </label>
+            {#if data.user}
+              <label class="label">
+                <input
+                  class="checkbox"
+                  type="checkbox"
+                  bind:checked={filterByFavorites} />
+                <span>Filter by Favorites</span>
+              </label>
+            {/if}
           </div>
-
           <button
             class="btn mx-auto block w-20 bg-primary-500"
             on:click={handleFilter}
@@ -365,17 +370,20 @@
       <h2 class="mb-2 text-lg font-semibold">{car.model}</h2>
       <p>{car.description}</p>
       <div class="mt-4 flex">
-        {#if data.user && particularIndex !== idx}
-          <button
-            on:click={() => changeLikeStatus(car.id, idx)}
-            class="btn mx-auto mt-2 block {likedVehiclesIDs.includes(car.id)
-              ? 'bg-tertiary-500'
-              : 'bg-primary-500'}"
-            disabled={particularIndex === idx}>
-            {likedVehiclesIDs.includes(car.id) ? "Unfavorite" : "Favorite"}
-          </button>
-        {:else}
-          <button class="btn mx-auto mt-2 block bg-surface-500">Loading</button>
+        {#if data.user}
+          {#if particularIndex !== idx}
+            <button
+              on:click={() => changeLikeStatus(car.id, idx)}
+              class="btn mx-auto mt-2 block {likedVehiclesIDs.includes(car.id)
+                ? 'bg-tertiary-500'
+                : 'bg-primary-500'}"
+              disabled={particularIndex === idx}>
+              {likedVehiclesIDs.includes(car.id) ? "Unfavorite" : "Favorite"}
+            </button>
+          {:else}
+            <button class="btn mx-auto mt-2 block bg-surface-500"
+              >Loading</button>
+          {/if}
         {/if}
         <button
           on:click={showPopup(car)}
