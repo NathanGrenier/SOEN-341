@@ -12,7 +12,9 @@ const openRoutes = [
   "/browse-vehicles",
   "/find-branch",
   "/contact-us",
-  "/our-policies"
+  "/our-policies",
+  "/our-promotions",
+  "/our-promotions/wheel"
 ]; // Routes that don't need the user to be logged in
 
 export const handle: Handle = async ({ event, resolve }) => {

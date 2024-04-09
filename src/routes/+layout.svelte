@@ -146,6 +146,7 @@
       <div class="footer-links">
         <a href="/contact-us" class="p-2">Contact Us</a>
         <a href="/our-policies" class="p-2">Our Policies</a>
+        <a href="/our-promotions" class="p-2">Our Promotions</a>
       </div>
       <div>© 2024 DriveXperience. All rights reserved.</div>
     </footer>
