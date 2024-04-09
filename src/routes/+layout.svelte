@@ -115,7 +115,9 @@
         </button>
         <a href="/" class="h-10">
           <img
-            src={$modeCurrent ? "SiteLogoForDark.png" : "SiteLogoForLight.png"}
+            src={$modeCurrent
+              ? "/SiteLogoForDark.png"
+              : "/SiteLogoForLight.png"}
             alt="DriveXperience"
             class="h-full" />
         </a>
