@@ -81,6 +81,7 @@ export const actions = {
       depositAmountRefunded: null,
       amountPaid: null,
       paymentMethod: null,
+      couponId: null,
     };
 
     return await prisma.reservation.create({
