@@ -1,17 +1,18 @@
 <script lang="ts">
   import { modeCurrent } from "@skeletonlabs/skeleton";
   import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
 
   let currentMode: boolean;
-
   $: currentMode = $modeCurrent;
-
   let videoReady = false;
 
   onMount(() => {
     currentMode = $modeCurrent;
     videoReady = true;
   });
+
+  let promoHover = false; // State to handle hover style for promo button
 </script>
 
 <div class="content-container">
@@ -38,44 +39,38 @@
       </div>
     {/if}
   </div>
+  <!-- Company Information Section -->
+  <div
+    class="company-info"
+    style="padding: 80px; text-align: center; margin-top: -160px;">
+    <h2 style="font-size: 2.5em; margin-bottom: 0.75em; line-height: 1.2;">
+      DriveXperience offers premium driving experiences across the country.
+    </h2>
+    <h2 style="font-size: 2em; margin-bottom: 0.75em; line-height: 1.2;">
+      From luxury cars to everyday commuter cars, we have something for
+      everyone.
+    </h2>
+    <h2 style="font-size: 2em; margin-bottom: 0.75em; line-height: 1.2;">
+      Discover our available models today!
+    </h2>
+  </div>
 
-  <div class="box-overlay">
-    <div class="container mx-auto py-10">
-      <div class="info-boxes">
-        <div class="info-box smokewhite">
-          <div class="box-content">
-            <h2 class="mb-4 text-2xl font-bold">
-              View our catalog of vehicles
-            </h2>
-            <p class="mt-4 text-lg">
-              Explore our wide range of available vehicles for rental. From
-              compact cars to luxury SUVs, we have something for everyone.
-            </p>
-          </div>
-          <img src="car3hp.jpg" alt="Vehicle Catalog" class="box-image" />
-        </div>
-        <div class="info-box smokewhite">
-          <div class="box-content">
-            <h2 class="mb-4 text-2xl font-bold">View our Payment Plans</h2>
-            <p class="mt-4 text-lg">
-              Discover our flexible payment plans tailored to your budget and
-              needs. Renting a car has never been easier!
-            </p>
-          </div>
-          <img src="car2hp.jpg" alt="Payment Plans" class="box-image" />
-        </div>
-        <div class="info-box smokewhite">
-          <div class="box-content">
-            <h2 class="mb-4 text-2xl font-bold">Find a Branch Near You</h2>
-            <p class="mt-4 text-lg">
-              Locate our branches conveniently located across the city. We're
-              always nearby to provide you with the best car rental experience.
-            </p>
-          </div>
-          <img src="car1hp.jpg" alt="Branch Locator" class="box-image" />
-        </div>
-      </div>
-    </div>
+  <div
+    class="promotions-section"
+    style="padding: 80px; text-align: center; margin-top: -30px;">
+    <h2 style="font-size: 2em; margin-bottom: 0.75em; line-height: 1.2;">
+      Explore Exclusive Offers at DriveXperience
+    </h2>
+    <button
+      class="promo-button"
+      on:click={() => goto("/our-promotions")}
+      on:mouseenter={() => (promoHover = true)}
+      on:mouseleave={() => (promoHover = false)}
+      style="background-color: {promoHover
+        ? '#ffdd22'
+        : '#f5f5f5'}; color: #333; padding: 10px 20px; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; margin-top: 20px;">
+      View Promotions
+    </button>
   </div>
 </div>
 
@@ -103,40 +98,6 @@
     color: white;
     font-size: 40px;
     font-weight: bold;
-  }
-
-  .box-overlay {
-    position: relative;
-    min-height: 90vh;
-    padding: 0 1rem;
-    box-sizing: border-box;
-    margin: auto;
-  }
-
-  .info-boxes {
-    display: flex;
-    flex-direction: column;
-    margin-top: -140px;
-  }
-
-  .info-box {
-    display: flex;
-    justify-content: space-between;
-    width: 80%;
-    padding: 20px;
-    border-radius: 8px;
-    color: "bg-tertiary-500";
-    margin-bottom: 20px;
-    border: 2px solid white;
-  }
-
-  .box-content {
-    max-width: 50%;
-  }
-
-  .box-image {
-    max-width: 26%;
-    border-radius: 8px;
   }
 
   .z-low,

@@ -133,6 +133,7 @@ model Reservation {
   creditCardExpiry                  String
   creditCardCVV                     String
   cancelled                         Boolean                          @default(false)
+  couponUsed                        Coupon?                          @relation(fields: [couponId], references: [id])
   // The optional fields following won't be filled in until check-in
   checkInReportedDamages            String?
   checkInLicenseNumber              String?
@@ -147,6 +148,7 @@ model Reservation {
   returnedAt                        DateTime? // Deposit is refunded at this time. Amount is paid at this time.
   createdAt                         DateTime                         @default(now())
   updatedAt                         DateTime                         @updatedAt
+  couponId                          Int?
 }
 
 enum PaymentMethod {
@@ -170,4 +172,21 @@ model Like {
   user      User     @relation(fields: [userId], references: [id])
   car       Car      @relation(fields: [carId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model Coupon {
+  id         Int    @id @default(autoincrement())
+  couponCode String @unique // Should be normalized in the app, eg. limit to A-Z0-9 only with no whitespace
+
+  // discountAmount and discountBasisPoints shouldn't both be defined at the same time,
+  // but if they are, discountBasisPoints takes priority. For some reason Prisma doesn't
+  // easily support a mutual exclusion constraint. 
+  discountAmount      Int? // Amonut of the discount in cents
+  discountBasisPoints Int? // Amount of the discount in basis points eg. 500 = 5% discount, finalPrice = price * (1 - discountBasisPoins/10000)
+
+  validFrom   DateTime? // If not defined, valid any time before any expiry date, if present
+  expires     DateTime? // If not defined, does not expire
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Reservation Reservation[]
 }
