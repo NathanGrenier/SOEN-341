@@ -60,11 +60,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   };
 };
 
+// Server-side actions
 export const actions = {
+  // Action to search for cars based on filter criteria
   searchCars: async ({ locals, request }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
+    // Constructing WHERE clause for Prisma query
     const whereClause: Prisma.CarWhereInput = {};
 
     whereClause.bookingDisabled = false;
