@@ -43,4 +43,9 @@ jobs:
           --env SMTP_HOST=${{secrets.SMTP_HOST}} --env
           SMTP_PORT=${{secrets.SMTP_PORT}} --env
           SMTP_USER=${{secrets.SMTP_USER}} --env
-          SMTP_PASS=${{secrets.SMTP_PASS}}
+          SMTP_PASS=${{secrets.SMTP_PASS}} --env
+          BLOB_CLOUDFRONT_DIST=${{vars.BLOB_CLOUDFRONT_DIST}} --env
+          BLOB_S3_BUCKET=${{vars.BLOB_S3_BUCKET}} --env
+          BLOB_S3_REGION=${{vars.BLOB_S3_REGION}} --env
+          AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} --env
+          AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}

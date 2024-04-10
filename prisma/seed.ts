@@ -1,4 +1,4 @@
-import { UserRole, CarColour } from "@prisma/client";
+import { UserRole, CarColour, CarType } from "@prisma/client";
 import { prisma } from "../src/lib/db/client.ts";
 
 async function firstSeed() {
@@ -69,8 +69,9 @@ async function firstSeed() {
     create: {
       branchId: yulAirport.id,
       photoUrl:
-        "https://linglaotgbph7idj.public.blob.vercel-storage.com/2021_Ferrari_F8_Tributo-Z9uuYxEmCx1XcxpYH52nI0oHiLbqJZ.jpg?download=1",
+        "https://upload.wikimedia.org/wikipedia/commons/0/00/2021_Ferrari_F8_Tributo.jpg",
       make: "Ferrari",
+      carsize: CarType.Supercar,
       model: "F8 Tributo",
       year: 2020,
       colour: CarColour.RED,
@@ -87,15 +88,25 @@ async function firstSeed() {
     create: {
       branchId: yulAirport.id,
       make: "Toyota",
+      carsize: CarType.SUV,
       model: "Highlander",
       year: 2021,
       photoUrl:
-        "https://linglaotgbph7idj.public.blob.vercel-storage.com/Highlander_XSE-uAtUggxqVniafxdL72PWRnipeHSy9B.jpg?download=1",
+        "https://toyotacanada.scene7.com/is/image/toyotacanada/Highlander_XSE?ts=1688689328971&$Media-Large$&dpr=off",
       colour: CarColour.BLACK,
       seats: 7,
       description:
         "Perfect for road trips with the whole family, this SUV seats 7 passengers and has all-wheel drive.",
       dailyPrice: 8900,
+    },
+  });
+
+  await prisma.like.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      userId: 1,
+      carId: 1,
     },
   });
 
@@ -208,6 +219,33 @@ async function firstSeed() {
       returnedAt: new Date("2024-03-03T18:53:00.000-04:00"),
     },
     update: {},
+  });
+
+  await prisma.coupon.upsert({
+    where: { couponCode: "SAVENOW10" },
+    update: {},
+    create: {
+      couponCode: "SAVENOW10",
+      discountBasisPoints: 1000, // 10% discount
+    },
+  });
+
+  await prisma.coupon.upsert({
+    where: { couponCode: "HALFOFF" },
+    update: {},
+    create: {
+      couponCode: "HALFOFF",
+      discountBasisPoints: 5000, // 50% discount
+    },
+  });
+
+  await prisma.coupon.upsert({
+    where: { couponCode: "THIRTYOFF" },
+    update: {},
+    create: {
+      couponCode: "THIRTYOFF",
+      discountBasisPoints: 3000, // 30% discount
+    },
   });
 
   // No seeds for reservations with accessories yet because that's not a sprint 1 feature.
