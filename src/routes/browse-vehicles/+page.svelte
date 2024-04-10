@@ -334,15 +334,19 @@
           <!-- Branch Location Filter -->
           <label class="label">
             <span>Branch Location</span>
+            <!-- Dropdown for Branch Locations -->
             <select class="select" bind:value={selectedBranch}>
               <option value={-1}>No Specific Branch</option>
+              <!-- Render Options for Each Branch -->
               {#each branches as branch}
                 <option value={branch.id}>{branch.name}</option>
               {/each}
             </select>
           </label>
+          <!-- Price Range Slider -->
           <div class="row py-6">
             <p class="pb-6">Minimum and Maximum Price</p>
+            <!-- Range Slider Component -->
             <RangeSlider
               bind:values
               min={minimumPrice}
