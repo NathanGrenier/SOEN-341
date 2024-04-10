@@ -1,4 +1,5 @@
 <script lang="ts">
+// Importing necessary types and utilities from the skeleton library and other modules.
   import {
     type PaginationSettings,
     type ModalComponent,
