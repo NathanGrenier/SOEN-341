@@ -1,8 +1,10 @@
+// Importing Prisma client and types
 import { prisma } from "$lib/db/client";
 import type { PageServerLoad } from "./$types";
 import type { Actions } from "./$types";
 import { CarColour, CarType, type Prisma } from "@prisma/client";
 
+// Function to convert string to enum value
 function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   for (const key in enumObj) {
     if (
@@ -15,11 +17,13 @@ function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   return undefined;
 }
 
+// Server-side load function
 export const load: PageServerLoad = async ({ locals, url }) => {
   const branchId = url.searchParams.get("branchId");
 
   let cars;
 
+  // Fetching cars based on branchId (if provided)
   if (branchId) {
     cars = await prisma.car.findMany({
       where: {
@@ -37,14 +41,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     });
   }
 
+  // Fetching branches and liked vehicles for the user
   const branches = await prisma.branch.findMany({ where: { disabled: false } });
 
   const likedVehicles = await prisma.like.findMany({
     where: { userId: locals.user?.id },
   });
 
+  // Extracting car IDs of liked vehicles
   const likedVehiclesIDs: number[] = likedVehicles.map((obj) => obj.carId);
 
+  // Returning fetched data
   return {
     cars,
     branches,
