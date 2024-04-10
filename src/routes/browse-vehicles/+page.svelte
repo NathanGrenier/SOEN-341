@@ -305,11 +305,15 @@
     <TreeViewItem>
       <h6 class="h6 font-bold">Search Filters</h6>
       <svelte:fragment slot="children">
+        <!-- Filter Options Container -->
         <div class="space-y-4 p-4">
+          <!-- Car Type Filter -->
           <label class="label mt-2">
             <span>Car Type</span>
+            <!-- Dropdown for Car Types -->
             <select class="select" bind:value={selectedCarType}>
               <option value={"No Specific Type"}>No Specific Type</option>
+              <!-- Render Options for Each Unique Car Type -->
               {#each uniqueType as carsize}
                 <option value={carsize}>{toTitleCase(carsize)}</option>
               {/each}
