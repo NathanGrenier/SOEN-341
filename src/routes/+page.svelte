@@ -5,13 +5,35 @@
   import { modeCurrent } from "@skeletonlabs/skeleton";
   import { T } from "@threlte/core";
   import { OrbitControls } from "@threlte/extras";
-  import { inSphere } from "maath/random";
   import type { TypedArray } from "three";
   import { tweened } from "svelte/motion";
   import { linear } from "svelte/easing";
   import { fade } from "svelte/transition";
   import DownArrowIcon from "$lib/icons/DownArrowIcon.svelte";
   import { browser } from "$app/environment";
+
+  function inSphere(array: Float32Array, radius: number) {
+    const numPoints = array.length / 3;
+
+    for (let i = 0; i < numPoints; i++) {
+      const u = Math.random();
+      const v = Math.random();
+
+      const theta = 2 * Math.PI * u;
+      const phi = Math.acos(2 * v - 1);
+
+      const r = Math.cbrt(Math.random());
+      const x = radius * r * Math.sin(phi) * Math.cos(theta);
+      const y = radius * r * Math.sin(phi) * Math.sin(theta);
+      const z = radius * r * Math.cos(phi);
+
+      array[i * 3] = x;
+      array[i * 3 + 1] = y;
+      array[i * 3 + 2] = z;
+    }
+
+    return array;
+  }
 
   const tweenedXPosition = tweened(0, {
     duration: 500,
@@ -74,7 +96,7 @@
       observer.observe(element);
     });
 
-    sphere = inSphere(new Float32Array(5000), { radius: 1.2 });
+    sphere = inSphere(new Float32Array(5000), 1.2);
 
     function animate() {
       const currentTime = Date.now();
