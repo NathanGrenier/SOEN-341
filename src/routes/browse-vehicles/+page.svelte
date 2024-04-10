@@ -291,13 +291,16 @@
   }
 </script>
 
+<!-- Styling Import: Flatpickr theme -->
 <link
   rel="stylesheet"
   type="text/css"
   href="https://npmcdn.com/flatpickr/dist/themes/{themeMode}.css"
   id="flatpickr-theme" />
 
+<!-- Search Filters Section -->
 <div class="card my-2 space-y-2 pb-2 pr-4">
+  <!-- TreeView Component for Filter Options -->
   <TreeView>
     <TreeViewItem>
       <h6 class="h6 font-bold">Search Filters</h6>
