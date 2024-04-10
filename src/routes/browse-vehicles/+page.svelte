@@ -152,12 +152,14 @@
     return null;
   }
 
+  // Event handler for filtering cars based on selected criteria.
   function handleFilter(): void {
-    if ((startDate && !endDate) || (!startDate && endDate)) return;
+    if ((startDate && !endDate) || (!startDate && endDate)) return; // Ensure both dates are selected.
     cars = [];
     isLoading = true;
     const formData = new FormData();
 
+    // Code to fetch and update the cars list based on the filter criteria.
     if (selectedCarType !== "No Specific Car Type")
       formData.append("carsize", selectedCarType);
 
