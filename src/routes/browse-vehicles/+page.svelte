@@ -75,6 +75,7 @@
   if (cars) uniqueColors = [...new Set(cars.map((car) => car.colour))];
 
   onMount(() => {
+    // If carId is provided in URL, show popup for that car
     if ($page.url.searchParams.get("carId")) {
       const popUpCar = cars.find(
         (car) => car.id == Number($page.url.searchParams.get("carId")),
