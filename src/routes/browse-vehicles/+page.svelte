@@ -183,8 +183,9 @@
     })
       .then((res: Response) => {
         if (res.ok) {
-          return res.json();
+          return res.json(); // If response is OK, parse JSON data
         } else {
+          // If there's an error, trigger a toast notification
           const cancelErrorToast: ToastSettings = {
             message: "There was an error filtering cars.",
             background: "variant-filled-error",
@@ -195,10 +196,11 @@
         }
       })
       .then((data) => {
-        const jsonData = JSON.parse(data.data);
+        const jsonData = JSON.parse(data.data); // Parse JSON data
 
-        const fetchedCars = [];
+        const fetchedCars = []; // Initialize an array to store fetched cars
 
+        // Loop through the JSON data and parse each item, then push it to the fetchedCars array
         for (const item of jsonData) {
           const parsedItem = JSON.parse(item);
           fetchedCars.push(parsedItem);
@@ -208,6 +210,7 @@
           return acc.concat(current);
         }, []);
 
+        // Update UI state variables
         isLoading = false;
         cars = flattenedCars;
         paginationSettings.size = cars.length;
@@ -218,11 +221,13 @@
       });
   }
 
+  // This function handles changing the like status of a car.
   function changeLikeStatus(carId: number, cardIndex: number) {
     particularIndex = cardIndex;
 
     const formData = new FormData();
 
+    // If user data is not available, return
     if (!data.user) return;
 
     formData.append("userId", data.user.id.toString());
