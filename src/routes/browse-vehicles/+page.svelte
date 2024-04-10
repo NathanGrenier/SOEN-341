@@ -416,11 +416,15 @@
         src={car.photoUrl || "https://placehold.co/600x400"}
         alt="Car"
         class="mx-auto mb-4 h-auto w-full rounded" />
+      <!-- Car Model -->
       <h2 class="mb-2 text-lg font-semibold">{car.model}</h2>
+      <!-- Car Description -->
       <p>{car.description}</p>
       <div class="mt-4 flex">
+        <!-- Favorite Button -->
         {#if data.user}
           {#if particularIndex !== idx}
+            <!-- Button to Favorite/Unfavorite Car -->
             <button
               on:click={() => changeLikeStatus(car.id, idx)}
               class="btn mx-auto mt-2 block {likedVehiclesIDs.includes(car.id)
