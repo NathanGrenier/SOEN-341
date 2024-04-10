@@ -113,12 +113,15 @@ export const actions = {
       };
     }
 
+    // Fetching cars based on constructed WHERE clause
     let cars = await prisma.car.findMany({
       where: whereClause,
       include: { reservations: true },
     });
 
+    // Filtering based on date range if provided
     if (data.startDate && data.endDate) {
+      // Filtering cars with reservations conflicting with provided date range
       const filteredCars = cars.filter((car) => {
         const conflict = car.reservations.some((reservation) => {
           if (reservation.cancelled) {
@@ -150,6 +153,7 @@ export const actions = {
       cars = filteredCars;
     }
 
+    // Filtering based on user's favorite cars
     if (data.filterFavorite && data.filterFavorite.toString() === "true") {
       const likedCars = await prisma.like.findMany({
         where: {
