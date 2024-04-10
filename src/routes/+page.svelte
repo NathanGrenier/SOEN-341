@@ -1,20 +1,17 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { get, writable } from "svelte/store";
-  import { Canvas, type AsyncWritable } from "@threlte/core";
+  import { Canvas } from "@threlte/core";
   import { modeCurrent } from "@skeletonlabs/skeleton";
   import { T } from "@threlte/core";
   import { OrbitControls } from "@threlte/extras";
   import { inSphere } from "maath/random";
   import type { TypedArray } from "three";
   import { tweened } from "svelte/motion";
-  import { linear, quintOut } from "svelte/easing";
-  import { fade, slide } from "svelte/transition";
-  import { useLoader } from "@threlte/core";
-  import {
-    GLTFLoader,
-    type GLTF,
-  } from "three/examples/jsm/loaders/GLTFLoader.js";
+  import { linear } from "svelte/easing";
+  import { fade } from "svelte/transition";
+  import DownArrowIcon from "$lib/icons/DownArrowIcon.svelte";
+  import { browser } from "$app/environment";
 
   const tweenedXPosition = tweened(0, {
     duration: 500,
@@ -52,21 +49,30 @@
   }
 
   let sphere: TypedArray;
-  let scrollPosition = writable(0);
   let videoReady = false;
   let mouseMove = false;
   let videoEnded = false;
   let isMobile = false;
 
-  let gltf: AsyncWritable<GLTF>;
+  const sectionVisibility = writable<number>(0);
 
   onMount(() => {
-    const handleScroll = () => {
-      scrollPosition.set(window.scrollY);
-      console.log("yes");
-    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const element = entry.target as HTMLElement;
+            sectionVisibility.set(Number(element.dataset.section));
+          }
+        });
+      },
+      { threshold: 0.5 },
+    );
 
-    window.addEventListener("scroll", handleScroll);
+    document.querySelectorAll(".section-card").forEach((section) => {
+      const element = section as HTMLElement;
+      observer.observe(element);
+    });
 
     sphere = inSphere(new Float32Array(5000), { radius: 1.2 });
 
@@ -95,11 +101,8 @@
 
     videoEnded = isMobile;
 
-    gltf = useLoader(GLTFLoader).load("./free_car_001.gltf");
-
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("scroll", handleScroll);
     };
   });
 
@@ -124,23 +127,31 @@
   let prevX = 0;
   let prevY = 0;
 
-  function scrollToDiv(sectionName: string) {
-    const targetDiv = document.getElementById(sectionName);
+  $: $sectionVisibility;
 
-    if (targetDiv) {
-      targetDiv.scrollIntoView({ behavior: "smooth" });
-
-      setTimeout(() => {
-        tweenCameraPosition("add");
-      }, 200);
+  const incrementSectionNumber = () => {
+    if ($sectionVisibility === 3) {
+      sectionVisibility.set(0);
+      tweenCameraPosition("remove");
+    } else {
+      sectionVisibility.set($sectionVisibility + 1);
+      tweenCameraPosition("add");
     }
-  }
+  };
 
-  // Tween camera position when scrolling
+  const scrollToSection = () => {
+    if (!browser) return;
+    incrementSectionNumber();
+    const section = document.getElementById(`section${$sectionVisibility}`);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   function tweenCameraPosition(operation: string) {
     if (operation === "remove")
       tweenedXPosition.update((prev) => {
-        return prev - 0.5;
+        return prev - 2.5;
       });
     else
       tweenedXPosition.update((prev) => {
@@ -189,14 +200,10 @@
           sizeAttenuation={true} />
       </T.Points>
     </T.Group>
-
-    {#if $gltf}
-      <T is={$gltf.scene} position={[0, 0, 1]} />
-    {/if}
   </Canvas>
 </div>
 
-<div class="h-screen">
+<div class="section-card h-screen" id="section0" data-section="0">
   {#if videoReady}
     <div
       transition:fade={{ delay: 250, duration: 300 }}
@@ -209,7 +216,7 @@
         on:ended={handleVideoEnded}
         class="{isMobile ? 'hidden' : ''} {!currentMode
           ? 'z-low'
-          : 'z-high'} absolute">
+          : 'z-high'} absolute top-[-3rem] w-screen">
         Your browser does not support the video tag.
       </video>
       <video
@@ -219,7 +226,7 @@
         playsinline
         class="{isMobile ? 'hidden' : ''} {!currentMode
           ? 'z-high'
-          : 'z-low'} absolute">
+          : 'z-low'} absolute top-[-3rem] w-screen">
         Your browser does not support the video tag.
       </video>
     </div>
@@ -233,27 +240,22 @@
         Welcome to DriveXperience
       </div>
       <button
-        on:click={() => {
-          scrollToDiv("sectionOne");
-        }}
+        on:click={scrollToSection}
         transition:fade={{ delay: 250, duration: 300 }}
         class="variant-filled-primary btn mx-auto block">Begin</button>
     {/if}
   </div>
 </div>
 
-<div class="card fixed left-0 top-0 z-30 p-4">{$scrollPosition}</div>
-
-<div class="card relative my-4 space-y-4 p-4">
-  <div id="sectionOne" class="card p-4">
+<div class="relative my-4 space-y-4 p-4">
+  <div
+    id="section1"
+    data-section="1"
+    class="section-card fade-transition {$sectionVisibility === 1
+      ? 'visible'
+      : ''}">
     <div
-      class="relative my-4 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40"
-      transition:slide={{
-        delay: 250,
-        duration: 300,
-        easing: quintOut,
-        axis: "x",
-      }}>
+      class="relative my-4 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
       <div class="card col-span-1">
         <a href="/browse-vehicles">
           <img class="rounded-t-lg" src="/car1hp.jpg" alt="" />
@@ -276,54 +278,78 @@
       <div class="card col-span-1 p-4">Test</div>
     </div>
   </div>
-  <div id="sectionTwo" class="card p-4">
+  <div
+    id="section2"
+    data-section="2"
+    class="section-card fade-transition {$sectionVisibility === 2
+      ? 'visible'
+      : ''}">
     <div
-      class="relative my-4 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40"
-      transition:slide={{
-        delay: 250,
-        duration: 300,
-        easing: quintOut,
-        axis: "x",
-      }}>
-      <div class="card col-span-1 p-4">Test</div>
+      class="relative my-2 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
+      <div class="col-span-1 p-4">Test</div>
       <div class="card col-span-1">
         <a href="/browse-vehicles">
-          <img class="rounded-t-lg" src="/car1hp.jpg" alt="" />
+          <img class="rounded-t-lg" src="/car2hp.jpg" alt="" />
         </a>
         <header class="card-header">
-          <p class="h2">View our catalog of vehicles</p>
+          <p class="h2">Find a Branch Near You</p>
+        </header>
+        <section class="p-4">
+          Locate our branches conveniently located across the city. We're always
+          nearby to provide you with the best car rental experience.
+        </section>
+        <footer class="card-footer">
+          <button
+            class="btn mx-auto block bg-primary-500"
+            on:click={() => {
+              window.location.href = "/find-branch";
+            }}>Find a Branch</button>
+        </footer>
+      </div>
+    </div>
+  </div>
+  <div
+    id="section3"
+    data-section="3"
+    class="section-card fade-transition {$sectionVisibility === 3
+      ? 'visible'
+      : ''}">
+    <div
+      class="relative my-2 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
+      <div class="card col-span-1">
+        <a href="/browse-vehicles">
+          <img class="rounded-t-lg" src="/car3hp.jpg" alt="" />
+        </a>
+        <header class="card-header">
+          <p class="h2">View our Amazing Roulette</p>
         </header>
         <section class="p-4">
           Explore our wide range of available vehicles for rental. From compact
           cars to luxury SUVs, we have something for everyone.
         </section>
-      </div>
-    </div>
-  </div>
-  <div id="sectionThree" class="card p-4">
-    <div
-      class="relative my-4 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40"
-      transition:slide={{
-        delay: 250,
-        duration: 300,
-        easing: quintOut,
-        axis: "x",
-      }}>
-      <div class="card col-span-1">
-        <a href="/browse-vehicles">
-          <img class="rounded-t-lg" src="/car1hp.jpg" alt="" />
-        </a>
-        <header class="card-header">
-          <p class="h2">View our catalog of vehicles</p>
-        </header>
-        <section class="p-4">
-          Explore our wide range of available vehicles for rental. From compact
-          cars to luxury SUVs, we have something for everyone.
-        </section>
+        <footer class="card-footer">
+          <button
+            class="btn mx-auto block bg-primary-500"
+            on:click={() => {
+              window.location.href = "/our-promotions";
+            }}>Spin the Wheel</button>
+        </footer>
       </div>
       <div class="card col-span-1 p-4">Test</div>
     </div>
   </div>
+</div>
+
+<div class="absolute-center bottom-button bottom-0">
+  <button
+    class="{$sectionVisibility === 0
+      ? 'hidden'
+      : ''} btn z-50 rounded bg-primary-500 px-3 py-2 font-bold"
+    on:click={() => {
+      scrollToSection();
+    }}>
+    <DownArrowIcon />
+  </button>
 </div>
 
 <style>
@@ -352,5 +378,35 @@
   .z-low,
   .z-high {
     transition: opacity 0.3s ease;
+  }
+
+  .section-card {
+    opacity: 1;
+    transform: translateY(20px);
+    transition:
+      opacity 2.5s,
+      transform 0.5s;
+  }
+
+  .absolute-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .bottom-button {
+    bottom: 20px;
+  }
+
+  .fade-transition {
+    transition:
+      opacity 1.5s ease,
+      transform 0.5s;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .fade-transition.visible {
+    opacity: 1;
   }
 </style>
