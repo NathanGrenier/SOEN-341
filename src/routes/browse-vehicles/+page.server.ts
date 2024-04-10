@@ -189,13 +189,16 @@ export const actions = {
         where: { userId: Number(data.userId), carId: Number(data.carId) },
       });
 
+      // Handling if like entry doesn't exist
       if (!likeToDelete) return "Could not unfavorite";
 
+      // Deleting the like entry
       await prisma.like.delete({
         where: { id: likeToDelete.id },
       });
     }
 
+    // Returning success message
     return "Success";
   },
 } satisfies Actions;
