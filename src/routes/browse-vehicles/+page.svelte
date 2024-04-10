@@ -230,6 +230,7 @@
     // If user data is not available, return
     if (!data.user) return;
 
+    // Append user ID, car ID, and status (favorite/unfavorite) to FormData
     formData.append("userId", data.user.id.toString());
     formData.append("carId", carId.toString());
     formData.append(
@@ -237,11 +238,13 @@
       likedVehiclesIDs.includes(carId) ? "Unfavorite" : "Favorite",
     );
 
+    // Send a POST request to set the like status of the car
     fetch("?/setLikeStatus", {
       method: "POST",
       body: formData,
     })
       .then(() => {
+        // If successful, trigger a success toast notification
         const successFavoriteToast: ToastSettings = {
           message:
             "Vehicle was " +
