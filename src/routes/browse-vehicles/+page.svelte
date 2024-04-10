@@ -360,13 +360,16 @@
               suffix="$"
               last="label" />
           </div>
+          <!-- Date Range Input -->
           <div class="space-y-4">
             <label class="label">
               <span>Start and End Dates</span>
+              <!-- Input Field for Date Range -->
               <input
                 class="center input mx-auto ml-4 mt-4 w-60 sm:w-80"
                 bind:this={ref} />
             </label>
+            <!-- Checkbox to Filter by Favorites -->
             {#if data.user}
               <label class="label">
                 <input
@@ -377,6 +380,7 @@
               </label>
             {/if}
           </div>
+          <!-- Filter Button -->
           <button
             class="btn mx-auto block w-20 bg-primary-500"
             on:click={handleFilter}
