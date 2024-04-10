@@ -1,10 +1,10 @@
 <script lang="ts">
   // Importing necessary types and utilities from the skeleton library and other modules.
   import {
-    type PaginationSettings,
-    type ModalComponent,
-    type ToastSettings,
-    getModeUserPrefers,
+    type PaginationSettings, // Types for pagination settings
+    type ModalComponent, // Type for modal components
+    type ToastSettings, // Type for toast settings
+    getModeUserPrefers, // Utility function to get user's preferred mode
   } from "@skeletonlabs/skeleton";
   import {
     getModalStore,
@@ -23,12 +23,13 @@
   import flatpickr from "flatpickr";
   import { modeCurrent } from "@skeletonlabs/skeleton";
 
+  // Declares reactive data and some local state variables for managing UI state.
   export let data;
 
   const modalStore = getModalStore();
   const toastStore = getToastStore();
 
-  let { cars } = data;
+  let { cars } = data; // Destructuring cars from external data
   let maximumPrice = 3000;
   let minimumPrice = 0;
   if (cars.length > 0)
@@ -53,6 +54,7 @@
 
   $: likedVehiclesIDs;
 
+  // Svelte store reactivity to update the theme for Flatpickr dynamically.
   let themeMode = getModeUserPrefers() ? "material_blue" : "dark";
 
   $: {
