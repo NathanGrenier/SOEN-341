@@ -434,10 +434,12 @@
               {likedVehiclesIDs.includes(car.id) ? "Unfavorite" : "Favorite"}
             </button>
           {:else}
+            <!-- Loading Button -->
             <button class="btn mx-auto mt-2 block bg-surface-500"
               >Loading</button>
           {/if}
         {/if}
+        <!-- Button to Show Car Details -->
         <button
           on:click={showPopup(car)}
           class="btn mx-auto mt-2 block bg-primary-500">
@@ -448,12 +450,14 @@
   {/each}
 </div>
 
+<!-- Pagination Component -->
 <Paginator
   bind:settings={paginationSettings}
   showFirstLastButtons={false}
   showPreviousNextButtons={true}
   amountText="Cars" />
 
+<!-- Custom CSS Variables for Range Slider -->
 <style>
   :root {
     --range-slider: hwb(180 46% 51%);
