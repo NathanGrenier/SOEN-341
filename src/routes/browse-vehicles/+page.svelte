@@ -1,4 +1,27 @@
 <script lang="ts">
+  /*
+  Static Analysis: This file is responsible for rendering the browse vehicles page. It contains the logic for filtering cars based on user preferences and displaying them in a paginated format. It also includes the logic for handling user interactions such as favoriting/unfavoriting cars and displaying car details in a modal.
+  1. Select Appropriate Tools: ESLINT and PRETTIER
+  2. Integrate into Build Process - Done
+  3. Establish Baseline: Done since first implementation of ESLINT and PRETTIER
+  4. Define Coding Standards: Same as [3]
+  5. Customize Rules: Same as [3]
+  6. Regularly Update Rules : done.
+  7. Use Pre-commit Hooks : done, always been implemented.
+  8. Continuous Integration (CI) Integration: already included.
+  9. Set Quality Gates: same as [8].
+  10. Utilize Git Hooks: npx cz ~ done.
+  11. Configure Exclusions: same as [5].
+  12. Leverage Editor Integration: PRETTIER - done.
+  13. Address False Positives - done.
+  14. Educate the Team - done.
+  15. Automated Code Reviews - on commit (save).
+  16. Monitor Trends: history included.
+  17. Include Security Scans: always done during npm.
+  18. Documentation - Done by Jeremy for this page.
+  19. Periodic Reviews - Done during scrum time and PR.
+
+  */
   // Importing necessary types and utilities from the skeleton library and other modules.
   import {
     type PaginationSettings, // Types for pagination settings
