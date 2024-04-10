@@ -261,7 +261,7 @@
           <img class="rounded-t-lg" src="/car1hp.jpg" alt="" />
         </a>
         <header class="card-header">
-          <p class="h2">View our catalog of vehicles</p>
+          <p class="h2">View Our Vehicle Catalog</p>
         </header>
         <section class="p-4">
           Explore our wide range of available vehicles for rental. From compact
@@ -275,7 +275,12 @@
             }}>Browse Vehicles</button>
         </footer>
       </div>
-      <div class="card col-span-1 p-4">Test</div>
+      <div class="card col-span-1 my-auto rounded-md">
+        <img
+          src="https://i.imgur.com/0VwWrT4.png"
+          alt="preview of browse"
+          class="img w-full rounded-md" />
+      </div>
     </div>
   </div>
   <div
@@ -286,7 +291,12 @@
       : ''}">
     <div
       class="relative my-2 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
-      <div class="col-span-1 p-4">Test</div>
+      <div class="col-span-1 my-auto rounded-md">
+        <img
+          src="https://i.imgur.com/fL8sRmJ.png"
+          alt="preview of search branch"
+          class="img w-full rounded-md" />
+      </div>
       <div class="card col-span-1">
         <a href="/browse-vehicles">
           <img class="rounded-t-lg" src="/car2hp.jpg" alt="" />
@@ -321,7 +331,7 @@
           <img class="rounded-t-lg" src="/car3hp.jpg" alt="" />
         </a>
         <header class="card-header">
-          <p class="h2">View our Amazing Roulette</p>
+          <p class="h2">View Our Roulette</p>
         </header>
         <section class="p-4">
           Explore our wide range of available vehicles for rental. From compact
@@ -335,7 +345,12 @@
             }}>Spin the Wheel</button>
         </footer>
       </div>
-      <div class="card col-span-1 p-4">Test</div>
+      <div class="card col-span-1 my-auto rounded-md">
+        <img
+          src="https://i.imgur.com/7L7a3pd.png"
+          alt="roulette"
+          class="img w-full rounded-md" />
+      </div>
     </div>
   </div>
 </div>
