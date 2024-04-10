@@ -72,12 +72,14 @@ export const actions = {
 
     whereClause.bookingDisabled = false;
 
+    // Filtering based on branchId
     if (data.branchId !== undefined && +data.branchId.toString() !== -1) {
       whereClause.branchId = { equals: +data.branchId };
     } else {
       delete whereClause.branchId;
     }
 
+    // Filtering based on price range
     if (data.minPrice !== undefined && data.maxPrice !== undefined) {
       whereClause.dailyPrice = {
         gte: +data.minPrice * 100,
@@ -93,6 +95,7 @@ export const actions = {
       };
     }
 
+    // Filtering based on car type
     if (!data.carsize || data.carsize === "No Specific Size") {
       delete whereClause.carsize;
     } else {
@@ -101,6 +104,7 @@ export const actions = {
       };
     }
 
+    // Filtering based on car color
     if (!data.colour || data.colour === "No Specific Color") {
       delete whereClause.colour;
     } else {
