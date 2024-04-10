@@ -255,6 +255,7 @@
 
         toastStore.trigger(successFavoriteToast);
 
+        // Update likedVehiclesIDs array based on the like status change
         if (!likedVehiclesIDs.includes(carId)) {
           likedVehiclesIDs.push(carId);
         } else {
@@ -263,12 +264,14 @@
           );
         }
 
+        // Reset particularIndex after a brief delay
         setTimeout(() => {
           particularIndex = -1;
         }, 100);
       })
       .catch((err) => {
         console.log(err);
+        // If there's an error, trigger an error toast notification
         const errorFavoriteToast: ToastSettings = {
           message:
             "Could not " +
@@ -278,6 +281,7 @@
         };
         toastStore.trigger(errorFavoriteToast);
 
+        // Reset particularIndex after a brief delay
         setTimeout(() => {
           particularIndex = -1;
         }, 100);
