@@ -58,7 +58,9 @@
   let themeMode = getModeUserPrefers() ? "material_blue" : "dark";
 
   $: {
+    // Update theme mode based on current mode
     themeMode = $modeCurrent ? "material_blue" : "dark";
+    // Update Flatpickr theme dynamically
     onMount(() => {
       const link = document.getElementById(
         "flatpickr-theme",
