@@ -166,13 +166,17 @@ export const actions = {
       cars = cars.filter((car) => likedCarIds.includes(car.id));
     }
 
+    // Returning filtered cars as JSON string
     return JSON.stringify(cars);
   },
+  // Action to set like status (favorite/unfavorite) for a car
   setLikeStatus: async ({ request }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
+    // Handling favorite/unfavorite action
     if (data.status === "Favorite") {
+      // Creating a new like entry
       await prisma.like.create({
         data: {
           userId: Number(data.userId),
@@ -180,6 +184,7 @@ export const actions = {
         },
       });
     } else {
+      // Deleting the like entry
       const likeToDelete = await prisma.like.findFirst({
         where: { userId: Number(data.userId), carId: Number(data.carId) },
       });
