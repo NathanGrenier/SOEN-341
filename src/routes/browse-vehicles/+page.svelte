@@ -320,14 +320,18 @@
             </select>
           </label>
           <label class="label mt-2">
+            <!-- Car Color Filter -->
             <span>Car Color</span>
+            <!-- Dropdown for Car Colors -->
             <select class="select" bind:value={selectedCarColour}>
               <option value={"No Specific Color"}>No Specific Color</option>
+              <!-- Render Options for Each Unique Car Color -->
               {#each uniqueColors as colour}
                 <option value={colour}>{toTitleCase(colour)}</option>
               {/each}
             </select>
           </label>
+          <!-- Branch Location Filter -->
           <label class="label">
             <span>Branch Location</span>
             <select class="select" bind:value={selectedBranch}>
