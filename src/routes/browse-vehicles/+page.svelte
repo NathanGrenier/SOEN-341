@@ -176,9 +176,10 @@
 
     if (filterByFavorites) formData.append("filterFavorite", "true");
 
+    // This function handles filtering cars based on the selected criteria.
     fetch("?/searchCars", {
-      method: "POST",
-      body: formData,
+      method: "POST", // Sending a POST request to the server
+      body: formData, // Sending form data containing filter criteria
     })
       .then((res: Response) => {
         if (res.ok) {
