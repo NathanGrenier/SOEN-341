@@ -391,7 +391,9 @@
   </TreeView>
 </div>
 
+<!-- Loading and No Results Indicators -->
 {#if isLoading}
+  <!-- Loading Indicator -->
   <div class="mt-4 flex flex-col items-center justify-center space-y-4">
     <div class="flex items-center justify-center">
       <ProgressRadial value={undefined} class="w-9" />
@@ -399,14 +401,17 @@
     <p>Searching for Cars</p>
   </div>
 {:else if cars.length === 0}
+  <!-- No Results Indicator -->
   <div class="mt-2 flex flex-col items-center justify-center">
     <p class="card my-12 p-4">No cars found</p>
   </div>
 {/if}
 
+<!-- Car Listings Display -->
 <div class="my-2 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
   {#each paginatedCars as car, idx}
     <div class="card p-4">
+      <!-- Car Image -->
       <img
         src={car.photoUrl || "https://placehold.co/600x400"}
         alt="Car"
