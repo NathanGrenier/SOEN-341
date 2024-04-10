@@ -86,6 +86,7 @@
       showPopup(popUpCar);
     }
 
+    // Sets up date picking functionality using Flatpickr.
     flatpickr(ref, {
       allowInput: true,
       clickOpens: true,
@@ -112,6 +113,7 @@
       paginationSettings.limit,
   );
 
+  // Pagination settings and logic for handling user interactions.
   let paginationSettings = {
     page: 0,
     limit: 10,
@@ -119,12 +121,14 @@
     amounts: [1, 2, 5, 10],
   } satisfies PaginationSettings;
 
+  // Utility function to format strings into Title Case.
   function toTitleCase(str: string) {
     return str.toLowerCase().replace(/\b\w/g, function (char) {
       return char.toUpperCase();
     });
   }
 
+  // Function to display a modal with car details.
   function showPopup(car: Car) {
     const modalComponent: ModalComponent = {
       ref: ViewCarModal,
