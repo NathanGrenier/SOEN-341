@@ -275,11 +275,11 @@
             }}>Browse Vehicles</button>
         </footer>
       </div>
-      <div class="card col-span-1 my-auto rounded-md">
+      <div class="col-span-1">
         <img
           src="https://i.imgur.com/0VwWrT4.png"
           alt="preview of browse"
-          class="img w-full rounded-md" />
+          class="img flex justify-center rounded-md align-middle" />
       </div>
     </div>
   </div>
@@ -291,11 +291,11 @@
       : ''}">
     <div
       class="relative my-2 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
-      <div class="col-span-1 my-auto rounded-md">
+      <div class="col-span-1">
         <img
           src="https://i.imgur.com/fL8sRmJ.png"
           alt="preview of search branch"
-          class="img w-full rounded-md" />
+          class="img flex justify-center rounded-md align-middle" />
       </div>
       <div class="card col-span-1">
         <a href="/browse-vehicles">
@@ -345,11 +345,11 @@
             }}>Spin the Wheel</button>
         </footer>
       </div>
-      <div class="card col-span-1 my-auto rounded-md">
+      <div class="col-span-1">
         <img
           src="https://i.imgur.com/7L7a3pd.png"
           alt="roulette"
-          class="img w-full rounded-md" />
+          class="img flex w-[30rem] justify-center rounded-md align-middle" />
       </div>
     </div>
   </div>
