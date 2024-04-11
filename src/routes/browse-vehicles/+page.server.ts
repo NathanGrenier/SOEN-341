@@ -1,8 +1,10 @@
+// Importing Prisma client and types
 import { prisma } from "$lib/db/client";
 import type { PageServerLoad } from "./$types";
 import type { Actions } from "./$types";
 import { CarColour, CarType, type Prisma } from "@prisma/client";
 
+// Function to convert string to enum value
 function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   for (const key in enumObj) {
     if (
@@ -15,11 +17,13 @@ function stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
   return undefined;
 }
 
+// Server-side load function
 export const load: PageServerLoad = async ({ locals, url }) => {
   const branchId = url.searchParams.get("branchId");
 
   let cars;
 
+  // Fetching cars based on branchId (if provided)
   if (branchId) {
     cars = await prisma.car.findMany({
       where: {
@@ -37,14 +41,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     });
   }
 
+  // Fetching branches and liked vehicles for the user
   const branches = await prisma.branch.findMany({ where: { disabled: false } });
 
   const likedVehicles = await prisma.like.findMany({
     where: { userId: locals.user?.id },
   });
 
+  // Extracting car IDs of liked vehicles
   const likedVehiclesIDs: number[] = likedVehicles.map((obj) => obj.carId);
 
+  // Returning fetched data
   return {
     cars,
     branches,
@@ -53,21 +60,26 @@ export const load: PageServerLoad = async ({ locals, url }) => {
   };
 };
 
+// Server-side actions
 export const actions = {
+  // Action to search for cars based on filter criteria
   searchCars: async ({ locals, request }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
+    // Constructing WHERE clause for Prisma query
     const whereClause: Prisma.CarWhereInput = {};
 
     whereClause.bookingDisabled = false;
 
+    // Filtering based on branchId
     if (data.branchId !== undefined && +data.branchId.toString() !== -1) {
       whereClause.branchId = { equals: +data.branchId };
     } else {
       delete whereClause.branchId;
     }
 
+    // Filtering based on price range
     if (data.minPrice !== undefined && data.maxPrice !== undefined) {
       whereClause.dailyPrice = {
         gte: +data.minPrice * 100,
@@ -83,6 +95,7 @@ export const actions = {
       };
     }
 
+    // Filtering based on car type
     if (!data.carsize || data.carsize === "No Specific Size") {
       delete whereClause.carsize;
     } else {
@@ -91,6 +104,7 @@ export const actions = {
       };
     }
 
+    // Filtering based on car color
     if (!data.colour || data.colour === "No Specific Color") {
       delete whereClause.colour;
     } else {
@@ -99,12 +113,15 @@ export const actions = {
       };
     }
 
+    // Fetching cars based on constructed WHERE clause
     let cars = await prisma.car.findMany({
       where: whereClause,
       include: { reservations: true },
     });
 
+    // Filtering based on date range if provided
     if (data.startDate && data.endDate) {
+      // Filtering cars with reservations conflicting with provided date range
       const filteredCars = cars.filter((car) => {
         const conflict = car.reservations.some((reservation) => {
           if (reservation.cancelled) {
@@ -136,6 +153,7 @@ export const actions = {
       cars = filteredCars;
     }
 
+    // Filtering based on user's favorite cars
     if (data.filterFavorite && data.filterFavorite.toString() === "true") {
       const likedCars = await prisma.like.findMany({
         where: {
@@ -148,13 +166,17 @@ export const actions = {
       cars = cars.filter((car) => likedCarIds.includes(car.id));
     }
 
+    // Returning filtered cars as JSON string
     return JSON.stringify(cars);
   },
+  // Action to set like status (favorite/unfavorite) for a car
   setLikeStatus: async ({ request }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
+    // Handling favorite/unfavorite action
     if (data.status === "Favorite") {
+      // Creating a new like entry
       await prisma.like.create({
         data: {
           userId: Number(data.userId),
@@ -162,17 +184,21 @@ export const actions = {
         },
       });
     } else {
+      // Deleting the like entry
       const likeToDelete = await prisma.like.findFirst({
         where: { userId: Number(data.userId), carId: Number(data.carId) },
       });
 
+      // Handling if like entry doesn't exist
       if (!likeToDelete) return "Could not unfavorite";
 
+      // Deleting the like entry
       await prisma.like.delete({
         where: { id: likeToDelete.id },
       });
     }
 
+    // Returning success message
     return "Success";
   },
 } satisfies Actions;
