@@ -38,7 +38,7 @@ jobs:
         id: get_pull_request_branch_name
         run: |
           branch_name=${{ github.event.pull_request.head.ref }}
-          if [[ branch_name == "develop" ]]; then
+          if [[ $branch_name == "develop" ]]; then
             branch_name="preview/develop"
           fi
           echo "branch_name=${branch_name}" >> $GITHUB_OUTPUT
@@ -83,7 +83,7 @@ jobs:
 
       - name: Run Prisma Seed
         run: |
-          npx prisma db seed
+          npx prisma db seed -- --environment preview
 
       - name: Extract branch name
         id: extract_branch
@@ -118,7 +118,7 @@ jobs:
           vercel --version
           vercel pull --yes --environment=preview --git-branch=${{github.head_ref}} --token=$VERCEL_TOKEN
           vercel build --token=$VERCEL_TOKEN
-          vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} --env DATABASE_URL=$DATABASE_URL --env DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL --env SESSION_SIGNING_KEY=$SESSION_SIGNING_KEY --env EXEC_ENV=$EXEC_ENV --env SMTP_HOST=${{secrets.SMTP_HOST}} --env SMTP_PORT=${{secrets.SMTP_PORT}} --env SMTP_USER=${{secrets.SMTP_USER}} --env SMTP_PASS=${{secrets.SMTP_PASS}}
+          vercel deploy --prebuilt --archive=tgz --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} --env DATABASE_URL=$DATABASE_URL --env DIRECT_DATABASE_URL=$DIRECT_DATABASE_URL --env SESSION_SIGNING_KEY=$SESSION_SIGNING_KEY --env EXEC_ENV=$EXEC_ENV --env SMTP_HOST=${{secrets.SMTP_HOST}} --env SMTP_PORT=${{secrets.SMTP_PORT}} --env SMTP_USER=${{secrets.SMTP_USER}} --env SMTP_PASS=${{secrets.SMTP_PASS}} --env BLOB_CLOUDFRONT_DIST=${{vars.BLOB_CLOUDFRONT_DIST}} --env BLOB_S3_BUCKET=${{vars.BLOB_S3_BUCKET}} --env BLOB_S3_REGION=${{vars.BLOB_S3_REGION}} --env AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}} --env AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
 
           vercel ls --token=$VERCEL_TOKEN --meta base_hash=${{ env.META_TAG }} &> vercel-output
           url=$(cat vercel-output | grep http | awk '{print $2}')

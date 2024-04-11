@@ -24,6 +24,7 @@ model User {
   disabled     Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  Like         Like[]
 }
 
 enum UserRole {
@@ -56,6 +57,7 @@ model Car {
   branch          Branch        @relation(fields: [branchId], references: [id])
   branchId        Int
   make            String
+  carsize         CarType
   model           String
   year            Int
   colour          CarColour
@@ -69,6 +71,7 @@ model Car {
   bookingDisabled Boolean       @default(false)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  Like            Like[]
 }
 
 enum CarColour {
@@ -85,6 +88,16 @@ enum CarColour {
   PURPLE
   PINK
   MULTI
+}
+
+enum CarType {
+  Sedan
+  SUV
+  Hatchback
+  Pickup
+  Supercar
+  Convertible
+  Minivan
 }
 
 // It may be neccesary to revise this schema down the line for daily-price vs. flat-rate accessories.
@@ -120,6 +133,7 @@ model Reservation {
   creditCardExpiry                  String
   creditCardCVV                     String
   cancelled                         Boolean                          @default(false)
+  couponUsed                        Coupon?                          @relation(fields: [couponId], references: [id])
   // The optional fields following won't be filled in until check-in
   checkInReportedDamages            String?
   checkInLicenseNumber              String?
@@ -134,6 +148,7 @@ model Reservation {
   returnedAt                        DateTime? // Deposit is refunded at this time. Amount is paid at this time.
   createdAt                         DateTime                         @default(now())
   updatedAt                         DateTime                         @updatedAt
+  couponId                          Int?
 }
 
 enum PaymentMethod {
@@ -148,4 +163,30 @@ model ReservationIncludedAccessories {
   accessoryId   Int
 
   @@unique([reservationId, accessoryId])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  carId     Int
+  user      User     @relation(fields: [userId], references: [id])
+  car       Car      @relation(fields: [carId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Coupon {
+  id         Int    @id @default(autoincrement())
+  couponCode String @unique // Should be normalized in the app, eg. limit to A-Z0-9 only with no whitespace
+
+  // discountAmount and discountBasisPoints shouldn't both be defined at the same time,
+  // but if they are, discountBasisPoints takes priority. For some reason Prisma doesn't
+  // easily support a mutual exclusion constraint. 
+  discountAmount      Int? // Amonut of the discount in cents
+  discountBasisPoints Int? // Amount of the discount in basis points eg. 500 = 5% discount, finalPrice = price * (1 - discountBasisPoins/10000)
+
+  validFrom   DateTime? // If not defined, valid any time before any expiry date, if present
+  expires     DateTime? // If not defined, does not expire
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Reservation Reservation[]
 }
