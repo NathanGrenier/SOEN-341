@@ -25,6 +25,11 @@ jobs:
         run: |
           npx prisma migrate deploy
 
+      # Seed the develop database with the seedMain script. We do this to mimic the production database
+      - name: Run Prisma SeedMain
+        run: |
+          npx prisma db seedMain
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
