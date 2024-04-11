@@ -1,3 +1,15 @@
+<script lang="ts" context="module">
+  export type HomePageCardType = {
+    section: number;
+    href: string;
+    title: string;
+    description: string;
+    buttonText: string;
+    image: string;
+    previewImage: string;
+  };
+</script>
+
 <script lang="ts">
   import { onMount } from "svelte";
   import { get, writable } from "svelte/store";
@@ -11,6 +23,8 @@
   import { fade } from "svelte/transition";
   import DownArrowIcon from "$lib/icons/DownArrowIcon.svelte";
   import { browser } from "$app/environment";
+  import HomePageCard from "$lib/components/HomePageCard.svelte";
+  import UpArrowIcon from "$lib/icons/UpArrowIcon.svelte";
 
   function inSphere(array: Float32Array, radius: number) {
     const numPoints = array.length / 3;
@@ -76,7 +90,7 @@
   let videoEnded = false;
   let isMobile = false;
 
-  const sectionVisibility = writable<number>(0);
+  $: sectionVisibility = 0;
 
   onMount(() => {
     const observer = new IntersectionObserver(
@@ -84,7 +98,7 @@
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const element = entry.target as HTMLElement;
-            sectionVisibility.set(Number(element.dataset.section));
+            sectionVisibility = Number(element.dataset.section);
           }
         });
       },
@@ -149,14 +163,14 @@
   let prevX = 0;
   let prevY = 0;
 
-  $: $sectionVisibility;
+  $: sectionVisibility;
 
   const incrementSectionNumber = () => {
-    if ($sectionVisibility === 3) {
-      sectionVisibility.set(0);
+    if (sectionVisibility === 3) {
+      sectionVisibility = 0;
       tweenCameraPosition("remove");
     } else {
-      sectionVisibility.set($sectionVisibility + 1);
+      sectionVisibility = sectionVisibility + 1;
       tweenCameraPosition("add");
     }
   };
@@ -164,7 +178,7 @@
   const scrollToSection = () => {
     if (!browser) return;
     incrementSectionNumber();
-    const section = document.getElementById(`section${$sectionVisibility}`);
+    const section = document.getElementById(`section${sectionVisibility}`);
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
     }
@@ -185,6 +199,39 @@
     videoEnded = true;
     videoReady = false;
   }
+
+  const homePageCards: HomePageCardType[] = [
+    {
+      section: 1,
+      href: "/browse-vehicles",
+      title: "View Our Vehicle Catalog",
+      description:
+        "Explore our wide range of available vehicles for rental. From compact cars to luxury SUVs, we have something for everyone.",
+      buttonText: "Browse Vehicles",
+      image: "/car1hp.jpg",
+      previewImage: "/browse-vehicles.png",
+    },
+    {
+      section: 2,
+      href: "/find-branch",
+      title: "Find a Branch Near You",
+      description:
+        "Locate our branches conveniently located across the city. We're always nearby to provide you with the best car rental experience.",
+      buttonText: "Find a Branch",
+      image: "/car2hp.jpg",
+      previewImage: "/find-a-branch.png",
+    },
+    {
+      section: 3,
+      href: "/our-promotions",
+      title: "View Our Roulette",
+      description:
+        "Explore our wide range of available vehicles for rental. From compact cars to luxury SUVs, we have something for everyone.",
+      buttonText: "Spin the Wheel",
+      image: "/car3hp.jpg",
+      previewImage: "/roulette.png",
+    },
+  ];
 </script>
 
 <div class="{currentMode ? 'sceneLight' : 'sceneDark'} absolute z-0">
@@ -270,122 +317,24 @@
 </div>
 
 <div class="relative my-4 space-y-4 p-4">
-  <div
-    id="section1"
-    data-section="1"
-    class="section-card fade-transition {$sectionVisibility === 1
-      ? 'visible'
-      : ''}">
-    <div
-      class="relative my-4 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
-      <div class="card col-span-1">
-        <a href="/browse-vehicles">
-          <img class="rounded-t-lg" src="/car1hp.jpg" alt="" />
-        </a>
-        <header class="card-header">
-          <p class="h2">View Our Vehicle Catalog</p>
-        </header>
-        <section class="p-4">
-          Explore our wide range of available vehicles for rental. From compact
-          cars to luxury SUVs, we have something for everyone.
-        </section>
-        <footer class="card-footer">
-          <button
-            class="btn mx-auto block bg-primary-500"
-            on:click={() => {
-              window.location.href = "/browse-vehicles";
-            }}>Browse Vehicles</button>
-        </footer>
-      </div>
-      <div class="col-span-1">
-        <img
-          src="/browse-vehicles.png"
-          alt="preview of browse"
-          class="img flex justify-center rounded-md align-middle" />
-      </div>
-    </div>
-  </div>
-  <div
-    id="section2"
-    data-section="2"
-    class="section-card fade-transition {$sectionVisibility === 2
-      ? 'visible'
-      : ''}">
-    <div
-      class="relative my-2 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
-      <div class="col-span-1">
-        <img
-          src="/find-a-branch.png"
-          alt="preview of search branch"
-          class="img flex justify-center rounded-md align-middle" />
-      </div>
-      <div class="card col-span-1">
-        <a href="/find-branch">
-          <img class="rounded-t-lg" src="/car2hp.jpg" alt="" />
-        </a>
-        <header class="card-header">
-          <p class="h2">Find a Branch Near You</p>
-        </header>
-        <section class="p-4">
-          Locate our branches conveniently located across the city. We're always
-          nearby to provide you with the best car rental experience.
-        </section>
-        <footer class="card-footer">
-          <button
-            class="btn mx-auto block bg-primary-500"
-            on:click={() => {
-              window.location.href = "/find-branch";
-            }}>Find a Branch</button>
-        </footer>
-      </div>
-    </div>
-  </div>
-  <div
-    id="section3"
-    data-section="3"
-    class="section-card fade-transition {$sectionVisibility === 3
-      ? 'visible'
-      : ''}">
-    <div
-      class="relative my-2 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
-      <div class="card col-span-1">
-        <a href="/our-promotions">
-          <img class="rounded-t-lg" src="/car3hp.jpg" alt="" />
-        </a>
-        <header class="card-header">
-          <p class="h2">View Our Roulette</p>
-        </header>
-        <section class="p-4">
-          Explore our wide range of available vehicles for rental. From compact
-          cars to luxury SUVs, we have something for everyone.
-        </section>
-        <footer class="card-footer">
-          <button
-            class="btn mx-auto block bg-primary-500"
-            on:click={() => {
-              window.location.href = "/our-promotions";
-            }}>Spin the Wheel</button>
-        </footer>
-      </div>
-      <div class="col-span-1">
-        <img
-          src="/roulette.png"
-          alt="roulette"
-          class="img flex w-[30rem] justify-center rounded-md align-middle" />
-      </div>
-    </div>
-  </div>
+  {#each homePageCards as card}
+    <HomePageCard {card} isVisible={sectionVisibility === card.section} />
+  {/each}
 </div>
 
 <div class="absolute-center bottom-button bottom-0">
   <button
-    class="{$sectionVisibility === 0
+    class="{sectionVisibility === 0
       ? 'hidden'
       : ''} btn z-50 rounded bg-primary-500 px-3 py-2 font-bold"
     on:click={() => {
       scrollToSection();
     }}>
-    <DownArrowIcon />
+    {#if sectionVisibility === homePageCards.length}
+      <UpArrowIcon />
+    {:else}
+      <DownArrowIcon />
+    {/if}
   </button>
 </div>
 
@@ -433,17 +382,5 @@
 
   .bottom-button {
     bottom: 20px;
-  }
-
-  .fade-transition {
-    transition:
-      opacity 1.5s ease,
-      transform 0.5s;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  .fade-transition.visible {
-    opacity: 1;
   }
 </style>
