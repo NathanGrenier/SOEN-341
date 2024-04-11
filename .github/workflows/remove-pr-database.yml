@@ -18,7 +18,7 @@ jobs:
         id: get_branch_name
         run: |
           branch_name=${{ github.event.pull_request.head.ref }}
-          if [[ branch_name == "develop" ]]; then
+          if [[ $branch_name == "develop" ]]; then
             branch_name="preview/develop"
           fi
           echo "branch_name=${branch_name}" >> $GITHUB_OUTPUT
