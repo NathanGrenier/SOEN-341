@@ -514,18 +514,20 @@ async function main() {
     values: { environment },
   } = parseArgs({ options: { environment: { type: "string" } } });
 
+  if (environment) {
+    console.log(`Seeding database for environment: ${environment}`);
+  } else {
+    console.log("No environment specified, seeding test data.");
+  }
+
   switch (environment) {
     case "production":
     case "develop":
       await seedMain();
       break;
     case "preview":
-      await testSeed();
-      break;
     default:
-      console.log(
-        `Invalid environment "${environment}". Please provide a valid environment.`,
-      );
+      await testSeed();
       break;
   }
 }
