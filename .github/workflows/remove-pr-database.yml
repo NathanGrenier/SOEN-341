@@ -7,9 +7,7 @@ on:
 
 jobs:
   remove-merged-pr-database:
-    if:
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.head.ref != 'develop'
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +17,11 @@ jobs:
       - name: Get Closed PR Head Ref Branch Name
         id: get_branch_name
         run: |
-          echo "branch_name=${{ github.event.pull_request.head.ref }}" >> $GITHUB_OUTPUT
+          branch_name=${{ github.event.pull_request.head.ref }}
+          if [[ branch_name == "develop" ]]; then
+            branch_name="preview/develop"
+          fi
+          echo "branch_name=${branch_name}" >> $GITHUB_OUTPUT
 
       - name: Search branch by name
         id: get_branch_id

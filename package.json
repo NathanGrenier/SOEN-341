@@ -19,7 +19,8 @@
     "pre-commit": "lint-staged && npm test"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "seedMain": "tsx prisma/seedMain.ts"
   },
   "engines": {
     "node": "18.x"
