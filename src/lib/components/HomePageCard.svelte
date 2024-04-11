@@ -8,9 +8,29 @@
   id={`section${card.section}`}
   data-section={card.section}
   class="section-card fade-transition {isVisible ? 'visible' : ''}">
-  <div
+  <a
+    href={card.href}
     class="relative my-4 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
-    <a href={card.href}>
+    {#if card.section % 2 === 0}
+      <div class="col-span-1">
+        <img
+          src={card.previewImage}
+          alt=""
+          class="img card-hover flex justify-center rounded-md align-middle" />
+      </div>
+      <div class="card card-hover col-span-1">
+        <img class="rounded-t-lg" src={card.image} alt={card.title} />
+        <header class="card-header">
+          <p class="h2">{card.title}</p>
+        </header>
+        <section class="p-4">
+          {card.description}
+        </section>
+        <footer class="card-footer flex justify-center">
+          <a href={card.href} class="btn bg-primary-500">{card.buttonText}</a>
+        </footer>
+      </div>
+    {:else}
       <div class="card card-hover col-span-1">
         <img class="rounded-t-lg" src={card.image} alt={card.title} />
         <header class="card-header">
@@ -29,8 +49,8 @@
           alt=""
           class="img card-hover flex justify-center rounded-md align-middle" />
       </div>
-    </a>
-  </div>
+    {/if}
+  </a>
 </div>
 
 <style>
