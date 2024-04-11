@@ -3,25 +3,49 @@
   import type { ModalSettings, ToastSettings } from "@skeletonlabs/skeleton";
   import type { Reservation } from "@prisma/client";
   import { getToastStore } from "@skeletonlabs/skeleton";
-  import { parseDate } from "$lib/utils.js";
+  import { formatDateToYYYYMMDD, parseDate } from "$lib/utils.js";
+  import Reserve from "$lib/icons/Reserve.svelte";
+  import CancelIcon from "$lib/icons/CancelIcon.svelte";
+  import { tweened } from "svelte/motion";
+  import { quadInOut } from "svelte/easing";
 
   export let data;
+
+  const userEmail = data.user?.email;
 
   const toastStore = getToastStore();
   const { startDate } = data;
   const { endDate } = data;
   const { currentCar } = data;
   const { currentBranch } = data;
+  const { allAccessories } = data;
+  const { allCoupons } = data;
+
   let creditCardNumber: string;
   let cvvNumber: string;
   let expiryDate: string;
+  let couponAlreadyApplied = false;
 
+  const totalPrice = tweened(0, {
+    easing: quadInOut,
+    duration: 500,
+  });
+  let prevPrice = $totalPrice;
+
+  const timeDifference =
+    new Date(endDate).getTime() - new Date(startDate).getTime();
+
+  const numberOfDays = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+  totalPrice.set((numberOfDays * currentCar.dailyPrice) / 100);
+
+  let currentCouponId: string;
   let firstName = data.user?.name.split(" ")[0];
   let middleName =
     data.user?.name.split(" ").length === 3 ? data.user.name.split(" ")[1] : "";
   let lastName = data.user?.name.split(" ").slice(-1);
 
-  let extraEquipment: string[] = [];
+  let extraEquipment: number[] = [];
 
   const modalStore = getModalStore();
 
@@ -88,7 +112,15 @@
         </div>
         <div class="flex justify-between">
           <span>Extra Equipment:</span>
-          <span>${extraEquipment.length !== 0 ? extraEquipment.join(", ") : "None"}</span>
+          <span>${
+            extraEquipment.length !== 0
+              ? allAccessories
+                  .filter((accessory) => extraEquipment.includes(accessory.id))
+                  .map((accessory) => accessory.name)
+                  .join(", ")
+              : "None"
+          }
+          </span>
         </div>
       </div>
     `,
@@ -163,6 +195,10 @@
                   <span>Daily Price:</span>
                   <span>${currentCar ? currentCar.dailyPrice / 100 + ".00 $" : ""}</span>
                 </div>
+                <div class="flex justify-between">
+                  <span>Total Price:</span>
+                  <span>${$totalPrice}</span>
+                </div>
               </div>
             `,
               response: async (confirmed: boolean) => {
@@ -189,14 +225,7 @@
                 };
                 modalStore.trigger(loadingModal);
 
-                const timeDifference =
-                  new Date(endDate).getTime() - new Date(startDate).getTime();
-                const numberOfDays = Math.ceil(
-                  timeDifference / (1000 * 3600 * 24),
-                );
-                const quotedPrice = currentCar.dailyPrice
-                  ? (numberOfDays * currentCar.dailyPrice) / 100
-                  : 0;
+                const quotedPrice = $totalPrice;
 
                 function convertDateToSpecificTimezone(
                   userDate: Date,
@@ -249,7 +278,7 @@
                   formData.append(key, value?.toString() ?? "");
                 });
 
-                fetch("", {
+                fetch("?/createReservation", {
                   method: "POST",
                   body: formData,
                 })
@@ -260,20 +289,74 @@
                       const cancelErrorToast: ToastSettings = {
                         message: "There was an error filtering cars.",
                         background: "variant-filled-error",
-                        autohide: false,
+                        autohide: true,
                       };
 
                       toastStore.trigger(cancelErrorToast);
                     }
                   })
-                  .then(() => {
-                    window.location.href = "/dashboard";
+                  .then((data) => {
+                    const dataArray = JSON.parse(data.data);
+                    const id = dataArray[1];
+                    window.location.href = `/dashboard/reservation-${id}`;
+
+                    const formData = new FormData();
+                    const formattedStartDate = formatDateToYYYYMMDD(
+                      new Date(startDate),
+                    );
+                    const formattedEndDate = formatDateToYYYYMMDD(
+                      new Date(endDate),
+                    );
+                    formData.append("plannedDeparture", formattedStartDate);
+                    formData.append("plannedReturn", formattedEndDate);
+                    formData.append("daysRented", numberOfDays.toString());
+                    formData.append("quotedPrice", quotedPrice.toString());
+                    formData.append(
+                      "carName",
+                      currentCar.make +
+                        " " +
+                        currentCar.model +
+                        " " +
+                        currentCar.year.toString(),
+                    );
+                    if (currentCar.photoUrl)
+                      formData.append("carImageURL", currentCar.photoUrl);
+                    formData.append("branchName", currentBranch.name);
+                    formData.append(
+                      "branchAddress",
+                      currentBranch.streetAddress,
+                    );
+                    formData.append("branchCity", currentBranch.city);
+                    formData.append("branchRegion", currentBranch.region);
+                    formData.append(
+                      "branchPostalCode",
+                      currentBranch.postalCode,
+                    );
+                    if (userEmail) formData.append("email", userEmail);
+
+                    fetch("?/confirmation", {
+                      method: "POST",
+                      body: formData,
+                    }).then((res: Response) => {
+                      if (res.ok) {
+                        return res.json();
+                      } else {
+                        const cancelErrorToast: ToastSettings = {
+                          message:
+                            "There was an error sending a confirmation email.",
+                          background: "variant-filled-error",
+                          autohide: true,
+                        };
+
+                        toastStore.trigger(cancelErrorToast);
+                      }
+                    });
                   })
                   .catch(() => {
                     const failToast: ToastSettings = {
                       message: "There was an error creating the reservation",
                       background: "variant-filled-error",
-                      autohide: false,
+                      autohide: true,
                     };
                     toastStore.trigger(failToast);
                   });
@@ -292,10 +375,68 @@
     const target = event.target as HTMLInputElement;
     const { value, checked } = target;
     if (checked) {
-      extraEquipment = [...extraEquipment, value];
+      extraEquipment = [...extraEquipment, Number(value)];
     } else {
-      extraEquipment = extraEquipment.filter((item) => item !== value);
+      extraEquipment = extraEquipment.filter((item) => item !== Number(value));
     }
+  }
+
+  function isValidCreditCard(
+    creditCardNumber: string,
+    cvvNumber: string,
+    expiryDate: string,
+  ) {
+    const creditCardRegex =
+      /^(?:4[0-9]{12}(?:[0-9]{3})?|[25][1-7][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$/;
+
+    const cvvRegex = /^[0-9]{3,4}$/;
+
+    const expiryDateRegex = /^(0[1-9]|1[0-2])\/(20[2-9][0-9])$/;
+
+    return (
+      creditCardRegex.test(creditCardNumber) &&
+      cvvRegex.test(cvvNumber) &&
+      expiryDateRegex.test(expiryDate)
+    );
+  }
+
+  function verifyCoupon(couponToCheck: string) {
+    for (const coupon of allCoupons) {
+      if (coupon.couponCode === couponToCheck) {
+        const successfulCoupon: ToastSettings = {
+          message: `Coupon code ${couponToCheck} successfully applied.`,
+          background: "variant-filled-success",
+          autohide: true,
+        };
+        let discount = 0;
+        let previousPrice = $totalPrice;
+        if (coupon.discountBasisPoints != null) {
+          const basisPointsDiscount =
+            (previousPrice * coupon.discountBasisPoints) / 10000;
+          discount = Math.min(basisPointsDiscount, previousPrice);
+        } else if (coupon.discountAmount != null) {
+          discount = Math.min(coupon.discountAmount, previousPrice);
+        }
+        prevPrice = $totalPrice;
+        totalPrice
+          .update(() => {
+            return previousPrice - discount;
+          })
+          .then(() => {
+            couponAlreadyApplied = true;
+          });
+        toastStore.trigger(successfulCoupon);
+        return true;
+      }
+    }
+    const failedCoupon: ToastSettings = {
+      message: "This coupon code does not exist.",
+      background: "variant-filled-error",
+      autohide: true,
+    };
+
+    toastStore.trigger(failedCoupon);
+    return false;
   }
 </script>
 
@@ -357,55 +498,49 @@
         <h3 class="h3">Extra Equipment</h3>
 
         <div class="flex justify-center space-x-4">
-          <label class="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              class="form-checkbox"
-              value="gps"
-              bind:group={extraEquipment}
-              on:change={handleCheckboxChange} />
-            <span>GPS</span>
-          </label>
+          {#each allAccessories as accessory}
+            <label class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                class="form-checkbox"
+                value={accessory.id}
+                bind:group={extraEquipment}
+                on:change={handleCheckboxChange} />
+              <span>{accessory.name}</span>
+            </label>
+          {/each}
+        </div>
+      </section>
 
-          <label class="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              class="form-checkbox"
-              value="child-seat"
-              bind:group={extraEquipment}
-              on:change={handleCheckboxChange} />
-            <span>Child Seat</span>
-          </label>
+      <section class="space-y-4 p-4">
+        <h3 class="h3">Redeem a Coupon</h3>
 
-          <label class="flex items-center space-x-2">
+        <div class="flex justify-center space-x-4">
+          <label class="flex items-center">
             <input
-              type="checkbox"
-              class="form-checkbox"
-              value="roof-rack"
-              bind:group={extraEquipment}
-              on:change={handleCheckboxChange} />
-            <span>Roof Rack</span>
+              type="input"
+              class="input p-2"
+              bind:value={currentCouponId} />
           </label>
-
-          <label class="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              class="form-checkbox"
-              value="bike-rack"
-              bind:group={extraEquipment}
-              on:change={handleCheckboxChange} />
-            <span>Bike Rack</span>
-          </label>
-
-          <label class="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              class="form-checkbox"
-              value="snow-chains"
-              bind:group={extraEquipment}
-              on:change={handleCheckboxChange} />
-            <span>Snow Chains</span>
-          </label>
+          <button
+            disabled={!currentCouponId || couponAlreadyApplied}
+            class="variant-filled btn"
+            on:click={() => {
+              if (!verifyCoupon(currentCouponId)) currentCouponId = "";
+            }}>Redeem</button>
+          <button
+            disabled={!currentCouponId || !couponAlreadyApplied}
+            class="variant-filled btn"
+            on:click={() => {
+              console.log(prevPrice);
+              totalPrice
+                .update(() => {
+                  return prevPrice;
+                })
+                .then(() => {
+                  couponAlreadyApplied = false;
+                });
+            }}>Remove</button>
         </div>
       </section>
 
@@ -440,7 +575,7 @@
         <div>
           <h3 class="h3">Branch Location</h3>
 
-          <div class="rounded-d card mx-auto my-2 overflow-hidden bg-slate-900">
+          <div class="card mx-auto my-2 overflow-hidden">
             <div class="px-4 py-2">
               <div class="flex items-center">
                 <span class="mr-2 text-base font-bold">Branch Name:</span>
@@ -501,35 +636,23 @@
           <span class="font-semibold">Daily Price:</span>
           <span>{currentCar ? currentCar.dailyPrice / 100 + ".00 $" : ""}</span>
         </div>
+        <div class="flex justify-between">
+          <span class="font-semibold">Total Price:</span>
+          <span>{$totalPrice.toFixed(2)} $</span>
+        </div>
+        {#if couponAlreadyApplied}
+          <div class="flex justify-between">
+            <span>Coupon Applied:</span>
+            <span>{currentCouponId}</span>
+          </div>
+        {/if}
       </div>
     </div>
   </div>
 
   <footer class="card-footer my-2 flex justify-center space-x-4">
     <button type="button" class="variant-filled btn" on:click={handleCancel}>
-      <span
-        ><svg
-          id="Cancel_24"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          xmlns:xlink="http://www.w3.org/1999/xlink"
-          ><rect
-            width="24"
-            height="24"
-            stroke="none"
-            fill="#000000"
-            opacity="0" />
-
-          <g transform="matrix(1 0 0 1 12 12)">
-            <path
-              style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;"
-              transform=" translate(-12, -12)"
-              d="M 12 2 C 6.47 2 2 6.47 2 12 C 2 17.53 6.47 22 12 22 C 17.53 22 22 17.53 22 12 C 22 6.469999999999999 17.53 2 12 2 z M 17 15.59 L 15.59 17 L 12 13.41 L 8.41 17 L 7 15.59 L 10.59 12 L 7 8.41 L 8.41 7 L 12 10.59 L 15.59 7 L 17 8.41 L 13.41 12 L 17 15.59 z"
-              stroke-linecap="round" />
-          </g>
-        </svg></span>
+      <span><CancelIcon /></span>
       <span>Cancel</span>
     </button>
     <button
@@ -542,24 +665,8 @@
         startDate < getToday() ||
         endDate < getToday() ||
         !currentCar ||
-        !creditCardNumber ||
-        !cvvNumber ||
-        !expiryDate}>
-      <span
-        ><svg
-          class="h-[28px] w-[28px] text-black dark:text-white"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24">
-          <path
-            stroke="black"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M8 7H5a2 2 0 0 0-2 2v4m5-6h8M8 7V5c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v2m0 0h3a2 2 0 0 1 2 2v4m0 0v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6m18 0s-4 2-9 2-9-2-9-2m9-2h0" />
-        </svg>
-      </span>
+        !isValidCreditCard(creditCardNumber, cvvNumber, expiryDate)}>
+      <span><Reserve /> </span>
       <span>Reserve</span>
     </button>
   </footer>

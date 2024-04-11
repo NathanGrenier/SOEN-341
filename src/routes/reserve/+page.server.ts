@@ -2,6 +2,7 @@ import type { Branch, Car, Reservation } from "@prisma/client";
 import type { PageServerLoad } from "./$types";
 import { error, redirect, type Actions } from "@sveltejs/kit";
 import { prisma } from "$lib/db/client";
+import { sendEmail } from "$lib/server/email/email";
 
 function isValidDate(dateString: string | undefined) {
   if (!dateString) return false;
@@ -13,6 +14,7 @@ function isValidDate(dateString: string | undefined) {
 
 export const load: PageServerLoad = async ({ locals, url }) => {
   if (!locals.user) {
+    console.log(`/auth/login?destination=${url.pathname}/${url.search}`);
     return redirect(
       300,
       `/auth/login?destination=${url.pathname}/${url.search}`,
@@ -104,20 +106,26 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     },
   );
 
+  const allCoupons = await prisma.coupon.findMany();
+
+  const allAccessories = await prisma.accessory.findMany();
+
   if (conflictingReservation) {
     redirect(302, "/browse-vehicles");
   }
 
   return {
-    startDate: startDate,
-    endDate: endDate,
+    startDate,
+    endDate,
     currentCar: car,
     currentBranch: branch,
+    allCoupons,
+    allAccessories,
   };
 };
 
 export const actions = {
-  default: async ({ request }) => {
+  createReservation: async ({ request }) => {
     const form = await request.formData();
     const data = Object.fromEntries(form);
 
@@ -125,7 +133,7 @@ export const actions = {
       carId: data.carId ? parseInt(data.carId.toString(), 10) : 0,
       holderId: data.holderId ? parseInt(data.holderId.toString(), 10) : 0,
       quotedPrice: data.quotedPrice
-        ? parseInt(data.quotedPrice.toString(), 10) * 100
+        ? Number(data.quotedPrice.toString()) * 100
         : 0,
       cancelled: data.cancelled === "true",
       plannedDepartureAt: data.plannedDepartureAt
@@ -152,10 +160,55 @@ export const actions = {
       creditCardCVV: data.creditCardCVV ? data.creditCardCVV.toString() : "",
       checkInLicenseNumber: null,
       checkInLicenseIssuingJurisdiction: null,
+      checkInReportedDamages: null,
+      depositAmountTaken: null,
+      depositAmountRefunded: null,
+      amountPaid: null,
+      paymentMethod: null,
+      couponId: Number(data.couponId),
     };
 
     return await prisma.reservation.create({
       data: reservationData,
     });
+  },
+  confirmation: async ({ request }) => {
+    const form = await request.formData();
+    const data = Object.fromEntries(form);
+
+    const user = await prisma.user.findUnique({
+      where: { email: data.email.toString() },
+    });
+
+    if (!user || user.disabled) {
+      return { success: true };
+    }
+
+    await sendEmail({
+      recipientName: user.name,
+      recipientEmail: user.email,
+      subject: "Reservation Confirmation",
+      template: "reservation-confirmation",
+      vars: {
+        "%name%": user.name,
+        "%plannedDeparture%": data.plannedDeparture.toString(),
+        "%plannedReturn%": data.plannedReturn.toString(),
+        "%daysRented%": data.daysRented.toString(),
+        "%quotedPrice%": data.quotedPrice.toString(),
+        "%carName%": data.carName.toString(),
+        "%carImageURL%": data.carImageURL.toString(),
+        "%branchName%": data.branchName.toString(),
+        "%branchAddress%": data.branchAddress.toString(),
+        "%branchCity%": data.branchCity.toString(),
+        "%branchRegion%": data.branchRegion.toString(),
+        "%branchPostalCode%": data.branchPostalCode.toString(),
+      },
+    });
+
+    if (process.env.EXEC_ENV === "development") {
+      console.log("Confirmation Sent");
+    }
+
+    return { success: true };
   },
 } satisfies Actions;

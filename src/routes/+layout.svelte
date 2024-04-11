@@ -74,7 +74,7 @@
     placement: "bottom",
   };
 
-  const initials =
+  $: initials =
     data?.user?.name
       .match(/(\b\S)?/g)
       ?.join("")
@@ -115,7 +115,9 @@
         </button>
         <a href="/" class="h-10">
           <img
-            src={$modeCurrent ? "SiteLogoForDark.png" : "SiteLogoForLight.png"}
+            src={$modeCurrent
+              ? "/SiteLogoForDark.png"
+              : "/SiteLogoForLight.png"}
             alt="DriveXperience"
             class="h-full" />
         </a>
@@ -146,6 +148,7 @@
       <div class="footer-links">
         <a href="/contact-us" class="p-2">Contact Us</a>
         <a href="/our-policies" class="p-2">Our Policies</a>
+        <a href="/our-promotions" class="p-2">Our Promotions</a>
       </div>
       <div>© 2024 DriveXperience. All rights reserved.</div>
     </footer>
