@@ -299,7 +299,7 @@
       </div>
       <div class="col-span-1">
         <img
-          src="https://i.imgur.com/0VwWrT4.png"
+          src="/browse-vehicles.png"
           alt="preview of browse"
           class="img flex justify-center rounded-md align-middle" />
       </div>
@@ -315,12 +315,12 @@
       class="relative my-2 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
       <div class="col-span-1">
         <img
-          src="https://i.imgur.com/fL8sRmJ.png"
+          src="/find-a-branch.png"
           alt="preview of search branch"
           class="img flex justify-center rounded-md align-middle" />
       </div>
       <div class="card col-span-1">
-        <a href="/browse-vehicles">
+        <a href="/find-branch">
           <img class="rounded-t-lg" src="/car2hp.jpg" alt="" />
         </a>
         <header class="card-header">
@@ -349,7 +349,7 @@
     <div
       class="relative my-2 grid grid-cols-2 items-center justify-center gap-4 space-y-6 p-40">
       <div class="card col-span-1">
-        <a href="/browse-vehicles">
+        <a href="/our-promotions">
           <img class="rounded-t-lg" src="/car3hp.jpg" alt="" />
         </a>
         <header class="card-header">
@@ -369,7 +369,7 @@
       </div>
       <div class="col-span-1">
         <img
-          src="https://i.imgur.com/7L7a3pd.png"
+          src="/roulette.png"
           alt="roulette"
           class="img flex w-[30rem] justify-center rounded-md align-middle" />
       </div>
