@@ -20,7 +20,7 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts",
-    "seedMain": "tsx prisma/seedMain.ts"
+    "seedMain": "tsx prisma/seed_main.ts"
   },
   "engines": {
     "node": "18.x"
