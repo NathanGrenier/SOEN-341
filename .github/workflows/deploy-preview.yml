@@ -83,7 +83,7 @@ jobs:
 
       - name: Run Prisma Seed
         run: |
-          npx prisma db seed
+          npx prisma db seed -- --environment preview
 
       - name: Extract branch name
         id: extract_branch
