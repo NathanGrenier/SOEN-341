@@ -2,7 +2,9 @@ import { getModeUserPrefers } from "@skeletonlabs/skeleton";
 
 export function centsToDollars(price: number): string {
   // Divide by 100 to convert cents to dollars
-  return `$${(price / 100).toFixed(2)}`;
+  const dollars = Math.abs(price) / 100; // Taking absolute value to handle negative prices
+  const sign = price < 0 ? "-" : ""; // Adding a negative sign if price is negative
+  return `${sign}$${dollars.toFixed(2)}`;
 }
 
 export function formatDbReservationDate(date: Date): string {
